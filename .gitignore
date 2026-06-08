@@ -1,0 +1,264 @@
+# ==========================================================
+# ENTORNO VIRTUAL
+# ==========================================================
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Virtualenv internals
+[Bb]in/
+[Ii]nclude/
+[Ll]ib/
+[Ll]ib64/
+[Ll]ocal/
+[Ss]cripts/
+pyvenv.cfg
+pip-selfcheck.json
+
+# ==========================================================
+# VARIABLES DE ENTORNO Y BASES DE DATOS (SEGURIDAD)
+# ==========================================================
+
+.env
+.env.*
+*.db
+*.sqlite3
+db.sqlite3
+db.sqlite3-journal
+
+# ==========================================================
+# PYTHON
+# ==========================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+*.py,cover
+.python-version
+
+# C extensions
+*.so
+
+# ==========================================================
+# DISTRIBUCIÓN / EMPAQUETADO
+# ==========================================================
+.Python
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# ==========================================================
+# LOGS
+# ==========================================================
+*.log
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ==========================================================
+# TESTING / COVERAGE
+# ==========================================================
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# ==========================================================
+# TYPE CHECKERS / LINTERS
+# ==========================================================
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+
+# ==========================================================
+# HERRAMIENTAS Y FRAMEWORKS
+# ==========================================================
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Django
+local_settings.py
+
+# Flask
+instance/
+.webassets-cache
+
+# Scrapy
+.scrapy
+
+# Sphinx
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath
+*.sage.py
+
+# Cython
+cython_debug/
+
+# ==========================================================
+# GESTORES DE DEPENDENCIAS
+# ==========================================================
+
+# Poetry
+poetry.toml
+# poetry.lock   # Descomentar si no deseas versionarlo
+
+# Pipenv
+# Pipfile.lock
+
+# PDM
+.pdm.toml
+# pdm.lock
+
+# PEP 582
+__pypackages__/
+
+
+.vscode/
+.idea/
+*.iml
+.spyderproject
+.spyproject
+.ropeproject
+
+# ==========================================================
+# ANDROID / ANDROID STUDIO
+# ==========================================================
+.gradle/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+output.json
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+*.jks
+*.keystore
+google-services.json
+*.hprof
+gen-external-apklibs
+
+# ==========================================================
+# SISTEMA OPERATIVO - WINDOWS
+# ==========================================================
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# ==========================================================
+# SISTEMA OPERATIVO - macOS
+# ==========================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+*.icloud
+
+# ==========================================================
+# SISTEMA OPERATIVO - LINUX
+# ==========================================================
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ==========================================================
+# ARCHIVOS TEMPORALES
+# ==========================================================
+*.tmp
+*.temp
+
+# ==========================================================
+# CONFIGURACIONES DE LSP
+# ==========================================================
+pyrightconfig.json
+
+# ==========================================================
+# SITIOS GENERADOS
+# ==========================================================
+site/
+
+# ==========================================================
+# IMÁGENES (descomentar si NO quieres subir imágenes)
+# ==========================================================
+.png
+.jpg
+.jpeg
+.gif
+.svg
+.webp
+.bmp
+.tiff
+.ico
