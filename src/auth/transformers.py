@@ -9,6 +9,6 @@ async def parse_usuario_form(
 ):
     return {
         "email": email,
-        "password_hash": password,
+        "password": password,
         "imagen_url": imagen_url,
     }
