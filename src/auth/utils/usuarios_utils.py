@@ -13,7 +13,7 @@ def normalizar_registro_a_cargar(usuario: Dict) -> AuthUser:
     try:
         file_binario = usuario.get("imagen_url")
         datos_limpios = usuario | {
-            "mail": usuario.get("email", "").strip().lower(),            
+            "email": usuario.get("email", "").strip().lower(),            
         }
         
         datos_para_validar = datos_limpios | {"imagen_url": None} if file_binario else datos_limpios
