@@ -6,7 +6,7 @@ from src.database.client import get_session
 from src.auth import service
 from src.auth.transformers import parse_usuario_form
 from src.config.config import settings
-from src.auth.utils import mail
+from src.utils import mail
 from src.auth.tokens.tokens import create_access_token
 
 router = APIRouter(prefix=f"/{settings.NOMBRE_APP}/usuarios",

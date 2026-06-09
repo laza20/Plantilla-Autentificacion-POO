@@ -6,7 +6,7 @@ from jose import JWTError
 from exceptions.domain import SinCargas, ContraseñaNoSegura
 from exceptions.usuarios_exceptions import TokenInvalido, UsuarioNoEncontrado
 from src.auth import repository 
-from src.utils.cloudinary import insertar_imagen
+from src.cloudinary.cloudinary import insertar_imagen
 from src.auth.security.security import hash_password, decode_token
 from src.auth.tokens.tokens import create_access_token, create_refresh_token
 import logging
