@@ -9,9 +9,7 @@ from fastapi.responses import JSONResponse
 SQLModel.metadata.create_all(engine)
 app = FastAPI()
 
-from src.auth.routers import(
-    usuarios
-)
+from src.auth import(routers as usuarios)
 
 app.include_router(usuarios.router)
 
