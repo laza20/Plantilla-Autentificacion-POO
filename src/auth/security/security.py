@@ -1,5 +1,5 @@
 from pwdlib import PasswordHash
-from config.config import settings
+from src.config.config import settings
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 
@@ -29,7 +29,7 @@ def encode_token(payload: dict, expires_delta: timedelta) -> str:
     data = payload.copy()
     expire = datetime.now(timezone.utc) + expires_delta
     data["exp"] = int(expire.timestamp())
-    return jwt.encode(data, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return jwt.encode(data, settings.JWT_SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
 def decode_token(token: str) -> dict:
@@ -39,4 +39,4 @@ def decode_token(token: str) -> dict:
     - Si el token es válido, se devuelve el payload decodificado.
     - Si el token es inválido o ha expirado, se lanza una excepción JWTError.
     """
-    return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    return jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.ALGORITHM])
