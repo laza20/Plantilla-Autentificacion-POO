@@ -1,4 +1,8 @@
-from pydantic_settings import BaseSettings, SettingsConfigForm
+from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ENV_PATH = os.path.join(BASE_DIR, ".env")
 
 class Settings(BaseSettings):
     #General settings
@@ -7,18 +11,20 @@ class Settings(BaseSettings):
     
     #JWT settings
     JWT_SECRET_KEY: str
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    REFRESH_TOKEN_DURATION: int
     
     #Mail settings
+
     MAIL_USERNAME: str
     MAIL_PASSWORD: str
     MAIL_FROM: str
     MAIL_PORT: int
     MAIL_SERVER: str
-    MAIL_STARTTLS: bool
-    MAIL_SSL_TLS: bool
-    USE_CREDENTIALS: bool
+    MAIL_STARTTLS: bool = True
+    MAIL_SSL_TLS: bool = False
+    USE_CREDENTIALS: bool = True
 
     #App settings
     NOMBRE_APP: str
@@ -30,8 +36,8 @@ class Settings(BaseSettings):
     CLOUDINARY_API_SECRET: str
     CLOUDINARY_UPLOAD_PRESET: str
 
-    model_config = SettingsConfigForm(
-        env_file=".env", 
+    model_config = SettingsConfigDict(
+        env_file=ENV_PATH, 
         env_file_encoding="utf-8",
         extra="ignore"
     )
