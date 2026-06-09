@@ -3,7 +3,12 @@ from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from src.config.config import settings
 import os
 
-TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+TEMPLATE_DIR = os.path.join(
+    os.path.dirname(CURRENT_DIR),
+    "templates"
+)
 env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
 
 def generar_correo_verificacion(url: str, nombre_proyecto: str) -> str:
@@ -18,7 +23,7 @@ def generar_correo_verificacion(url: str, nombre_proyecto: str) -> str:
 
 async def enviar_mail(email_destino: str, cuerpo_html: str):
     message = MessageSchema(
-        subject="Activa tu cuenta - BookTrace",
+        subject=f"Activa tu cuenta - {settings.NOMBRE_APP}",
         recipients=[email_destino],
         body=cuerpo_html,
         subtype="html"
@@ -29,8 +34,9 @@ async def enviar_mail(email_destino: str, cuerpo_html: str):
         MAIL_FROM=settings.MAIL_FROM,
         MAIL_PORT=settings.MAIL_PORT,
         MAIL_SERVER=settings.MAIL_SERVER,
-        MAIL_TLS=True,
-        MAIL_SSL=False
+        MAIL_STARTTLS=settings.MAIL_STARTTLS,
+        MAIL_SSL_TLS=settings.MAIL_SSL_TLS,
+        USE_CREDENTIALS=settings.USE_CREDENTIALS,
     )
     fm = FastMail(cfg)
     await fm.send_message(message)
