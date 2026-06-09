@@ -3,7 +3,7 @@ from src.auth.security import security
 from fastapi import Body
 from exceptions.usuarios_exceptions import TokenInvalido
 from jose import JWTError
-from config.config import settings
+from src.config.config import settings
 
 
 def create_access_token(user_id: str) -> str:
@@ -16,7 +16,7 @@ def create_access_token(user_id: str) -> str:
             "sub": user_id,
             "type": "access"
         },
-        timedelta(minutes=settings.ACCESS_TOKEN_DURATION)
+        timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
 
 
