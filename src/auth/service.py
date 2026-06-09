@@ -7,7 +7,7 @@ from exceptions.domain import SinCargas, ContraseñaNoSegura
 from exceptions.usuarios_exceptions import TokenInvalido, UsuarioNoEncontrado
 from src.auth import repository 
 from src.utils.cloudinary import insertar_imagen
-from src.auth.security.security import hash_password, verify_password, encode_token, decode_token
+from src.auth.security.security import hash_password, decode_token
 from src.auth.tokens.tokens import create_access_token, create_refresh_token
 import logging
 
@@ -22,12 +22,12 @@ def insertar_usuarios(session: Session, usuario: Dict) -> AuthUser:
         raise SinCargas()
     
     objeto_usuario = usuarios_utils.normalizar_registro_a_cargar(usuario)
-    verificacion_pass = usuarios_utils.validar_contraseña(objeto_usuario.contraseña)
+    verificacion_pass = usuarios_utils.validar_contraseña(objeto_usuario.password)
 
     if not verificacion_pass:
         raise ContraseñaNoSegura()
     
-    objeto_usuario.contraseña = hash_password(objeto_usuario.contraseña)
+    objeto_usuario.password = hash_password(objeto_usuario.password)
     if objeto_usuario.imagen_url != None:
         objeto_usuario = insertar_imagen(objeto_usuario, servicio="usuarios")
 
