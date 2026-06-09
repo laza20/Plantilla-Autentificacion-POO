@@ -1,4 +1,4 @@
-from exceptions.domain import DomainError
+from src.exceptions.domain import DomainError
 
 class UsuarioError(DomainError):
     status_code = 400

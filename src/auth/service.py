@@ -3,8 +3,8 @@ from src.auth.models import AuthUser
 from src.auth.utils import usuarios_utils
 from typing import Dict
 from jose import JWTError
-from exceptions.domain import SinCargas, ContraseñaNoSegura
-from exceptions.usuarios_exceptions import TokenInvalido, UsuarioNoEncontrado
+from src.exceptions.domain import SinCargas, ContraseñaNoSegura
+from src.exceptions.usuarios_exceptions import TokenInvalido, UsuarioNoEncontrado
 from src.auth import repository 
 from src.cloudinary.cloudinary import insertar_imagen
 from src.auth.security.security import hash_password, decode_token

@@ -1,7 +1,7 @@
 from typing import List, Dict
 from src.auth.models import AuthUser, AuthUserNoImage
 from pydantic import ValidationError
-from exceptions.domain import LongitudExcedida
+from src.exceptions.domain import LongitudExcedida
 import re
 
 def normalizar_registro_a_cargar(usuario: Dict) -> AuthUser:

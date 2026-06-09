@@ -1,7 +1,7 @@
 from datetime import timedelta
 from src.auth.security import security
 from fastapi import Body
-from exceptions.usuarios_exceptions import TokenInvalido
+from src.exceptions.usuarios_exceptions import TokenInvalido
 from jose import JWTError
 from src.config.config import settings
 

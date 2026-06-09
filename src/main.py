@@ -3,7 +3,7 @@ load_dotenv()
 from fastapi import FastAPI, Request
 from sqlmodel import SQLModel
 from src.database.client import engine
-from exceptions.domain import DomainError
+from src.exceptions.domain import DomainError
 from fastapi.responses import JSONResponse
 
 SQLModel.metadata.create_all(engine)
