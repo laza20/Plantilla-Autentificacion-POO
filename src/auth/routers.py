@@ -1,4 +1,4 @@
-from src.auth.models import AuthUser
+from src.auth.models import AuthUser, LoginResponse
 from fastapi import APIRouter, Depends, status, Response, Path, Request
 from typing import Dict
 from sqlmodel import Session
@@ -8,6 +8,7 @@ from src.auth.transformers import parse_usuario_form
 from src.config.config import settings
 from src.utils import mail
 from src.auth.tokens.tokens import create_access_token
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter(prefix=f"/{settings.NOMBRE_APP}/usuarios",
                    tags=["USUARIOS"],
@@ -78,3 +79,29 @@ async def verificar_mail(
     except Exception as e:
         raise Exception({"status": "error",   
                         "message": "Error al verificar el correo electrónico."}) from e
+
+
+@router.post("/login", response_model=LoginResponse, status_code=status.HTTP_202_ACCEPTED)
+async def logearse(
+    request: Request, 
+    response: Response, 
+    session: Session = Depends(get_session),
+    usuario: OAuth2PasswordRequestForm = Depends()):
+    logeado = service.login_with_credentials(usuario.username, usuario.password, session)
+    
+    cookies = _cookies_setings()
+    response.set_cookie(
+            key="access_token",
+            value=logeado["access_token"],
+            max_age=15 * 60,
+            **cookies 
+        )
+
+    response.set_cookie(
+        key="refresh_token",
+        value=logeado["refresh_token"],
+        max_age=7 * 24 * 60 * 60,
+        **cookies
+    )
+
+    return logeado
