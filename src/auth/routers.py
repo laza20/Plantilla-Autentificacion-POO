@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends, status, Response, Path, Request
 from typing import Dict
 from sqlmodel import Session
 from src.database.client import get_session
+from src.auth.tokens.tokens import refreshed_token
+from src.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth import service
 from src.auth.transformers import parse_usuario_form
 from src.config.config import settings
@@ -105,3 +107,23 @@ async def logearse(
     )
 
     return logeado
+
+
+@router.post("/Refresh/Token")
+async def refresh_token(request: Request, response: Response):
+    refresh_token = request.cookies.get("refresh_token")
+
+    if not refresh_token:
+        raise SinRefreshToken("No hay refresh token en la cookie")
+
+    nuevo_token = refreshed_token(refresh_token)
+    cookies = _cookies_setings()
+
+    response.set_cookie(
+        key="access_token",
+        value=nuevo_token["access_token"],
+        max_age=15 * 60,
+        **cookies
+    )
+
+    return {"message": "Access token renovado"}
