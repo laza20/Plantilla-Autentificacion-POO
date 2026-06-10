@@ -62,3 +62,11 @@ def validar_contraseña(contraseña: str) -> bool:
         return False
     
     return True
+
+
+def retornar_usuario_publico(mail_usuario:str, avatar:str)->Dict:
+    usuario_publico = {
+        "email": mail_usuario,
+        "imagen_url": avatar
+    }
+    return usuario_publico
