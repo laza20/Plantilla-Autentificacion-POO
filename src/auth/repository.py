@@ -40,7 +40,7 @@ def activar_usuario(session: Session, usuario: AuthUser) -> AuthUser:
     statement = (
         update(AuthUser)
         .where(AuthUser.id_usuario == usuario.id_usuario)
-        .values(estado=EstadoEntidad.ACTIVO)
+        .values(estado=EstadoEntidad.ACTIVO, is_verified=True)
     )
     session.exec(statement) 
     session.commit()
