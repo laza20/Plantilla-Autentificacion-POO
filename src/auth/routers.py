@@ -1,5 +1,5 @@
 from src.auth.models import AuthUser
-from fastapi import APIRouter, Depends, status, Response, Query
+from fastapi import APIRouter, Depends, status, Response, Path, Request
 from typing import Dict
 from sqlmodel import Session
 from src.database.client import get_session
@@ -26,6 +26,7 @@ def _cookies_setings():
 
 @router.post("/registrar", response_model=AuthUser, status_code=status.HTTP_201_CREATED)
 async def crear_usuario(
+    request: Request,
     usuario: Dict = Depends(parse_usuario_form),
     session: Session = Depends(get_session),
     response: Response = Response()):
@@ -42,9 +43,11 @@ async def crear_usuario(
     """
     nuevos_usuarios = service.insertar_usuarios(session, usuario)
     token_verificacion = create_access_token(str(nuevos_usuarios.id_usuario))
+
+
     try:
         cuerpo_correo = mail.generar_correo_verificacion(
-            url=f"/{settings.BASE_URL}/{settings.NOMBRE_APP}/verificar/{token_verificacion}",
+            url=f"{settings.BASE_URL}/{settings.NOMBRE_APP}/usuarios/verificar/{token_verificacion}",
             nombre_proyecto=settings.NOMBRE_APP
         )
         await mail.enviar_mail(
@@ -55,3 +58,23 @@ async def crear_usuario(
         print(e)
         raise Exception(e) from e
     return nuevos_usuarios
+
+@router.get("/verificar/{token}", status_code=status.HTTP_200_OK)
+async def verificar_mail(
+    token: str = Path(..., description="Token de verificación enviado al correo"),
+    session: Session = Depends(get_session),
+    response: Response = Response()):
+    """
+    End point el cual permite la verificacion de una cuenta por medio de un token enviado al correo del usuario.
+    """
+    try:
+        tokens = service.verificar_mail(token, session)
+        
+        cookies = _cookies_setings()
+        response.set_cookie(key="access_token", value=tokens["access_token"], max_age=15 * 60, **cookies)
+        response.set_cookie(key="refresh_token", value=tokens["refresh_token"], max_age=7 * 24 * 60 * 60, **cookies)
+        
+        return {"status": "success", "message": "¡Cuenta activada con éxito! Ya puedes usar la plataforma."}
+    except Exception as e:
+        raise Exception({"status": "error",   
+                        "message": "Error al verificar el correo electrónico."}) from e
