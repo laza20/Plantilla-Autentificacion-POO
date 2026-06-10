@@ -55,8 +55,7 @@ def buscar_y_retornar_user_por_mail_username(session: Session, mail_username: st
     Función para buscar un usuario por su correo electrónico o nombre de usuario.
     """
     statement = select(AuthUser).where(
-        (AuthUser.correo_electronico == mail_username) | 
-        (AuthUser.nombre_usuario == mail_username)
+        (AuthUser.email == mail_username and AuthUser.estado == EstadoEntidad.ACTIVO)
     )
     resultado = session.exec(statement).first()
     
