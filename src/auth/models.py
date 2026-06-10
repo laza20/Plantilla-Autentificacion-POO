@@ -49,3 +49,13 @@ class AuthUser(SQLModel, table=True):
 class AuthUserNoImage(SQLModel):
     email: str = Field(max_length=55,nullable=False,unique=True)
     password: str = Field(nullable=False)
+
+class UsuarioLogeado(SQLModel):
+    email     : str = Field(...)
+    imagen_url       : Optional[str] = Field(None)
+
+class LoginResponse(SQLModel):
+    access_token: str = Field(...)
+    refresh_token: str = Field(...)
+    token_type: str = Field("bearer")
+    usuario: UsuarioLogeado = Field(...)
