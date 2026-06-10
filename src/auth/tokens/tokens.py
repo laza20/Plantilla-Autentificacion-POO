@@ -13,7 +13,7 @@ def create_access_token(user_id: str) -> str:
     """
     return security.encode_token(
         {
-            "sub": user_id,
+            "sub": str(user_id),
             "type": "access"
         },
         timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -27,7 +27,7 @@ def create_refresh_token(user_id: str) -> str:
     """
     return security.encode_token(
         {
-            "sub": user_id,
+            "sub": str(user_id),
             "type": "refresh"
         },
         timedelta(days=settings.REFRESH_TOKEN_DURATION)
@@ -45,7 +45,7 @@ def refreshed_token(refresh_token: str = Body(...)):
         if not user_id:
             raise TokenInvalido("Refresh token inválido")
 
-    except JWTError:
+    except JWTError as e:
         raise TokenInvalido("Refresh token inválido o expirado")
 
     new_access_token = create_access_token(user_id)
