@@ -11,6 +11,7 @@ from src.config.config import settings
 from src.utils import mail
 from src.auth.tokens.tokens import create_access_token
 from fastapi.security import OAuth2PasswordRequestForm
+from src.auth.dependencies import dependencias
 
 router = APIRouter(prefix=f"/{settings.NOMBRE_APP}/usuarios",
                    tags=["USUARIOS"],
@@ -127,3 +128,19 @@ async def refresh_token(request: Request, response: Response):
     )
 
     return {"message": "Access token renovado"}
+
+
+@router.post("/Logout")
+async def logout(response: Response):
+    """
+    End point encargado de desloguear un usuario.
+    """
+    cookie_params = {
+        "path": "/",
+        "httponly": True,
+        "samesite": "lax",
+        "secure": False  
+    }
+    response.delete_cookie("access_token", **cookie_params)
+    response.delete_cookie("refresh_token", **cookie_params)
+    return {"message": "Sesión cerrada"}
