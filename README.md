@@ -75,8 +75,8 @@ auth/
         ├── dependencies/
         │   └── dependencies.py # Dependencias de FastAPI (verificación de sesión activa)
         ├── security/
-        │   ├── hashing.py      # Funciones de hash y verificación de contraseña
-        │   └── jwt_handler.py  # Funciones de codificación y decodificación de JWT
+        │   └── security.py      # Funciones de hash y verificación de contraseña, encode y decode token.
+        │   
         ├── tokens/
         │   └── tokens.py       # Creación de access_token, refresh_token y refresco
         └── utils/
