@@ -11,7 +11,7 @@ from src.config.config import settings
 from src.utils import mail
 from src.auth.tokens.tokens import create_access_token
 from fastapi.security import OAuth2PasswordRequestForm
-from src.auth.dependencies import dependencias
+from src.auth.dependencies.dependencias import get_current_user
 
 router = APIRouter(prefix=f"/{settings.NOMBRE_APP}/usuarios",
                    tags=["USUARIOS"],
@@ -129,6 +129,15 @@ async def refresh_token(request: Request, response: Response):
 
     return {"message": "Access token renovado"}
 
+@router.get("/user/current")
+async def ver_usuario(
+    current_user: dict = Depends(get_current_user),
+    session: Session = Depends(get_session)):
+    """
+    End point encargado de devolver un usuario completo.
+    """
+    usuario = service.get_user(current_user, session)
+    return usuario
 
 @router.post("/Logout")
 async def logout(response: Response):
