@@ -87,6 +87,10 @@ def login_with_credentials(mail: str, password: str, session: Session):
         logger.exception("Error crítico en service")
         raise UsuarioError("Error al inicial sesion") from e
     
+
+def get_user(current_user:Dict, session:Session):
+    return repository.obtener_user_por_id(session, current_user.id_usuario)
+    
     
 def _emitir_tokens_usuario(dict_usuario:Dict)->Dict:
         access_token = create_access_token(dict_usuario["id_usuario"])
