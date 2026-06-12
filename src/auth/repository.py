@@ -63,3 +63,18 @@ def buscar_y_retornar_user_por_mail_username(session: Session, mail_username: st
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     
     return resultado
+
+
+def obtener_user_por_id(session: Session, user_id:int)->AuthUser:
+    """
+    Funcion para buscar un usuario por medio de su id
+    """
+    statement = select(AuthUser).where(
+        (AuthUser.id_usuario == user_id and AuthUser.estado == EstadoEntidad.ACTIVO)
+    )
+    resultado = session.exec(statement).first()
+    
+    if not resultado:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    return resultado
