@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Literal
 from sqlmodel import SQLModel, Field, Date
 from datetime import date
 from src.database.enums.estado_entidad import EstadoEntidad
@@ -46,13 +46,29 @@ class AuthUser(SQLModel, table=True):
     is_verified: bool = Field(default=False)
 
 
-class AuthUserNoImage(SQLModel):
-    email: str = Field(max_length=55,nullable=False,unique=True)
+class UserRegisterDTO(SQLModel):
+    email: str = Field(...),
     password: str = Field(nullable=False)
+    imagen_url: Optional[str] = Field(None)
+
+class UserTokens(SQLModel):
+    access_token: str
+    refresh_token: str
+    token_type:  Literal["bearer"]  = Field(default="bearer")
 
 class UsuarioLogeado(SQLModel):
     email     : str = Field(...)
     imagen_url       : Optional[str] = Field(None)
+
+class LoginResponse(SQLModel):
+    tokens: UserTokens
+    usuario: UsuarioLogeado
+
+class AuthUserNoImage(SQLModel):
+    email: str = Field(max_length=55,nullable=False,unique=True)
+    password: str = Field(nullable=False)
+
+
 
 class LoginResponse(SQLModel):
     access_token: str = Field(...)
