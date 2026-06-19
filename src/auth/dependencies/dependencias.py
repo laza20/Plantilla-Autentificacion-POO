@@ -8,7 +8,10 @@ from src.database.client import get_session
 from src.exceptions.usuarios_exceptions import (
     UsuarioNoEncontrado, NoAutenticado, 
     SinAccessToken, TokenInvalido)
+from src.config.config import Settings, settings
 
+def get_settings() -> Settings:
+    return settings
 
 
 async def get_current_user(request: Request, session: Session = Depends(get_session)):
