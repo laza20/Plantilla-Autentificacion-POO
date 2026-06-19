@@ -1,6 +1,6 @@
-from src.auth.models import AuthUser, LoginResponse
+from src.auth.models import AuthUser, LoginResponse, UserRegisterDTO
 from fastapi import APIRouter, Depends, status, Response, Path, Request
-from typing import Dict
+from src.auth.service import AuthService, get_auth_service
 from sqlmodel import Session
 from src.database.client import get_session
 from src.auth.tokens.tokens import refreshed_token
@@ -9,7 +9,6 @@ from src.auth import service
 from src.auth.transformers import parse_usuario_form
 from src.config.config import settings
 from src.utils import mail
-from src.auth.tokens.tokens import create_access_token
 from fastapi.security import OAuth2PasswordRequestForm
 from src.auth.dependencies.dependencias import get_current_user
 
@@ -30,10 +29,8 @@ def _cookies_setings():
 
 @router.post("/registrar", response_model=AuthUser, status_code=status.HTTP_201_CREATED)
 async def crear_usuario(
-    request: Request,
-    usuario: Dict = Depends(parse_usuario_form),
-    session: Session = Depends(get_session),
-    response: Response = Response()):
+    usuario: UserRegisterDTO = Depends(parse_usuario_form),
+    auth_service: AuthService = Depends(get_auth_service)):
     """
     La funcion registrar hace lo siguiente:
     1. Recibe un diccionario con los datos del usuario a registrar.
@@ -45,23 +42,7 @@ async def crear_usuario(
     7. Inserta el nuevo usuario en la base de datos.
     8. Devuelve el nuevo usuario creado.
     """
-    nuevos_usuarios = service.insertar_usuarios(session, usuario)
-    token_verificacion = create_access_token(str(nuevos_usuarios.id_usuario))
-
-
-    try:
-        cuerpo_correo = mail.generar_correo_verificacion(
-            url=f"{settings.BASE_URL}/{settings.NOMBRE_APP}/usuarios/verificar/{token_verificacion}",
-            nombre_proyecto=settings.NOMBRE_APP
-        )
-        await mail.enviar_mail(
-            email_destino=nuevos_usuarios.email,
-            cuerpo_html=cuerpo_correo
-        )   
-    except Exception as e:
-        print(e)
-        raise Exception(e) from e
-    return nuevos_usuarios
+    await auth_service.register(usuario)
 
 @router.get("/verificar/{token}", status_code=status.HTTP_200_OK)
 async def verificar_mail(
