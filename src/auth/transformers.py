@@ -1,14 +1,15 @@
 from fastapi import Form, File, UploadFile
-from datetime import date
-from typing import Optional
+from src.auth.models import UserRegisterDTO
 
-async def parse_usuario_form(
+def parse_usuario_form(
     email: str = Form(...),
     password: str = Form(...),
-    imagen_url: Optional[UploadFile] = File(default=None)
-):
-    return {
-        "email": email,
-        "password": password,
-        "imagen_url": imagen_url,
-    }
+    imagen_url: UploadFile | None = File(None)
+    ) -> UserRegisterDTO:
+
+    return UserRegisterDTO(
+        email=email,
+        password=password,
+        imagen_url=imagen_url
+    )
+
