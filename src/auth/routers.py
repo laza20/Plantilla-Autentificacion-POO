@@ -1,31 +1,19 @@
 from src.auth.models import AuthUser, LoginResponse, UserRegisterDTO
-from fastapi import APIRouter, Depends, status, Response, Path, Request
-from src.auth.service import AuthService, get_auth_service
-from sqlmodel import Session
-from src.database.client import get_session
-from src.auth.tokens.tokens import refreshed_token
+from fastapi import APIRouter, Depends, status, Response, Path, Request, HTTPException
+from src.auth.service import AuthService
+from src.container.dependencies import get_auth_service
 from src.exceptions.usuarios_exceptions import SinRefreshToken
-from src.auth import service
 from src.auth.transformers import parse_usuario_form
 from src.config.config import settings
-from src.utils import mail
 from fastapi.security import OAuth2PasswordRequestForm
 from src.auth.dependencies.dependencias import get_current_user
+from src.exceptions.tokens import VerificacionInvalida, VerificacionExpirada
 
 router = APIRouter(prefix=f"/{settings.NOMBRE_APP}/usuarios",
                    tags=["USUARIOS"],
                    responses={404:{"Message":"No encontrado"}}
 )
 
-def _cookies_setings():
-    is_prod = settings.is_prod
-    cookie_settings = {
-            "httponly": True,
-            "secure": is_prod,    
-            "samesite": "none" if is_prod else "lax",
-            "path": "/",
-        }
-    return cookie_settings
 
 @router.post("/registrar", response_model=AuthUser, status_code=status.HTTP_201_CREATED)
 async def crear_usuario(
@@ -42,95 +30,68 @@ async def crear_usuario(
     7. Inserta el nuevo usuario en la base de datos.
     8. Devuelve el nuevo usuario creado.
     """
-    await auth_service.register(usuario)
+    usuario_nuevo = await auth_service.register(usuario)
+    return usuario_nuevo
 
 @router.get("/verificar/{token}", status_code=status.HTTP_200_OK)
 async def verificar_mail(
+    response: Response,
     token: str = Path(..., description="Token de verificación enviado al correo"),
-    session: Session = Depends(get_session),
-    response: Response = Response()):
+    auth_service: AuthService = Depends(get_auth_service)):
     """
     End point el cual permite la verificacion de una cuenta por medio de un token enviado al correo del usuario.
     """
     try:
-        tokens = service.verificar_mail(token, session)
-        
-        cookies = _cookies_setings()
-        response.set_cookie(key="access_token", value=tokens["access_token"], max_age=15 * 60, **cookies)
-        response.set_cookie(key="refresh_token", value=tokens["refresh_token"], max_age=7 * 24 * 60 * 60, **cookies)
-        
-        return {"status": "success", "message": "¡Cuenta activada con éxito! Ya puedes usar la plataforma."}
-    except Exception as e:
-        raise Exception({"status": "error",   
-                        "message": "Error al verificar el correo electrónico."}) from e
+        await auth_service.verificar_mail(token, response)
+        return {"status": "success", "message": "¡Cuenta activada con éxito!"}
+    except VerificacionExpirada:
+        raise HTTPException(status_code=400, detail="Token expirado")
+    except VerificacionInvalida:
+        raise HTTPException(status_code=400, detail="Token inválido")
 
 
 @router.post("/login", response_model=LoginResponse, status_code=status.HTTP_202_ACCEPTED)
 async def logearse(
-    request: Request, 
-    response: Response, 
-    session: Session = Depends(get_session),
+    response: Response,
+    auth_service: AuthService = Depends(get_auth_service),
     usuario: OAuth2PasswordRequestForm = Depends()):
-    logeado = service.login_with_credentials(usuario.username, usuario.password, session)
-    
-    cookies = _cookies_setings()
-    response.set_cookie(
-            key="access_token",
-            value=logeado["access_token"],
-            max_age=15 * 60,
-            **cookies 
-        )
 
-    response.set_cookie(
-        key="refresh_token",
-        value=logeado["refresh_token"],
-        max_age=7 * 24 * 60 * 60,
-        **cookies
-    )
-
+    logeado = await auth_service.login(usuario.username, usuario.password, response)
     return logeado
 
 
 @router.post("/Refresh/Token")
-async def refresh_token(request: Request, response: Response):
+async def refresh_token(
+    request: Request, 
+    response: Response,
+    auth_service: AuthService = Depends(get_auth_service)):
+
     refresh_token = request.cookies.get("refresh_token")
 
     if not refresh_token:
         raise SinRefreshToken("No hay refresh token en la cookie")
 
-    nuevo_token = refreshed_token(refresh_token)
-    cookies = _cookies_setings()
-
-    response.set_cookie(
-        key="access_token",
-        value=nuevo_token["access_token"],
-        max_age=15 * 60,
-        **cookies
-    )
+    auth_service.refreshed_token(refresh_token, response)
 
     return {"message": "Access token renovado"}
 
 @router.get("/user/current")
 async def ver_usuario(
     current_user: dict = Depends(get_current_user),
-    session: Session = Depends(get_session)):
+    auth_service: AuthService = Depends(get_auth_service)):
     """
     End point encargado de devolver un usuario completo.
     """
-    usuario = service.get_user(current_user, session)
+    usuario = auth_service.get_user(current_user)
     return usuario
 
 @router.post("/Logout")
-async def logout(response: Response):
+async def logout(
+    response: Response,
+    auth_service: AuthService = Depends(get_auth_service)
+    ):
     """
     End point encargado de desloguear un usuario.
     """
-    cookie_params = {
-        "path": "/",
-        "httponly": True,
-        "samesite": "lax",
-        "secure": False  
-    }
-    response.delete_cookie("access_token", **cookie_params)
-    response.delete_cookie("refresh_token", **cookie_params)
+    auth_service.logout(response)
     return {"message": "Sesión cerrada"}
