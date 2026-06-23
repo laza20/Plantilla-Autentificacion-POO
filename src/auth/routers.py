@@ -1,4 +1,4 @@
-from src.auth.models import AuthUser, LoginResponse, UserRegisterDTO
+from src.auth.models import LoginResponse, UserRegisterDTO, UsuarioCreado
 from fastapi import APIRouter, Depends, status, Response, Path, Request, HTTPException
 from src.auth.service import AuthService
 from src.container.dependencies import get_auth_service
@@ -15,7 +15,7 @@ router = APIRouter(prefix=f"/{settings.NOMBRE_APP}/usuarios",
 )
 
 
-@router.post("/registrar", response_model=AuthUser, status_code=status.HTTP_201_CREATED)
+@router.post("/registrar", response_model=UsuarioCreado, status_code=status.HTTP_201_CREATED)
 async def crear_usuario(
     usuario: UserRegisterDTO = Depends(parse_usuario_form),
     auth_service: AuthService = Depends(get_auth_service)):
@@ -42,7 +42,7 @@ async def verificar_mail(
     End point el cual permite la verificacion de una cuenta por medio de un token enviado al correo del usuario.
     """
     try:
-        await auth_service.verificar_mail(token, response)
+        auth_service.verificar_mail(token, response)
         return {"status": "success", "message": "¡Cuenta activada con éxito!"}
     except VerificacionExpirada:
         raise HTTPException(status_code=400, detail="Token expirado")
@@ -56,7 +56,7 @@ async def logearse(
     auth_service: AuthService = Depends(get_auth_service),
     usuario: OAuth2PasswordRequestForm = Depends()):
 
-    logeado = await auth_service.login(usuario.username, usuario.password, response)
+    logeado = auth_service.login(usuario.username, usuario.password, response)
     return logeado
 
 
