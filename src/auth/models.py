@@ -46,6 +46,19 @@ class AuthUser(SQLModel, table=True):
     is_verified: bool = Field(default=False)
 
 
+class UsuarioCreado(SQLModel):
+    email: str = Field(unique=True, index=True, nullable=False)
+    imagen_url: Optional[str] = Field(default=None, max_length=255)
+    created_at: Optional[date] = Field(
+        default=None,
+        sa_column=Column(
+            Date,
+            server_default=text("CURRENT_DATE")
+        )
+    )
+    is_verified: bool = Field(default=False)
+
+
 class UserRegisterDTO(SQLModel):
     email: str = Field(...),
     password: str = Field(nullable=False)
@@ -68,10 +81,3 @@ class AuthUserNoImage(SQLModel):
     email: str = Field(max_length=55,nullable=False,unique=True)
     password: str = Field(nullable=False)
 
-
-
-class LoginResponse(SQLModel):
-    access_token: str = Field(...)
-    refresh_token: str = Field(...)
-    token_type: str = Field("bearer")
-    usuario: UsuarioLogeado = Field(...)
