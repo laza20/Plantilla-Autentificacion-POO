@@ -2,7 +2,7 @@ from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
 from src.auth.models import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
-from src.auth.dependencies.dependencias import get_session
+from src.database.client import get_session
 from fastapi import Depends
 
 
