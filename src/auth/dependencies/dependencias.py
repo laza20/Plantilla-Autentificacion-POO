@@ -52,7 +52,7 @@ class AuthDependencies:
             raise TokenInvalido("Token inválido o expirado")
 
         try:
-            usuario = self.user_repository.obtener_por_id(session, user_id)
+            usuario = self.user_repository.obtener_por_id(user_id)
             return usuario
         except UsuarioNoEncontrado:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
