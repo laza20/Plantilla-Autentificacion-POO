@@ -55,7 +55,7 @@ class TokenService:
         
     def get_user_id_from_access_token(self, token:str)->str:
         try:
-            payload = self.token_service.decode_token(token)
+            payload = self.decode_token(token)
             
             if payload.get("type") != "access":
                 raise TokenInvalido()
