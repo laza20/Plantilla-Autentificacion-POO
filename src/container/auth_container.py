@@ -18,7 +18,7 @@ class AuthContainer:
 
         self.auth_service = AuthService(
             token_service=TokenService(settings),
-            password_service=PasswordService(),
+            password_service=PasswordService(settings),
             mail_service=MailService(settings),
             image_service=ImageService(settings),
             user_mapper=UserMapper(),
