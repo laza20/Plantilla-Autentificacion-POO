@@ -62,7 +62,7 @@ class AuthService:
 
         return usuario_creado
 
-    async def verificar_mail(self, token: str, response:Response)-> UserTokens:
+    def verificar_mail(self, token: str, response:Response)-> UserTokens:
         """
         Funcion encargada de verificar el mail del usuario utilizando un token de verificación.
         El token se decodifica para obtener el ID del usuario, luego se busca el usuario en la base de datos y se activa su cuenta.
@@ -86,7 +86,7 @@ class AuthService:
 
 
 
-    async def login(self, mail: str, password: str, response:Response)-> LoginResponse:
+    def login(self, mail: str, password: str, response:Response)-> LoginResponse:
         try:
             usuario_db = self.user_repository.obtener_por_email(mail)
                 
@@ -96,8 +96,8 @@ class AuthService:
             login_response = self._emitir_tokens_usuario(usuario_db)
             self.cookies.set_auth_cookies(
                 response, 
-                login_response.access_token, 
-                login_response.refresh_token
+                login_response.tokens.access_token, 
+                login_response.tokens.refresh_token
                 )
             return login_response
         
