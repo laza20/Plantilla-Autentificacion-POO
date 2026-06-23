@@ -1,5 +1,5 @@
 from typing import List, Dict
-from src.auth.models import AuthUser, AuthUserNoImage, UsuarioLogeado
+from src.auth.models import AuthUser, AuthUserNoImage, UsuarioLogeado, UserRegisterDTO
 from pydantic import ValidationError
 from src.exceptions.domain import LongitudExcedida, ContraseñaNoSegura
 import re
@@ -11,7 +11,7 @@ class UserMapper:
     ):
         pass
 
-    def orquestador_carga(self, usuario:Dict)->AuthUser:
+    def orquestador_carga(self, usuario:UserRegisterDTO)->AuthUser:
         objeto_usuario = self.normalizar_registro_a_cargar(usuario)
         verificacion_pass = self.validar_contraseña(objeto_usuario.password)
         if not verificacion_pass:
@@ -20,18 +20,17 @@ class UserMapper:
         return objeto_usuario
 
 
-    def normalizar_registro_a_cargar(self, usuario: Dict) -> AuthUser:
+    def normalizar_registro_a_cargar(self, usuario: UserRegisterDTO) -> AuthUser:
         """
         Funcion encargada de normalizar los datos del usuario antes de ser insertados en la base de datos.
         - Datos limpios debe utilizarse para los datos str con una longitud maxima definida.
         - Valida que la imagen no exceda el tamaño máximo permitido.
         """
         try:
-            file_binario = usuario.get("imagen_url")
-            datos_limpios = usuario | {
-                "email": usuario.get("email", "").strip().lower(),            
-            }
-            
+            file_binario = usuario.imagen_url
+            datos_limpios = {"email": usuario.email.strip().lower(),
+                             "password":usuario.password}
+
             datos_para_validar = datos_limpios | {"imagen_url": None} if file_binario else datos_limpios
             
             usuario_validado = AuthUserNoImage(**datos_para_validar)
@@ -40,7 +39,7 @@ class UserMapper:
             if file_binario is not None and getattr(file_binario, "filename", "") != "":
                 usuario_orm.imagen_url = file_binario
             else:
-                usuario_orm.imagen_url = usuario.get("imagen_url") if isinstance(usuario.get("imagen_url"), str) else None
+                usuario_orm.imagen_url = usuario.imagen_url if isinstance(usuario.imagen_url, str) else None
             
             return usuario_orm
 
@@ -82,7 +81,7 @@ class UserMapper:
 
     def retornar_usuario_publico(self, usuario:AuthUser)-> UsuarioLogeado:
         return UsuarioLogeado(
-            email= usuario.mail_usuario,
+            email= usuario.email,
             imagen_url= usuario.imagen_url
         )
 
