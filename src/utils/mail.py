@@ -30,12 +30,12 @@ class MailService:
         self.env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
         self.fast_mail = FastMail(self.cfg)
 
-    def generar_correo_verificacion(self, url: str) -> str:
+    def generar_correo_verificacion(self, url: str, nombre_proyecto: str) -> str:
         template = self.env.get_template("verificacion.html")
         
         cuerpo_html = template.render(
             url_verificacion=url,
-            nombre_app=self.settings.NOMBRE_APP
+            nombre_app=nombre_proyecto
         )
         
         return cuerpo_html
