@@ -1,11 +1,8 @@
-# src/auth/dependencies/auth_dependencies.py
 from fastapi import HTTPException, Request, Depends
 from jose import JWTError
 from src.auth.tokens.tokens import TokenService, get_token_service
 from src.config.config import get_settings, Settings
 from src.auth.repository import UserRepository, get_user_repository
-from sqlmodel import Session
-from src.database.client import get_session
 from src.auth.models import AuthUser
 from src.exceptions.usuarios_exceptions import (
     NoAutenticado, SinAccessToken, TokenInvalido, UsuarioNoEncontrado
@@ -13,11 +10,6 @@ from src.exceptions.usuarios_exceptions import (
 
 
 class AuthDependencies:
-    """
-    Contenedor de dependencias de autenticación.
-    Facilita reutilización y extensión de lógica de auth.
-    """
-    
     def __init__(
         self,
         settings: Settings,
@@ -30,8 +22,7 @@ class AuthDependencies:
 
     async def get_current_user(
         self, 
-        request: Request, 
-        session: Session
+        request: Request
     ) -> AuthUser:
         """Obtiene el usuario actual del token en cookies."""
         token = request.cookies.get("access_token")
@@ -59,11 +50,10 @@ class AuthDependencies:
 
     async def get_admin_user(
         self, 
-        request: Request, 
-        session: Session
+        request: Request
     ) -> AuthUser:
         """Obtiene el usuario actual y valida que sea admin."""
-        user = await self.get_current_user(request, session)
+        user = await self.get_current_user(request)
         
         if user.role != "admin":
             raise HTTPException(
@@ -75,11 +65,10 @@ class AuthDependencies:
 
     async def get_premium_user(
         self, 
-        request: Request, 
-        session: Session
+        request: Request
     ) -> AuthUser:
         """Obtiene el usuario actual y valida que sea premium."""
-        user = await self.get_current_user(request, session)
+        user = await self.get_current_user(request)
         
         if not user.is_premium:
             raise HTTPException(
@@ -90,7 +79,6 @@ class AuthDependencies:
         return user
 
 
-# Factory function - Crea la clase
 def get_auth_dependencies(
     settings: Settings = Depends(get_settings),
     token_service: TokenService = Depends(get_token_service),
@@ -104,29 +92,25 @@ def get_auth_dependencies(
     )
 
 
-# Funciones expuestas para usar en routers (igual que antes)
 async def get_current_user(
     request: Request,
-    session: Session = Depends(get_session),
     auth_deps: AuthDependencies = Depends(get_auth_dependencies)
 ) -> AuthUser:
     """Dependencia que retorna el usuario actual."""
-    return await auth_deps.get_current_user(request, session)
+    return await auth_deps.get_current_user(request)
 
 
 async def get_admin_user(
     request: Request,
-    session: Session = Depends(get_session),
     auth_deps: AuthDependencies = Depends(get_auth_dependencies)
 ) -> AuthUser:
     """Dependencia que retorna el usuario actual si es admin."""
-    return await auth_deps.get_admin_user(request, session)
+    return await auth_deps.get_admin_user(request)
 
 
 async def get_premium_user(
     request: Request,
-    session: Session = Depends(get_session),
     auth_deps: AuthDependencies = Depends(get_auth_dependencies)
 ) -> AuthUser:
     """Dependencia que retorna el usuario actual si es premium."""
-    return await auth_deps.get_premium_user(request, session)
+    return await auth_deps.get_premium_user(request)
