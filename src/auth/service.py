@@ -5,14 +5,14 @@ from src.exceptions.tokens import TokenExpirado, TokenInvalido, VerificacionInva
 from src.exceptions.domain import DomainError
 from fastapi import Response
 import logging
-from src.auth.repository import UserRepository
-from src.auth.tokens.tokens import TokenService
+from src.domain.protocols.user_repository import UserRepositoryProtocol
+from src.domain.protocols.token_service import TokenProtocol
+from src.domain.protocols.password_service import PasswordProtocol
+from src.domain.protocols.mail_service import MailProtocol
+from src.domain.protocols.image_service import ImageProtocol
 from src.auth.security.security import Settings
-from src.utils.mail import MailService
-from src.cloudinary.cloudinary import ImageService
 from src.auth.utils.usuarios_utils import UserMapper
 from src.auth.cookies.cookies import CookiesService
-from src.auth.security.security import PasswordService
 
 
 
@@ -21,12 +21,12 @@ logger = logging.getLogger(__name__)
 class AuthService:
     def __init__(
         self,
-        token_service: TokenService,
-        user_repository: UserRepository,
-        password_service: PasswordService,
+        token_service: TokenProtocol,
+        user_repository: UserRepositoryProtocol,
+        password_service: PasswordProtocol,
         settings: Settings,
-        mail_service: MailService,
-        image_service: ImageService,
+        mail_service: MailProtocol,
+        image_service: ImageProtocol,
         user_mapper: UserMapper,
         cookies: CookiesService
     ):
