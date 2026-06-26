@@ -27,19 +27,10 @@ class UserMapper:
         - Valida que la imagen no exceda el tamaño máximo permitido.
         """
         try:
-            file_binario = usuario.imagen_url
+
             datos_limpios = {"email": usuario.email.strip().lower(),
                              "password":usuario.password}
-
-            datos_para_validar = datos_limpios | {"imagen_url": None} if file_binario else datos_limpios
-            
-            usuario_validado = AuthUserNoImage(**datos_para_validar)
-            usuario_orm = AuthUser(**usuario_validado.model_dump())
-            
-            if file_binario is not None and getattr(file_binario, "filename", "") != "":
-                usuario_orm.imagen_url = file_binario
-            else:
-                usuario_orm.imagen_url = usuario.imagen_url if isinstance(usuario.imagen_url, str) else None
+            usuario_orm = AuthUser(**datos_limpios)
             
             return usuario_orm
 

@@ -1,5 +1,5 @@
 from src.auth.models import LoginResponse, UserRegisterDTO, UsuarioCreado
-from fastapi import APIRouter, Depends, status, Response, Path, Request, HTTPException
+from fastapi import APIRouter, Depends, status, Response, Path, Request, HTTPException, UploadFile
 from src.auth.service import AuthService
 from src.container.dependencies import get_auth_service
 from src.exceptions.usuarios_exceptions import SinRefreshToken
@@ -17,7 +17,7 @@ router = APIRouter(prefix=f"/{settings.NOMBRE_APP}/usuarios",
 
 @router.post("/registrar", response_model=UsuarioCreado, status_code=status.HTTP_201_CREATED)
 async def crear_usuario(
-    usuario: UserRegisterDTO = Depends(parse_usuario_form),
+    datos: tuple[UserRegisterDTO, UploadFile | None] = Depends(parse_usuario_form),
     auth_service: AuthService = Depends(get_auth_service)):
     """
     La funcion registrar hace lo siguiente:
@@ -30,7 +30,8 @@ async def crear_usuario(
     7. Inserta el nuevo usuario en la base de datos.
     8. Devuelve el nuevo usuario creado.
     """
-    usuario_nuevo = await auth_service.register(usuario)
+    usuario, imagen = datos
+    usuario_nuevo = await auth_service.register(usuario, imagen)
     return usuario_nuevo
 
 @router.get("/verificar/{token}", status_code=status.HTTP_200_OK)

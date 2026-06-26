@@ -1,5 +1,6 @@
 from typing import Protocol, runtime_checkable
 from src.auth.models import AuthUser
+from fastapi import UploadFile
 
 @runtime_checkable
 class ImageProtocol(Protocol):
@@ -38,7 +39,7 @@ class ImageProtocol(Protocol):
     -------------------
     """
     
-    def insertar_imagen(self, objeto: AuthUser, servicio: str) -> AuthUser:
+    def insertar_imagen(self, objeto:AuthUser, imagen:UploadFile, servicio: str) -> AuthUser:
         """
         Inserta/procesa una imagen asociada a un usuario.
         

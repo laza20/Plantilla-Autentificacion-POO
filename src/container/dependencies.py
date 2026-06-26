@@ -10,8 +10,8 @@ from src.domain.protocols.mail_service import MailProtocol
 from src.domain.protocols.image_service import ImageProtocol
 from src.auth.tokens.tokens import TokenService
 from src.auth.security.security import PasswordService
-from src.utils.mail import MailService
-from src.cloudinary.cloudinary import ImageService
+from src.infrastructure.mail.mail import MailService
+from src.infrastructure.images.cloudinary import ImageService
 
 
 

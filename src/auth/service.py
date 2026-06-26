@@ -3,7 +3,7 @@ from src.exceptions.domain import SinCargas
 from src.exceptions.usuarios_exceptions import UsuarioError, LoginError
 from src.exceptions.tokens import TokenExpirado, TokenInvalido, VerificacionInvalida, VerificacionExpirada
 from src.exceptions.domain import DomainError
-from fastapi import Response
+from fastapi import Response, UploadFile
 import logging
 from src.domain.protocols.user_repository import UserRepositoryProtocol
 from src.domain.protocols.token_service import TokenProtocol
@@ -39,15 +39,14 @@ class AuthService:
         self.user_mapper = user_mapper
         self.cookies = cookies
 
-    async def register(self, usuario:UserRegisterDTO) -> AuthUser:
+    async def register(self, usuario:UserRegisterDTO, imagen:UploadFile | None) -> AuthUser:
         if not usuario:
             raise SinCargas()
         
         objeto_usuario = self.user_mapper.orquestador_carga(usuario)
         objeto_usuario.password = self.password_service.hash_password(objeto_usuario.password)
-
-        if objeto_usuario.imagen_url != None:
-            objeto_usuario = self.image_service.insertar_imagen(objeto_usuario, servicio="usuarios")
+        if imagen != None:
+            objeto_usuario = self.image_service.insertar_imagen(objeto_usuario, imagen, servicio="usuarios")
 
         usuario_creado = self.user_repository.insertar(objeto_usuario)
 

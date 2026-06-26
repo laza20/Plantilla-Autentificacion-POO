@@ -4,12 +4,13 @@ from src.auth.models import UserRegisterDTO
 def parse_usuario_form(
     email: str = Form(...),
     password: str = Form(...),
-    imagen_url: UploadFile | None = File(None)
-    ) -> UserRegisterDTO:
+    imagen: UploadFile | None = File(None)
+) -> tuple[UserRegisterDTO, UploadFile | None]:
 
-    return UserRegisterDTO(
+    usuario = UserRegisterDTO(
         email=email,
-        password=password,
-        imagen_url=imagen_url
+        password=password
     )
+
+    return usuario, imagen
 

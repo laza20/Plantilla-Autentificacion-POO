@@ -62,7 +62,6 @@ class UsuarioCreado(SQLModel):
 class UserRegisterDTO(SQLModel):
     email: str = Field(...),
     password: str = Field(nullable=False)
-    imagen_url: Optional[str] = Field(None)
 
 class UserTokens(SQLModel):
     access_token: str
