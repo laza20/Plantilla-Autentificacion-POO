@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, status, Query
 from src.config.config import settings
 from src.auth.models import AuthUser
 from src.exceptions.domain import LimiteTamañoSuperado, ExtensionNoPermitida, ErrorCloudinary
-from src.cloudinary.cloudinary_config import cloudinary_uploader
+from src.infrastructure.images.cloudinary_config import cloudinary_uploader
 from src.config.config import Settings, get_settings
 from fastapi import Depends
 
