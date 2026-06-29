@@ -2,7 +2,9 @@ from src.auth.models import LoginResponse, UserRegisterDTO, UsuarioCreado
 from fastapi import APIRouter, Depends, status, Response, Path, Request, HTTPException, UploadFile
 from src.auth.service import AuthService
 from src.auth.use_cases.register import RegisterUseCase
-from src.container.dependencies import get_auth_service, get_register_use_case
+from src.auth.use_cases.login import LoginUseCase
+from src.auth.use_cases.verify_email import VerifyMailUseCase
+from src.container.dependencies import get_auth_service, get_register_use_case, get_login_use_case, get_verify_mail_use_case
 from src.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.transformers import parse_usuario_form
 from src.config.config import settings
@@ -39,12 +41,12 @@ async def crear_usuario(
 async def verificar_mail(
     response: Response,
     token: str = Path(..., description="Token de verificación enviado al correo"),
-    auth_service: AuthService = Depends(get_auth_service)):
+    verify_mail: VerifyMailUseCase = Depends(get_verify_mail_use_case)):
     """
     End point el cual permite la verificacion de una cuenta por medio de un token enviado al correo del usuario.
     """
     try:
-        auth_service.verificar_mail(token, response)
+        verify_mail.verificar_mail(token, response)
         return {"status": "success", "message": "¡Cuenta activada con éxito!"}
     except VerificacionExpirada:
         raise HTTPException(status_code=400, detail="Token expirado")
@@ -55,10 +57,10 @@ async def verificar_mail(
 @router.post("/login", response_model=LoginResponse, status_code=status.HTTP_202_ACCEPTED)
 async def logearse(
     response: Response,
-    auth_service: AuthService = Depends(get_auth_service),
+    login_use_case: LoginUseCase = Depends(get_login_use_case),
     usuario: OAuth2PasswordRequestForm = Depends()):
 
-    logeado = auth_service.login(usuario.username, usuario.password, response)
+    logeado = login_use_case.login(usuario.username, usuario.password, response)
     return logeado
 
 
