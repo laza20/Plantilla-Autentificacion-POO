@@ -1,6 +1,5 @@
-from pwdlib import PasswordHash
-from src.config.config import Settings, get_settings
-from fastapi import Depends, Response
+from src.config.config import Settings
+from fastapi import Response
 
 
 class CookiesService:
@@ -74,6 +73,3 @@ class CookiesService:
             "samesite": "none" if self.settings.is_prod else "lax"
         }
 
-
-def get_cookies_service(settings: Settings = Depends(get_settings)) -> CookiesService:
-    return CookiesService(settings=settings)
