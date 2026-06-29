@@ -5,11 +5,19 @@ from src.exceptions.usuarios_exceptions import TokenInvalido
 from jose import JWTError
 from fastapi import Depends
 from src.config.config import get_settings, Settings
+from src.auth.models import UserTokens
 
 
 class TokenService:
     def __init__(self, settings: Settings):
         self.settings = settings
+
+    def create_user_tokens(self, user_id:int) -> UserTokens:
+
+        return UserTokens(
+            access_token=self.create_access_token(str(user_id)),
+            refresh_token=self.create_refresh_token(str(user_id))
+        )
 
     def create_access_token(self, user_id: str) -> str:
         """
