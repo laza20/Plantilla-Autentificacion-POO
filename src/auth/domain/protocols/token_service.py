@@ -1,4 +1,5 @@
 from typing import Protocol, runtime_checkable
+from src.auth.models import UserTokens
 
 @runtime_checkable
 class TokenProtocol(Protocol):
@@ -50,6 +51,8 @@ class TokenProtocol(Protocol):
     Métodos requeridos:
     -------------------
     """
+    def create_user_tokens(self, user_id:int) -> UserTokens:
+        ...
     
     def create_access_token(self, user_id: str) -> str:
         """
