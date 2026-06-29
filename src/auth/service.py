@@ -2,16 +2,15 @@ from src.auth.models import AuthUser, UserRegisterDTO, LoginResponse, UserTokens
 from src.exceptions.domain import SinCargas
 from src.exceptions.usuarios_exceptions import UsuarioError, LoginError
 from src.exceptions.tokens import TokenExpirado, TokenInvalido, VerificacionInvalida, VerificacionExpirada
-from src.exceptions.domain import DomainError
-from fastapi import Response, UploadFile
+from src.auth.domain.services.password_policy import PasswordPolicyService
+from fastapi import Response
 import logging
-from src.domain.protocols.user_repository import UserRepositoryProtocol
-from src.domain.protocols.token_service import TokenProtocol
-from src.domain.protocols.password_service import PasswordProtocol
-from src.domain.protocols.mail_service import MailProtocol
-from src.domain.protocols.image_service import ImageProtocol
+from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
+from src.auth.domain.protocols.token_service import TokenProtocol
+from src.auth.domain.protocols.password_service import PasswordProtocol
+from src.auth.domain.protocols.mail_service import MailProtocol
+from src.auth.domain.protocols.image_service import ImageProtocol
 from src.auth.security.security import Settings
-from src.auth.utils.usuarios_utils import UserMapper
 from src.auth.cookies.cookies import CookiesService
 
 
@@ -27,8 +26,8 @@ class AuthService:
         settings: Settings,
         mail_service: MailProtocol,
         image_service: ImageProtocol,
-        user_mapper: UserMapper,
-        cookies: CookiesService
+        cookies: CookiesService,
+        password_policy : PasswordPolicyService,
     ):
         self.token_service = token_service
         self.user_repository = user_repository
@@ -36,30 +35,9 @@ class AuthService:
         self.settings = settings
         self.mail_service = mail_service
         self.image_service = image_service
-        self.user_mapper = user_mapper
         self.cookies = cookies
+        self.password_policy = password_policy 
 
-    async def register(self, usuario:UserRegisterDTO, imagen:UploadFile | None) -> AuthUser:
-        if not usuario:
-            raise SinCargas()
-        
-        objeto_usuario = self.user_mapper.orquestador_carga(usuario)
-        objeto_usuario.password = self.password_service.hash_password(objeto_usuario.password)
-        if imagen != None:
-            objeto_usuario = self.image_service.insertar_imagen(objeto_usuario, imagen, servicio="usuarios")
-
-        usuario_creado = self.user_repository.insertar(objeto_usuario)
-
-        token_verificacion = self.token_service.create_access_token(str(usuario_creado.id_usuario))
-        cuerpo_correo = self._formar_url_mail(token_verificacion)
-
-        await self.mail_service.enviar_mail(
-            email_destino=usuario_creado.email,
-            cuerpo_html=cuerpo_correo,
-            asunto = "Activa tu cuenta"
-        )   
-
-        return usuario_creado
 
     def verificar_mail(self, token: str, response:Response)-> UserTokens:
         """
@@ -78,33 +56,11 @@ class AuthService:
         except TokenInvalido:
             raise VerificacionInvalida()
         
-        tokens = self._crear_tokens_usuario(usuario.id_usuario)
+        tokens = self.token_service.create_user_tokens(usuario.id_usuario)
         self.cookies.set_auth_cookies(response, tokens.access_token, tokens.refresh_token)
         
         return tokens
 
-
-
-    def login(self, mail: str, password: str, response:Response)-> LoginResponse:
-        try:
-            usuario_db = self.user_repository.obtener_por_email(mail)
-                
-            if not self.password_service.verify_password(password, usuario_db.password):
-                raise LoginError("Usuario o contraseña incorrectos")
-            
-            login_response = self._emitir_tokens_usuario(usuario_db)
-            self.cookies.set_auth_cookies(
-                response, 
-                login_response.tokens.access_token, 
-                login_response.tokens.refresh_token
-                )
-            return login_response
-        
-        except (UsuarioError, DomainError):
-            raise
-        except Exception as e:
-            logger.exception("Error crítico en service")
-            raise UsuarioError("Error al inicial sesion") from e
         
 
     def get_user(self, current_user:AuthUser)-> AuthUser:
@@ -128,28 +84,6 @@ class AuthService:
         self.cookies.delete_auth_cookies(response)
 
         
-        
-    def _emitir_tokens_usuario(self, usuario:AuthUser)-> LoginResponse:
-            
-            tokens = self._crear_tokens_usuario(usuario.id_usuario)
-            usuario_publico = self.user_mapper.retornar_usuario_publico(usuario)
-
-            return LoginResponse(
-                tokens=tokens,
-                usuario=usuario_publico
-            )
     
-    def _formar_url_mail(self, token_verificacion:str)-> str:
-        cuerpo_correo = self.mail_service.generar_correo_verificacion(
-            url=f"{self.settings.BASE_URL}/{self.settings.NOMBRE_APP}/usuarios/verificar/{token_verificacion}",
-            nombre_proyecto=self.settings.NOMBRE_APP
-        )
-        return cuerpo_correo
-    
-    def _crear_tokens_usuario(self, user_id:int) -> UserTokens:
 
-        return UserTokens(
-            access_token=self.token_service.create_access_token(str(user_id)),
-            refresh_token=self.token_service.create_refresh_token(str(user_id))
-        )
 

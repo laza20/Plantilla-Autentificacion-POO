@@ -1,5 +1,4 @@
 from src.config.config import Settings
-from src.auth.utils.usuarios_utils import UserMapper
 from src.auth.cookies.cookies import CookiesService
 from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
