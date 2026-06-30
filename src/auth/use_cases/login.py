@@ -21,7 +21,7 @@ class LoginUseCase:
         settings : Settings,
         token_service: TokenProtocol,
         cookies_service: CookiesService,
-        user_validation_service =UserValidationService
+        user_validation_service: UserValidationService
     ):
         self.user_repository = user_repository
         self.password_service = password_service
