@@ -2016,7 +2016,7 @@ Este proyecto es código abierto bajo licencia **MIT**. Ver archivo `LICENSE` pa
 
 - **Issues**: Abre un issue en GitHub para reportar bugs
 - **Discussions**: Participa en discusiones para preguntas y sugerencias
-- **Email**: soporte@example.com
+- **Email**: salvirialazaro@gmail.com
 
 ---
 
