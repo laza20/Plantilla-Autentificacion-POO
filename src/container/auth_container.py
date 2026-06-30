@@ -11,6 +11,7 @@ from src.auth.use_cases.login import LoginUseCase
 from src.auth.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
 from src.auth.use_cases.logout import LogoutUseCase
+from src.auth.use_cases.refresh_token import RefreshTokenUseCase
 
 
 class ContainerRegister:
@@ -108,4 +109,20 @@ class ContainerLogout:
 
         return LogoutUseCase(
             cookies_service=self.cookies_service
+        )
+    
+class ContainerRefreshToken:
+    def __init__(
+        self,
+        cookies_service: CookiesService,
+        token_service: TokenProtocol
+    ):
+        self.cookies_service = cookies_service
+        self.token_service = token_service
+    @property
+    def refresh_token_use_case(self) -> RefreshTokenUseCase:
+
+        return RefreshTokenUseCase(
+            cookies_service=self.cookies_service,
+            token_service = self.token_service
         )

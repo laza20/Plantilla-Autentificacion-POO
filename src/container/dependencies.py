@@ -1,9 +1,12 @@
 from fastapi import Depends
-from src.auth.repository import UserRepository
-from src.config.config import (Settings, get_settings)
-from src.container.auth_container import ContainerRegister, ContainerLogin, ContainerVerifyMail, ContainerLogout
-from src.auth.cookies.cookies import CookiesService
 from sqlmodel import Session
+from src.auth.repository import UserRepository
+from src.config.config import Settings, get_settings
+from src.container.auth_container import (
+    ContainerRegister, ContainerLogin, 
+    ContainerVerifyMail, ContainerLogout,
+    ContainerRefreshToken)
+from src.auth.cookies.cookies import CookiesService
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.mail_service import MailProtocol
@@ -19,6 +22,7 @@ from src.auth.use_cases.verify_email import VerifyMailUseCase
 from src.database.client import get_session
 from src.auth.domain.services.user_validation_service import UserValidationService
 from src.auth.use_cases.logout import LogoutUseCase
+from src.auth.use_cases.refresh_token import RefreshTokenUseCase
 
 def get_user_repository(session: Session = Depends(get_session)) -> UserRepository:
     return UserRepository(session)
@@ -123,3 +127,13 @@ def get_logout_service(
     return ContainerLogout(
         cookies_service=cookies_service
         ).logout_use_case
+
+
+def get_refresh_token_service(
+    cookies_service: CookiesService = Depends(get_cookies_service),
+    token_service: TokenProtocol = Depends(get_token_service)
+)-> RefreshTokenUseCase:
+    return ContainerRefreshToken(
+        cookies_service=cookies_service,
+        token_service=token_service
+        ).refresh_token_use_case

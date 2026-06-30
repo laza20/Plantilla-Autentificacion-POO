@@ -1,13 +1,15 @@
 from src.auth.models import LoginResponse, UserRegisterDTO, UsuarioCreado
-from fastapi import APIRouter, Depends, status, Response, Path, Request, HTTPException, UploadFile
-from src.auth.service import AuthService
+from fastapi import APIRouter, Depends, status, Response, Path, HTTPException, UploadFile, Request
 from src.auth.use_cases.register import RegisterUseCase
 from src.auth.use_cases.login import LoginUseCase
 from src.auth.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
 from src.auth.use_cases.logout import LogoutUseCase
+from src.auth.use_cases.refresh_token import RefreshTokenUseCase
 from src.container.dependencies import (
-    get_register_use_case, get_login_use_case, get_verify_mail_use_case, get_user_validation_service, get_logout_service)
+    get_register_use_case, get_login_use_case, 
+    get_verify_mail_use_case, get_user_validation_service, 
+    get_logout_service, get_refresh_token_service)
 from src.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.transformers import parse_usuario_form
 from src.config.config import settings
@@ -66,22 +68,23 @@ async def logearse(
     logeado = login_use_case.login(usuario.username, usuario.password, response)
     return logeado
 
-"""
+
 @router.post("/Refresh/Token")
 async def refresh_token(
     request: Request, 
     response: Response,
-    auth_service: AuthService = Depends(get_auth_service)):
+    refresh_token_service: RefreshTokenUseCase = Depends(get_refresh_token_service)):
 
     refresh_token = request.cookies.get("refresh_token")
 
     if not refresh_token:
         raise SinRefreshToken("No hay refresh token en la cookie")
 
-    auth_service.refreshed_token(refresh_token, response)
+    refresh_token_service.refreshed_token(refresh_token, response)
 
     return {"message": "Access token renovado"}
-"""
+
+
 @router.get("/user/current")
 async def ver_usuario(
     current_user: dict = Depends(get_current_user),

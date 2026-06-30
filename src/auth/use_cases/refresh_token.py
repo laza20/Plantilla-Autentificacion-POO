@@ -1,0 +1,23 @@
+from fastapi import Response
+from src.auth.cookies.cookies import CookiesService
+from src.auth.domain.protocols.token_service import TokenProtocol
+
+class RefreshTokenUseCase:
+    def __init__(
+        self,
+        token_service: TokenProtocol,
+        cookies_service: CookiesService
+    ):
+        self.token_service = token_service
+        self.cookies_service = cookies_service
+
+    def refreshed_token(self, refresh_token: str, response:Response):
+        """
+        Servicio para refrescar el access token usando un refresh token válido.
+        """
+        user_id = self.token_service.get_user_id_from_refresh_token(refresh_token)
+
+        new_access_token = self.token_service.create_access_token(user_id)
+
+        self.cookies_service.set_access_cookie(response, new_access_token)
+
