@@ -8,7 +8,7 @@ from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.security.security import Settings
 from src.auth.cookies.cookies import CookiesService
-
+from src.auth.domain.services.user_validation_service import UserValidationService
 
 
 logger = logging.getLogger(__name__)
@@ -20,17 +20,19 @@ class LoginUseCase:
         password_service: PasswordProtocol,
         settings : Settings,
         token_service: TokenProtocol,
-        cookies_service: CookiesService
+        cookies_service: CookiesService,
+        user_validation_service =UserValidationService
     ):
         self.user_repository = user_repository
         self.password_service = password_service
         self.settings = settings
         self.token_service = token_service
         self.cookies_service = cookies_service
+        self.user_validation_service = user_validation_service
 
     def login(self, mail: str, password: str, response:Response)-> LoginResponse:
         try:
-            usuario_db = self.user_repository.obtener_por_email(mail)
+            usuario_db = self.user_validation_service.obtener_usuario_existente(mail)
                 
             if not self.password_service.verify_password(password, usuario_db.password):
                 raise LoginError("Usuario o contraseña incorrectos")

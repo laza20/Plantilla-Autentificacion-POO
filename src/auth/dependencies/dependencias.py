@@ -2,7 +2,8 @@ from fastapi import HTTPException, Request, Depends
 from jose import JWTError
 from src.auth.tokens.tokens import TokenService, get_token_service
 from src.config.config import get_settings, Settings
-from src.auth.repository import UserRepository, get_user_repository
+from src.auth.repository import UserRepository
+from src.container.dependencies import get_user_repository
 from src.auth.models import AuthUser
 from src.exceptions.usuarios_exceptions import (
     NoAutenticado, SinAccessToken, TokenInvalido, UsuarioNoEncontrado

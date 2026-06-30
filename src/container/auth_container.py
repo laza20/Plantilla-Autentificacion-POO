@@ -9,6 +9,7 @@ from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.use_cases.register import RegisterUseCase
 from src.auth.use_cases.login import LoginUseCase
 from src.auth.use_cases.verify_email import VerifyMailUseCase
+from src.auth.domain.services.user_validation_service import UserValidationService
 
 
 class AuthContainer:
@@ -71,13 +72,15 @@ class ContainerLogin:
         repository: UserRepositoryProtocol,
         token_service: TokenProtocol,
         password_service: PasswordProtocol,
-        cookies_service: CookiesService
+        cookies_service: CookiesService,
+        user_validation_service: UserValidationService
     ):
         self.settings = settings
         self.repository = repository
         self.token_service = token_service
         self.password_service = password_service
         self.cookies_service = cookies_service
+        self.user_validation_service = user_validation_service
         
 
     @property
@@ -88,7 +91,8 @@ class ContainerLogin:
             user_repository=self.repository,
             token_service=self.token_service,
             password_service=self.password_service,
-            cookies_service = self.cookies_service
+            cookies_service = self.cookies_service,
+            user_validation_service = self.user_validation_service
         )
 
 class ContainerVerifyMail:

@@ -1,9 +1,9 @@
 from fastapi import Depends
-from src.auth.repository import (UserRepository, get_user_repository)
+from src.auth.repository import UserRepository
 from src.config.config import (Settings, get_settings)
 from src.container.auth_container import ContainerRegister, ContainerLogin, ContainerVerifyMail, AuthContainer
 from src.auth.cookies.cookies import CookiesService
-from src.auth.service import AuthService
+from sqlmodel import Session
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.mail_service import MailProtocol
@@ -16,7 +16,20 @@ from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.use_cases.register import RegisterUseCase
 from src.auth.use_cases.login import LoginUseCase
 from src.auth.use_cases.verify_email import VerifyMailUseCase
+from src.database.client import get_session
+from src.auth.domain.services.user_validation_service import UserValidationService
 
+def get_user_repository(session: Session = Depends(get_session)) -> UserRepository:
+    return UserRepository(session)
+
+def get_user_validation_service(
+    repository: UserRepository = Depends(get_user_repository),
+    settings: Settings = Depends(get_settings)
+) -> UserValidationService:
+    return UserValidationService(
+        user_repository=repository, 
+        settings=settings
+    )
 
 def get_cookies_service(settings: Settings = Depends(get_settings)) -> CookiesService:
     return CookiesService(settings=settings)
@@ -94,7 +107,8 @@ def get_login_use_case(
     repository: UserRepository = Depends(get_user_repository),
     token_service: TokenProtocol = Depends(get_token_service),
     password_service: PasswordProtocol = Depends(get_password_service),
-    cookies_service: CookiesService = Depends(get_cookies_service)
+    cookies_service: CookiesService = Depends(get_cookies_service),
+    user_validation_service: UserValidationService = Depends(get_user_validation_service)
 ) -> LoginUseCase:
 
     return ContainerLogin(
@@ -102,7 +116,8 @@ def get_login_use_case(
         repository=repository,
         token_service=token_service,
         password_service=password_service,
-        cookies_service=cookies_service
+        cookies_service=cookies_service,
+        user_validation_service=user_validation_service
     ).login_use_case
 
 

@@ -2,8 +2,6 @@ from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
 from src.auth.models import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
-from src.database.client import get_session
-from fastapi import Depends
 
 
 class UserRepository:
@@ -66,6 +64,3 @@ class UserRepository:
         return self.session.exec(statement).first()
 
 
-
-def get_user_repository(session: Session = Depends(get_session)) -> UserRepository:
-    return UserRepository(session)
