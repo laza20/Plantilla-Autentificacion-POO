@@ -5,8 +5,9 @@ from src.auth.use_cases.register import RegisterUseCase
 from src.auth.use_cases.login import LoginUseCase
 from src.auth.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
+from src.auth.use_cases.logout import LogoutUseCase
 from src.container.dependencies import (
-    get_auth_service, get_register_use_case, get_login_use_case, get_verify_mail_use_case, get_user_validation_service)
+    get_register_use_case, get_login_use_case, get_verify_mail_use_case, get_user_validation_service, get_logout_service)
 from src.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.transformers import parse_usuario_form
 from src.config.config import settings
@@ -65,7 +66,7 @@ async def logearse(
     logeado = login_use_case.login(usuario.username, usuario.password, response)
     return logeado
 
-
+"""
 @router.post("/Refresh/Token")
 async def refresh_token(
     request: Request, 
@@ -80,7 +81,7 @@ async def refresh_token(
     auth_service.refreshed_token(refresh_token, response)
 
     return {"message": "Access token renovado"}
-
+"""
 @router.get("/user/current")
 async def ver_usuario(
     current_user: dict = Depends(get_current_user),
@@ -94,10 +95,10 @@ async def ver_usuario(
 @router.post("/Logout")
 async def logout(
     response: Response,
-    auth_service: AuthService = Depends(get_auth_service)
+    logout_service: LogoutUseCase = Depends(get_logout_service)
     ):
     """
     End point encargado de desloguear un usuario.
     """
-    auth_service.logout(response)
+    logout_service.logout(response)
     return {"message": "Sesión cerrada"}

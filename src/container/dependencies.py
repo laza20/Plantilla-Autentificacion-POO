@@ -1,7 +1,7 @@
 from fastapi import Depends
 from src.auth.repository import UserRepository
 from src.config.config import (Settings, get_settings)
-from src.container.auth_container import ContainerRegister, ContainerLogin, ContainerVerifyMail, AuthContainer
+from src.container.auth_container import ContainerRegister, ContainerLogin, ContainerVerifyMail, ContainerLogout
 from src.auth.cookies.cookies import CookiesService
 from sqlmodel import Session
 from src.auth.domain.protocols.token_service import TokenProtocol
@@ -18,6 +18,7 @@ from src.auth.use_cases.login import LoginUseCase
 from src.auth.use_cases.verify_email import VerifyMailUseCase
 from src.database.client import get_session
 from src.auth.domain.services.user_validation_service import UserValidationService
+from src.auth.use_cases.logout import LogoutUseCase
 
 def get_user_repository(session: Session = Depends(get_session)) -> UserRepository:
     return UserRepository(session)
@@ -61,25 +62,6 @@ def get_password_policy(settings: Settings = Depends(get_settings)) -> PasswordP
     return PasswordPolicyService()
 
 
-def get_auth_service(
-    settings: Settings = Depends(get_settings),
-    repository: UserRepository = Depends(get_user_repository),
-    token_service: TokenProtocol = Depends(get_token_service),
-    password_service: PasswordProtocol = Depends(get_password_service),
-    password_policy: PasswordPolicyService = Depends(get_password_policy),
-    mail_service: MailProtocol = Depends(get_mail_service),
-    image_service: ImageProtocol = Depends(get_image_service)
-) -> AuthContainer:
-
-    return ContainerRegister(
-        settings=settings,
-        repository=repository,
-        token_service=token_service,
-        password_service=password_service,
-        password_policy=password_policy,
-        mail_service=mail_service,
-        image_service=image_service
-    ).register_use_case
 
 def get_register_use_case(
     settings: Settings = Depends(get_settings),
@@ -134,3 +116,10 @@ def get_verify_mail_use_case(
         cookies_service=cookies_service,
         token_service=token_service
     ).verify_mail_use_case
+
+def get_logout_service(
+    cookies_service: CookiesService = Depends(get_cookies_service)
+)-> LogoutUseCase:
+    return ContainerLogout(
+        cookies_service=cookies_service
+        ).logout_use_case

@@ -10,29 +10,8 @@ from src.auth.use_cases.register import RegisterUseCase
 from src.auth.use_cases.login import LoginUseCase
 from src.auth.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
+from src.auth.use_cases.logout import LogoutUseCase
 
-
-class AuthContainer:
-
-    def __init__(
-        self,
-        settings: Settings,
-        repository: UserRepositoryProtocol,
-        token_service: TokenProtocol,
-        password_service: PasswordProtocol, 
-        mail_service: MailProtocol,        
-        image_service: ImageProtocol,
-        password_policy: PasswordPolicyService,
-        cookies_service: CookiesService
-    ):
-        self.settings = settings
-        self.repository = repository
-        self.token_service = token_service
-        self.password_service = password_service
-        self.mail_service = mail_service
-        self.image_service = image_service
-        self.password_policy = password_policy
-        self.cookies_service = cookies_service
 
 class ContainerRegister:
     def __init__(
@@ -115,4 +94,18 @@ class ContainerVerifyMail:
             settings=self.settings,
             cookies_service=self.cookies_service,
             token_service=self.token_service
+        )
+    
+
+class ContainerLogout:
+    def __init__(
+        self,
+        cookies_service: CookiesService
+    ):
+        self.cookies_service = cookies_service
+    @property
+    def logout_use_case(self) -> LogoutUseCase:
+
+        return LogoutUseCase(
+            cookies_service=self.cookies_service
         )
