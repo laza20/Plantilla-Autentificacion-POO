@@ -4,7 +4,9 @@ from src.auth.service import AuthService
 from src.auth.use_cases.register import RegisterUseCase
 from src.auth.use_cases.login import LoginUseCase
 from src.auth.use_cases.verify_email import VerifyMailUseCase
-from src.container.dependencies import get_auth_service, get_register_use_case, get_login_use_case, get_verify_mail_use_case
+from src.auth.domain.services.user_validation_service import UserValidationService
+from src.container.dependencies import (
+    get_auth_service, get_register_use_case, get_login_use_case, get_verify_mail_use_case, get_user_validation_service)
 from src.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.transformers import parse_usuario_form
 from src.config.config import settings
@@ -82,11 +84,11 @@ async def refresh_token(
 @router.get("/user/current")
 async def ver_usuario(
     current_user: dict = Depends(get_current_user),
-    auth_service: AuthService = Depends(get_auth_service)):
+    user_validation_service: UserValidationService = Depends(get_user_validation_service)):
     """
     End point encargado de devolver un usuario completo.
     """
-    usuario = auth_service.get_user(current_user)
+    usuario = user_validation_service.get_user(current_user)
     return usuario
 
 @router.post("/Logout")
