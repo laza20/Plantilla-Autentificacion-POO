@@ -212,54 +212,54 @@ Cliente HTTP
     │
     │  POST /{NOMBRE_APP}/usuarios/login
     ▼
-┌────────────────────────────────────────────┐
+┌──────────────────────────────────────────────┐
 │ presentation/web/routers.py :: logearse()    │   ← Capa de Presentación
-│   Depends(get_login_use_case)                 │
-└────────────────────────────────────────────┘
+│   Depends(get_login_use_case)                │
+└──────────────────────────────────────────────┘
     │  FastAPI resuelve el árbol de Depends
     ▼
-┌────────────────────────────────────────────┐
-│ container/providers.py :: get_login_use_case │
-│   ├─ get_settings()                            │
-│   ├─ get_user_repository()   → UserRepository   │
-│   ├─ get_token_service()     → TokenService (protocolo TokenProtocol)   │
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ container/providers.py :: get_login_use_case                                │
+│   ├─ get_settings()                                                         │
+│   ├─ get_user_repository()   → UserRepository                               │
+│   ├─ get_token_service()     → TokenService (protocolo TokenProtocol)       │
 │   ├─ get_password_service()  → PasswordService (protocolo PasswordProtocol) │
-│   ├─ get_cookies_service()   → CookiesService    │
-│   └─ get_user_validation_service()                │
-└────────────────────────────────────────────┘
+│   ├─ get_cookies_service()   → CookiesService                               │
+│   └─ get_user_validation_service()                                          │
+└─────────────────────────────────────────────────────────────────────────────┘
     │  construye
     ▼
-┌────────────────────────────────────────────┐
-│ container/auth_container.py :: ContainerLogin  │
-│   .login_use_case  →  LoginUseCase(...)          │
-└────────────────────────────────────────────┘
+┌───────────────────────────────────────────────┐
+│ container/auth_container.py :: ContainerLogin │
+│   .login_use_case  →  LoginUseCase(...)       │
+└───────────────────────────────────────────────┘
     │
     ▼
-┌────────────────────────────────────────────┐
-│ application/use_cases/login.py :: LoginUseCase │   ← Capa de Aplicación
-│   1. UserValidationService.obtener_usuario_...  │   (Servicio de Dominio)
+┌──────────────────────────────────────────────────┐
+│ application/use_cases/login.py :: LoginUseCase   │   ← Capa de Aplicación
+│   1. UserValidationService.obtener_usuario_...   │   (Servicio de Dominio)
 │   2. PasswordProtocol.verify_password(...)       │   (contrato)
-│   3. TokenProtocol.create_user_tokens(...)        │   (contrato)
-│   4. CookiesService.set_auth_cookies(...)          │
-└────────────────────────────────────────────┘
-    │                              │
-    │ implementado por             │ implementado por
-    ▼                              ▼
-┌───────────────────────┐   ┌───────────────────────┐
-│ infrastructure/security/ │   │ infrastructure/security/ │   ← Capa de Infraestructura
-│ security.py :: PasswordService (Argon2) │   │ tokens/tokens.py :: TokenService (JWT) │
-└───────────────────────┘   └───────────────────────┘
+│   3. TokenProtocol.create_user_tokens(...)       │   (contrato)
+│   4. CookiesService.set_auth_cookies(...)        │
+└──────────────────────────────────────────────────┘
+    │                                            │
+    │ implementado por                           │ implementado por
+    ▼                                            ▼
+┌─────────────────────────────────────────┐   ┌─────────────────────────────────────────┐
+│ infrastructure/security/                │   │ infrastructure/security/                │ ← Capa de 
+│ security.py :: PasswordService (Argon2) │   │ tokens/tokens.py :: TokenService (JWT)  │  Infraestructura
+└─────────────────────────────────────────┘   └─────────────────────────────────────────┘
     │
     ▼
-┌───────────────────────┐
-│ infrastructure/persistence/  │
-│ postgres/user_repository.py  │   ← Infraestructura de Persistencia
+┌────────────────────────────────────┐
+│ infrastructure/persistence/        │
+│ postgres/user_repository.py        │   ← Infraestructura de Persistencia
 │ UserRepository.obtener_por_email() │
-└───────────────────────┘
+└────────────────────────────────────┘
     │
     ▼
 ┌───────────────────────┐
-│        PostgreSQL          │
+│        PostgreSQL     │
 └───────────────────────┘
     │
     ▼
