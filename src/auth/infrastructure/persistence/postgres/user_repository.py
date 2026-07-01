@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
-from src.auth.models import AuthUser
+from src.auth.infrastructure.persistence.postgres.models import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
 
 

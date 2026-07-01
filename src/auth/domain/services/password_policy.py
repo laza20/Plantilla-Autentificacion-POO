@@ -1,4 +1,4 @@
-from src.exceptions.domain import ContraseñaNoSegura
+from src.auth.domain.exceptions.domain import ContraseñaNoSegura
 import re
 
 class PasswordPolicyService:

@@ -1,4 +1,4 @@
-from src.exceptions.domain import DomainError
+from src.auth.domain.exceptions.domain import DomainError
 from fastapi import status
 
 class TokenException(DomainError):

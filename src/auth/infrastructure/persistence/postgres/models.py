@@ -60,7 +60,7 @@ class UsuarioCreado(SQLModel):
 
 
 class UserRegisterDTO(SQLModel):
-    email: str = Field(...),
+    email: str = Field(...)
     password: str = Field(nullable=False)
 
 class UserTokens(SQLModel):

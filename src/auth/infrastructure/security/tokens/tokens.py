@@ -1,11 +1,11 @@
 from datetime import datetime, timezone, timedelta
 from jose import jwt
 from typing import Dict
-from src.exceptions.usuarios_exceptions import TokenInvalido
+from src.auth.domain.exceptions.usuarios_exceptions import TokenInvalido
 from jose import JWTError
 from fastapi import Depends
 from src.config.config import get_settings, Settings
-from src.auth.models import UserTokens
+from src.auth.infrastructure.persistence.postgres.models import UserTokens
 
 
 class TokenService:

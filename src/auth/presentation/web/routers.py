@@ -1,21 +1,21 @@
-from src.auth.models import LoginResponse, UserRegisterDTO, UsuarioCreado
+from src.auth.infrastructure.persistence.postgres.models import LoginResponse, UserRegisterDTO, UsuarioCreado
 from fastapi import APIRouter, Depends, status, Response, Path, HTTPException, UploadFile, Request
-from src.auth.use_cases.register import RegisterUseCase
-from src.auth.use_cases.login import LoginUseCase
-from src.auth.use_cases.verify_email import VerifyMailUseCase
+from src.auth.application.use_cases.register import RegisterUseCase
+from src.auth.application.use_cases.login import LoginUseCase
+from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
-from src.auth.use_cases.logout import LogoutUseCase
-from src.auth.use_cases.refresh_token import RefreshTokenUseCase
-from src.container.dependencies import (
+from src.auth.application.use_cases.logout import LogoutUseCase
+from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
+from src.container.providers import (
     get_register_use_case, get_login_use_case, 
     get_verify_mail_use_case, get_user_validation_service, 
     get_logout_service, get_refresh_token_service)
-from src.exceptions.usuarios_exceptions import SinRefreshToken
-from src.auth.transformers import parse_usuario_form
+from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
+from src.auth.application.dtos import parse_usuario_form
 from src.config.config import settings
 from fastapi.security import OAuth2PasswordRequestForm
-from src.auth.dependencies.dependencias import get_current_user
-from src.exceptions.tokens import VerificacionInvalida, VerificacionExpirada
+from src.auth.presentation.web.guards import get_current_user
+from src.auth.domain.exceptions.tokens import VerificacionInvalida, VerificacionExpirada
 
 router = APIRouter(prefix=f"/{settings.NOMBRE_APP}/usuarios",
                    tags=["USUARIOS"],

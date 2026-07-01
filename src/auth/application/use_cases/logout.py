@@ -1,5 +1,5 @@
 from fastapi import Response
-from src.auth.cookies.cookies import CookiesService
+from src.auth.presentation.web.cookies.cookies import CookiesService
 
 class LogoutUseCase:
     def __init__(

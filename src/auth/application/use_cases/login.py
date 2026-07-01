@@ -1,13 +1,13 @@
-from src.auth.models import LoginResponse, AuthUser, UsuarioLogeado
-from src.exceptions.usuarios_exceptions import UsuarioError, LoginError
-from src.exceptions.domain import DomainError
+from src.auth.infrastructure.persistence.postgres.models import LoginResponse, AuthUser, UsuarioLogeado
+from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError
+from src.auth.domain.exceptions.domain import DomainError
 from fastapi import Response
 import logging
 from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
 from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
-from src.auth.security.security import Settings
-from src.auth.cookies.cookies import CookiesService
+from src.auth.infrastructure.security.security import Settings
+from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.domain.services.user_validation_service import UserValidationService
 
 

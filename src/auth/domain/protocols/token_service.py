@@ -1,5 +1,5 @@
 from typing import Protocol, runtime_checkable
-from src.auth.models import UserTokens
+from src.auth.infrastructure.persistence.postgres.models import UserTokens
 
 @runtime_checkable
 class TokenProtocol(Protocol):

@@ -1,18 +1,7 @@
-from src.exceptions.usuarios_exceptions import UsuarioInactivo, UsuarioNoEncontrado
-from src.auth.models import AuthUser
-from src.exceptions.domain import SinCargas
-from fastapi import UploadFile
-import logging
+from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
+from src.auth.infrastructure.persistence.postgres.models import AuthUser
 from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
-from src.auth.domain.protocols.password_service import PasswordProtocol
-from src.auth.domain.protocols.mail_service import MailProtocol
-from src.auth.domain.protocols.image_service import ImageProtocol
-from src.auth.domain.protocols.token_service import TokenProtocol
-from src.auth.domain.services.password_policy import PasswordPolicyService
-from src.auth.models import AuthUser, UserRegisterDTO
-from pydantic import ValidationError
-from src.exceptions.domain import LongitudExcedida
-from src.auth.security.security import Settings
+from src.auth.infrastructure.security.security import Settings
 
 class UserValidationService:
     def __init__(

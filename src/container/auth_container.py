@@ -1,17 +1,17 @@
 from src.config.config import Settings
-from src.auth.cookies.cookies import CookiesService
+from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.mail_service import MailProtocol
 from src.auth.domain.protocols.image_service import ImageProtocol
 from src.auth.domain.services.password_policy import PasswordPolicyService
-from src.auth.use_cases.register import RegisterUseCase
-from src.auth.use_cases.login import LoginUseCase
-from src.auth.use_cases.verify_email import VerifyMailUseCase
+from src.auth.application.use_cases.register import RegisterUseCase
+from src.auth.application.use_cases.login import LoginUseCase
+from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
-from src.auth.use_cases.logout import LogoutUseCase
-from src.auth.use_cases.refresh_token import RefreshTokenUseCase
+from src.auth.application.use_cases.logout import LogoutUseCase
+from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 
 
 class ContainerRegister:

@@ -1,11 +1,11 @@
-from src.auth.models import UserTokens
+from src.auth.infrastructure.persistence.postgres.models import UserTokens
 from fastapi import Response
 import logging
 from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
-from src.exceptions.tokens import TokenExpirado, TokenInvalido, VerificacionInvalida, VerificacionExpirada
+from src.auth.domain.exceptions.tokens import TokenExpirado, TokenInvalido, VerificacionInvalida, VerificacionExpirada
 from src.auth.domain.protocols.token_service import TokenProtocol
-from src.auth.security.security import Settings
-from src.auth.cookies.cookies import CookiesService
+from src.auth.infrastructure.security.security import Settings
+from src.auth.presentation.web.cookies.cookies import CookiesService
 
 
 

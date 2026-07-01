@@ -1,28 +1,28 @@
 from fastapi import Depends
 from sqlmodel import Session
-from src.auth.repository import UserRepository
+from src.auth.infrastructure.persistence.postgres.user_repository import UserRepository
 from src.config.config import Settings, get_settings
 from src.container.auth_container import (
     ContainerRegister, ContainerLogin, 
     ContainerVerifyMail, ContainerLogout,
     ContainerRefreshToken)
-from src.auth.cookies.cookies import CookiesService
+from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.mail_service import MailProtocol
 from src.auth.domain.protocols.image_service import ImageProtocol
-from src.auth.tokens.tokens import TokenService
-from src.auth.security.security import PasswordService
-from src.infrastructure.mail.mail import MailService
-from src.infrastructure.images.cloudinary import ImageService
+from src.auth.infrastructure.security.tokens.tokens import TokenService
+from src.auth.infrastructure.security.security import PasswordService
+from src.auth.infrastructure.mail.mail import MailService
+from src.auth.infrastructure.images.cloudinary import ImageService
 from src.auth.domain.services.password_policy import PasswordPolicyService
-from src.auth.use_cases.register import RegisterUseCase
-from src.auth.use_cases.login import LoginUseCase
-from src.auth.use_cases.verify_email import VerifyMailUseCase
+from src.auth.application.use_cases.register import RegisterUseCase
+from src.auth.application.use_cases.login import LoginUseCase
+from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.database.client import get_session
 from src.auth.domain.services.user_validation_service import UserValidationService
-from src.auth.use_cases.logout import LogoutUseCase
-from src.auth.use_cases.refresh_token import RefreshTokenUseCase
+from src.auth.application.use_cases.logout import LogoutUseCase
+from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 
 def get_user_repository(session: Session = Depends(get_session)) -> UserRepository:
     return UserRepository(session)
