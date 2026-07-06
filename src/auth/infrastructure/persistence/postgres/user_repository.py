@@ -2,7 +2,7 @@ from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
 from src.auth.infrastructure.persistence.postgres.models import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
-
+from src.auth.domain.exceptions.domain import MailRepetido
 
 class UserRepository:
     def __init__(self, session: Session):
@@ -12,15 +12,14 @@ class UserRepository:
         """
         Función para insertar un registro en la base de datos y retornar el usuario actualizado.
         """
-        try:
-            self.session.add(usuario)
-            self.session.commit()
-            self.session.refresh(usuario)
-            return usuario
-        
-        except IntegrityError:
-            self.session.rollback()
-            raise
+        existente = self.session.query(AuthUser).filter_by(mail=usuario.mail).first()
+        if existente:
+            raise MailRepetido()
+
+        self.session.add(usuario)
+        self.session.commit()
+        self.session.refresh(usuario)
+        return usuario
 
     def obtener_por_id_sin_activar(self, id_usuario: int) -> AuthUser | None:
         """
