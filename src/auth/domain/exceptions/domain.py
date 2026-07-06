@@ -40,3 +40,8 @@ class ErrorCloudinary(DomainError):
     def __init__(self, error: str, message: str = "Error al subir la imagen a Cloudinary."):
         full_message = f"{message} Detalles del error: {error}"
         super().__init__(full_message)
+
+class MailRepetido(DomainError):
+    status_code = status.HTTP_409_CONFLICT
+    def __init__(self, message: str = "El correo electrónico ya está en uso."):
+        super().__init__(message)
