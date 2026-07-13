@@ -12,7 +12,7 @@ class UserRepository:
         """
         Función para insertar un registro en la base de datos y retornar el usuario actualizado.
         """
-        existente = self.session.query(AuthUser).filter_by(mail=usuario.mail).first()
+        existente = self.session.query(AuthUser).filter_by(email=usuario.email).first()
         if existente:
             raise MailRepetido()
 
