@@ -72,3 +72,24 @@ async def test_no_debe_registrar_un_usuario_sin_datos():
 
     with pytest.raises(SinCargas):
         await context.use_case().register(None, imagen=None)
+
+
+@pytest.mark.asyncio
+async def test_registro_verifica_normalizacion_de_datos():
+    """
+    Simula la carga de un usuario el cual contendra datos con espacios y mayusculas.
+    Se espera que los datos sean normalizados antes de ser insertados en la base de datos.
+    """
+    context = RegisterTestEnvironment()
+
+    usuario = UserRegisterDTO(
+        email="   TEST@TEST.COM",
+        password="Password123!"
+    )
+
+    usuario_creado = await context.use_case().register(
+        usuario,
+        imagen=None
+        )
+    
+    assert usuario_creado.email == "test@test.com"
