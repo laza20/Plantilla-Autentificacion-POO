@@ -1,9 +1,10 @@
 import pytest
 from src.auth.infrastructure.persistence.postgres.models import AuthUser
-from src.auth.domain.exceptions.domain import MailRepetido, SinCargas
+from src.auth.domain.exceptions.domain import MailRepetido, SinCargas, LongitudExcedida
 from src.auth.domain.exceptions.domain import ContraseñaNoSegura
 from src.auth.infrastructure.persistence.postgres.models import UserRegisterDTO
 from src.test.fixtures.fixture_register_case import RegisterTestEnvironment
+from pydantic import ValidationError
 
 
 @pytest.mark.asyncio
@@ -93,3 +94,21 @@ async def test_registro_verifica_normalizacion_de_datos():
         )
     
     assert usuario_creado.email == "test@test.com"
+
+
+@pytest.mark.asyncio
+async def test_longuitud_exedida():
+    """
+    Simula la carga de un usuario el cual contendra datos con longuitud exedida.
+    Se espera que se lance una excepcion de longuitud exedida.
+    """
+    context = RegisterTestEnvironment()
+
+    usuario = UserRegisterDTO(
+        email="" + "a" * 250 + "@test.com",
+        password="Password123!"
+    )
+
+
+    with pytest.raises(LongitudExcedida):
+        await context.use_case().register(usuario, imagen=None)
