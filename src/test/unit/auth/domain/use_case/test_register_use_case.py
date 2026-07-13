@@ -1,6 +1,6 @@
 import pytest
 from src.auth.infrastructure.persistence.postgres.models import AuthUser
-from src.auth.domain.exceptions.domain import MailRepetido
+from src.auth.domain.exceptions.domain import MailRepetido, SinCargas
 from src.auth.domain.exceptions.domain import ContraseñaNoSegura
 from src.auth.infrastructure.persistence.postgres.models import UserRegisterDTO
 from src.test.fixtures.fixture_register_case import RegisterTestEnvironment
@@ -62,3 +62,13 @@ async def test_no_debe_registrar_un_usuario_con_password_invalida():
 
     with pytest.raises(ContraseñaNoSegura):
         await context.use_case().register(usuario, imagen=None)
+
+@pytest.mark.asyncio
+async def test_no_debe_registrar_un_usuario_sin_datos():
+    """
+    Simula la carga de un usuario el cual no contendra datos.
+    """
+    context = RegisterTestEnvironment()
+
+    with pytest.raises(SinCargas):
+        await context.use_case().register(None, imagen=None)
