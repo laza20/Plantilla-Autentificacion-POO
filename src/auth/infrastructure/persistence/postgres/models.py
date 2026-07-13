@@ -10,7 +10,7 @@ class AuthUser(SQLModel, table=True):
 
     id_usuario: Optional[int] = Field(default=None, primary_key=True)
     
-    email: str = Field(unique=True, index=True, nullable=False)
+    email: str = Field(unique=True, index=True, nullable=False, max_length=255)
     password: str = Field(nullable=False)
     
     # Campos relacionados con la imagen del usuario
@@ -28,6 +28,30 @@ class AuthUser(SQLModel, table=True):
             server_default=text("'pendiente'::estado_entidad")
         )
     )
+
+    created_at: Optional[date] = Field(
+        default=None,
+        sa_column=Column(
+            Date,
+            server_default=text("CURRENT_DATE")
+        )
+    )
+    updated_at: Optional[date] = Field(
+        default=None,
+        sa_column=Column(
+            Date,
+            server_default=text("CURRENT_DATE")
+        )
+    )
+    is_verified: bool = Field(default=False)
+
+
+class AuthUserNoTable(SQLModel):
+    email: str = Field(unique=True, index=True, nullable=False, max_length=255)
+    password: str = Field(nullable=False)
+    # Campos relacionados con la imagen del usuario
+    imagen_url: Optional[str] = Field(default=None, max_length=255)
+    imagen_public_id: Optional[str] = Field(default=None, max_length=255)
 
     created_at: Optional[date] = Field(
         default=None,
