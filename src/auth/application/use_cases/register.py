@@ -7,7 +7,7 @@ from src.auth.domain.protocols.mail_service import MailProtocol
 from src.auth.domain.protocols.image_service import ImageProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.services.password_policy import PasswordPolicyService
-from src.auth.infrastructure.persistence.postgres.models import AuthUser, UserRegisterDTO
+from src.auth.infrastructure.persistence.postgres.models import AuthUser, UserRegisterDTO, AuthUserNoTable
 from pydantic import ValidationError
 from src.auth.domain.exceptions.domain import LongitudExcedida
 from src.auth.infrastructure.security.security import Settings
@@ -70,9 +70,9 @@ class RegisterUseCase:
 
             datos_limpios = {"email": usuario.email.strip().lower(),
                              "password":usuario.password}
-            usuario_orm = AuthUser(**datos_limpios)
+            usuario_orm = AuthUserNoTable(**datos_limpios)
             
-            return usuario_orm
+            return AuthUser(**usuario_orm.model_dump())
 
         except ValidationError as e:
             error_detalle = e.errors()[0]
