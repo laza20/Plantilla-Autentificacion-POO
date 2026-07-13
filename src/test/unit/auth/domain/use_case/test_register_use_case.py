@@ -4,11 +4,13 @@ from src.auth.domain.exceptions.domain import MailRepetido, SinCargas, LongitudE
 from src.auth.domain.exceptions.domain import ContraseñaNoSegura
 from src.auth.infrastructure.persistence.postgres.models import UserRegisterDTO
 from src.test.fixtures.fixture_register_case import RegisterTestEnvironment
-from pydantic import ValidationError
 
 
 @pytest.mark.asyncio
 async def test_debe_registrar_un_usuario_valido():
+    """
+    Verifica que un usuario sea registrado correctamente con datos válidos.
+    """
     context = RegisterTestEnvironment()
 
     usuario = UserRegisterDTO(
@@ -27,6 +29,10 @@ async def test_debe_registrar_un_usuario_valido():
 
 @pytest.mark.asyncio
 async def test_no_debe_registrar_un_email_duplicado():
+    """
+    Verifica que un usuario al ser registrado con un mail ya existente produzca un error 
+    y no pueda registrarse
+    """
     context = RegisterTestEnvironment()
 
     usuario_existente = AuthUser(
@@ -50,9 +56,7 @@ async def test_no_debe_registrar_un_email_duplicado():
 @pytest.mark.asyncio
 async def test_no_debe_registrar_un_usuario_con_password_invalida():
     """
-    Simula la carga de un usuario el cual contendra un password invalido.
-    Un password valido debe tener al menos una mayuscula, una minuscula, 8 caracteres, un numero
-    y un caracter especial.
+    Verifica que el registro rechaza usuarios cuya contraseña no cumple la política de seguridad.
     """
     context = RegisterTestEnvironment()
 
@@ -67,7 +71,7 @@ async def test_no_debe_registrar_un_usuario_con_password_invalida():
 @pytest.mark.asyncio
 async def test_no_debe_registrar_un_usuario_sin_datos():
     """
-    Simula la carga de un usuario el cual no contendra datos.
+    Verifica que un usuario registrado sea rechazado al ser none.
     """
     context = RegisterTestEnvironment()
 
@@ -78,8 +82,7 @@ async def test_no_debe_registrar_un_usuario_sin_datos():
 @pytest.mark.asyncio
 async def test_registro_verifica_normalizacion_de_datos():
     """
-    Simula la carga de un usuario el cual contendra datos con espacios y mayusculas.
-    Se espera que los datos sean normalizados antes de ser insertados en la base de datos.
+    verifica que la normalizacion funciona correctamente.
     """
     context = RegisterTestEnvironment()
 
@@ -97,10 +100,9 @@ async def test_registro_verifica_normalizacion_de_datos():
 
 
 @pytest.mark.asyncio
-async def test_longuitud_exedida():
+async def test_debe_lanzar_error_si_el_email_supera_la_longitud_maxima():
     """
-    Simula la carga de un usuario el cual contendra datos con longuitud exedida.
-    Se espera que se lance una excepcion de longuitud exedida.
+    Verifica que un usuario registrado con mayor tamaño del esperado produzca un error de longitud excedida.
     """
     context = RegisterTestEnvironment()
 
