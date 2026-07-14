@@ -4,6 +4,8 @@ from src.auth.domain.exceptions.domain import MailRepetido, SinCargas, LongitudE
 from src.auth.domain.exceptions.domain import ContraseñaNoSegura
 from src.auth.infrastructure.persistence.postgres.models import UserRegisterDTO
 from src.test.fixtures.fixture_register_case import RegisterTestEnvironment
+from io import BytesIO
+from fastapi import UploadFile
 
 
 @pytest.mark.asyncio
@@ -114,3 +116,25 @@ async def test_debe_lanzar_error_si_el_email_supera_la_longitud_maxima():
 
     with pytest.raises(LongitudExcedida):
         await context.use_case().register(usuario, imagen=None)
+
+@pytest.mark.asyncio
+async def test_registro_con_imagen():
+    """
+    Verifica que un usuario sea registrado correctamente con datos válidos y una imagen.
+    """
+    context = RegisterTestEnvironment()
+
+    usuario = UserRegisterDTO(
+        email = "test@test.com",
+        password = "Password123!"
+    )
+    imagen = UploadFile(
+        filename="foto.jpg",
+        file=BytesIO(b"contenido")
+    )
+    usuario_creado = await context.use_case().register(
+        usuario,
+        imagen=imagen
+    )
+
+    assert usuario_creado.imagen_url == "usuarios_imagen_ficticia.jpg"
