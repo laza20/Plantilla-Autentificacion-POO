@@ -109,7 +109,7 @@ async def test_debe_lanzar_error_si_el_email_supera_la_longitud_maxima():
     context = RegisterTestEnvironment()
 
     usuario = UserRegisterDTO(
-        email="" + "a" * 250 + "@test.com",
+        email="a" * 250 + "@test.com",
         password="Password123!"
     )
 
@@ -138,3 +138,23 @@ async def test_registro_con_imagen():
     )
 
     assert usuario_creado.imagen_url == "usuarios_imagen_ficticia.jpg"
+
+
+@pytest.mark.asyncio
+async def test_verificacion_mail_service():
+    """
+    Verifica que el servicio de correo se utilice correctamente durante el registro.
+    """
+    context = RegisterTestEnvironment()
+
+    usuario = UserRegisterDTO(
+        email = "test@test.com",
+        password = "Password123!"
+    )
+
+    usuario_creado = await context.use_case().register(
+        usuario,
+        imagen=None
+    )
+
+    assert context.mail_service.urls_list is not None
