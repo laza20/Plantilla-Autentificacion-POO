@@ -15,10 +15,8 @@ class FakeUserRepository:
         if usuario.email in self._users:
             raise MailRepetido()
         
-        copia_usuario = AuthUser(
-            id_usuario = self._next_id,
-            email = usuario.email,
-            password = usuario.password)
+        copia_usuario = usuario.model_copy()
+        copia_usuario.id_usuario = self._next_id
         
         self._users[usuario.email] = copia_usuario
         self._next_id += 1
