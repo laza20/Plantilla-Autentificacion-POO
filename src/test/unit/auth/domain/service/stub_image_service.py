@@ -11,5 +11,4 @@ class StubImageService:
         """
         # Simula la inserción de la imagen y retorna un nombre de archivo ficticio
         objeto_usuario.imagen_url = f"{servicio}_imagen_ficticia.jpg"
-        print(objeto_usuario)
         return objeto_usuario
