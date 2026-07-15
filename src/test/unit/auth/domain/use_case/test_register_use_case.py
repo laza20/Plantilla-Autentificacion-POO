@@ -157,4 +157,5 @@ async def test_verificacion_mail_service():
         imagen=None
     )
 
-    assert context.mail_service.urls_list is not None
+    assert len(context.mail_service.urls_list) == 1
+    assert f"access_token_{usuario_creado.id_usuario}" in context.mail_service.urls_list[0]
