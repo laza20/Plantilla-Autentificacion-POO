@@ -118,7 +118,7 @@ async def test_debe_lanzar_error_si_el_email_supera_la_longitud_maxima():
         await context.use_case().register(usuario, imagen=None)
 
 @pytest.mark.asyncio
-async def test_registro_con_imagen():
+async def test_debe_registrar_un_usuario_con_imagen():
     """
     Verifica que un usuario sea registrado correctamente con datos válidos y una imagen.
     """
@@ -141,7 +141,7 @@ async def test_registro_con_imagen():
 
 
 @pytest.mark.asyncio
-async def test_verificacion_mail_service():
+async def test_debe_generar_un_correo_con_el_token_de_activacion():
     """
     Verifica que el servicio de correo se utilice correctamente durante el registro.
     """
