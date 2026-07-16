@@ -157,5 +157,5 @@ async def test_debe_generar_un_correo_con_el_token_de_activacion():
         imagen=None
     )
 
-    assert len(context.mail_service.urls_list) == 1
-    assert f"access_token_{usuario_creado.id_usuario}" in context.mail_service.urls_list[0]
+    assert context.mail_service.fue_llamado is True
+    assert f"access_token_{usuario_creado.id_usuario}" in context.mail_service.cuerpo_html
