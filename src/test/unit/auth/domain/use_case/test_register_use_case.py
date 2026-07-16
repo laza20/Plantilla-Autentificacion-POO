@@ -139,6 +139,28 @@ async def test_debe_registrar_un_usuario_con_imagen():
 
     assert usuario_creado.imagen_url == "usuarios_imagen_ficticia.jpg"
 
+@pytest.mark.asyncio
+async def test_verificacion_image_llamada_correctamente():
+    """
+    Verifica que el servicio de imagen se llame correctamente durante el registro.
+    """
+    context = RegisterTestEnvironment()
+
+    usuario = UserRegisterDTO(
+        email = "test@test.com",
+        password = "Password123!"
+    )
+    imagen = UploadFile(
+        filename="foto.jpg",
+        file=BytesIO(b"contenido")
+    )
+
+    await context.use_case().register(usuario, imagen=imagen)
+
+    assert context.image_service.fue_llamado is True
+    assert context.image_service.imagen_recibida == imagen
+    assert context.image_service.servicio_recibido == "usuarios"
+
 
 @pytest.mark.asyncio
 async def test_debe_generar_un_correo_con_el_token_de_activacion():
