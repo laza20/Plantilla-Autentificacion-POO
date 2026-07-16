@@ -9,7 +9,7 @@ from fastapi import UploadFile
 
 
 @pytest.mark.asyncio
-async def test_debe_registrar_un_usuario_valido():
+async def test_debe_registrar_un_usuario_valido_sin_imagen():
     """
     Verifica que un usuario sea registrado correctamente con datos válidos.
     """
@@ -27,6 +27,7 @@ async def test_debe_registrar_un_usuario_valido():
     assert usuario_creado.id_usuario is not None
     assert usuario_creado.password == "hashed_Password123!"
     assert len(context.user_repository._users) == 1
+    assert context.image_service.fue_llamado is False
 
 
 @pytest.mark.asyncio
@@ -201,5 +202,5 @@ async def test_debe_generar_un_token_de_activacion():
     )
 
     assert context.token_service.fue_llamado is True
-    assert context.token_service.user_id_recibido == usuario_creado.id_usuario
+    assert context.token_service.user_id_recibido == str(usuario_creado.id_usuario)
     assert context.token_service.token_generado == f"access_token_{usuario_creado.id_usuario}"
