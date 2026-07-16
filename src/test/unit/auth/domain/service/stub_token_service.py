@@ -9,6 +9,6 @@ class StubTokenService:
         Función para simular la creación de un token de acceso.
         """
         self.fue_llamado = True
-        self.user_id_recibido = user_id
+        self.user_id_recibido = int(user_id)
         self.token_generado = f"access_token_{user_id}"
         return self.token_generado
