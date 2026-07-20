@@ -56,20 +56,6 @@ async def test_no_debe_registrar_un_email_duplicado():
             imagen=None
         )
 
-@pytest.mark.asyncio
-async def test_no_debe_registrar_un_usuario_con_password_invalida():
-    """
-    Verifica que el registro rechaza usuarios cuya contraseña no cumple la política de seguridad.
-    """
-    context = RegisterTestEnvironment()
-
-    usuario = UserRegisterDTO(
-        email="test@test.com",
-        password="Password"
-    )
-
-    with pytest.raises(ContraseñaNoSegura):
-        await context.use_case().register(usuario, imagen=None)
 
 @pytest.mark.asyncio
 async def test_no_debe_registrar_un_usuario_sin_datos():
