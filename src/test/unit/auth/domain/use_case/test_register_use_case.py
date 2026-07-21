@@ -1,9 +1,9 @@
 import pytest
 from src.auth.infrastructure.persistence.postgres.models import AuthUser
 from src.auth.domain.exceptions.domain import MailRepetido, SinCargas, LongitudExcedida
-from src.auth.domain.exceptions.domain import ContraseñaNoSegura
 from src.auth.infrastructure.persistence.postgres.models import UserRegisterDTO
 from src.test.fixtures.fixture_register_case import RegisterTestEnvironment
+from src.auth.domain.exceptions.domain import ContraseñaNoSegura
 from io import BytesIO
 from fastapi import UploadFile
 
@@ -190,3 +190,19 @@ async def test_debe_generar_un_token_de_activacion():
     assert context.token_service.fue_llamado is True
     assert context.token_service.user_id_recibido == str(usuario_creado.id_usuario)
     assert context.token_service.token_generado == f"access_token_{usuario_creado.id_usuario}"
+
+@pytest.mark.asyncio
+async def test_debe_dar_error_al_incumplir_politica_de_contraseña():
+    """
+    Verifica que el servicio de política de contraseña se utilice correctamente durante el registro.
+    """
+    context = RegisterTestEnvironment()
+    context.password_policy.es_valida = False
+
+    usuario = UserRegisterDTO(
+        email = "test@test.com",
+        password = "Password123!"
+    )
+
+    with pytest.raises(ContraseñaNoSegura):
+        await context.use_case().register(usuario, imagen=None)
