@@ -46,6 +46,24 @@ async def test_debe_crear_un_usuario():
 
     assert usuario_creado.id_usuario is not None
 
+@pytest.mark.asyncio
+async def test_debe_hashear_la_contraseña_del_usuario():
+    """
+    Verifica que la contraseña del usuario sea hasheada correctamente.
+    """
+    context = RegisterTestEnvironment()
+
+    usuario = UserRegisterDTO(
+        email = "test@test.com",
+        password = "Password123!"
+    )
+
+    usuario_creado = await context.use_case().register(
+        usuario,
+        imagen=None
+    )
+
+    assert usuario_creado.password == "hashed_Password123!"
 
 @pytest.mark.asyncio
 async def test_no_debe_registrar_un_email_duplicado():
