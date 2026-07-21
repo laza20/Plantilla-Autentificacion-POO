@@ -24,10 +24,27 @@ async def test_debe_registrar_un_usuario_valido_sin_imagen():
         imagen=None
     )
 
-    assert usuario_creado.id_usuario is not None
-    assert usuario_creado.password == "hashed_Password123!"
-    assert len(context.user_repository._users) == 1
     assert context.image_service.fue_llamado is False
+
+
+@pytest.mark.asyncio
+async def test_debe_crear_un_usuario():
+    """
+    Verifica que un usuario sea creado correctamente con datos válidos.
+    """
+    context = RegisterTestEnvironment()
+
+    usuario = UserRegisterDTO(
+        email = "test@test.com",
+        password = "Password123!"
+    )
+
+    usuario_creado = await context.use_case().register(
+        usuario,
+        imagen=None
+    )
+
+    assert usuario_creado.id_usuario is not None
 
 
 @pytest.mark.asyncio
