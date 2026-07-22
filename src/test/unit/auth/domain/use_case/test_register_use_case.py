@@ -3,7 +3,7 @@ from src.auth.infrastructure.persistence.postgres.models import AuthUser
 from src.auth.domain.exceptions.domain import MailRepetido, SinCargas, LongitudExcedida
 from src.auth.infrastructure.persistence.postgres.models import UserRegisterDTO
 from src.test.fixtures.fixture_register_case import RegisterTestEnvironment
-from src.auth.domain.exceptions.domain import ContraseñaNoSegura
+from src.auth.domain.exceptions.domain import ContraseñaNoSegura, MailNoValido
 from io import BytesIO
 from fastapi import UploadFile
 
@@ -240,4 +240,21 @@ async def test_debe_dar_error_al_incumplir_politica_de_contraseña():
     )
 
     with pytest.raises(ContraseñaNoSegura):
+        await context.use_case().register(usuario, imagen=None)
+
+
+@pytest.mark.asyncio
+async def test_debe_dar_error_al_incumplir_politica_de_mail():
+    """
+    Verifica que el servicio de política de correo se utilice correctamente durante el registro.
+    """
+    context = RegisterTestEnvironment()
+    context.mail_policy.es_valido = False
+
+    usuario = UserRegisterDTO(
+        email = "@test.com",
+        password = "Password123!"
+    )
+
+    with pytest.raises(MailNoValido):
         await context.use_case().register(usuario, imagen=None)
