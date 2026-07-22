@@ -44,3 +44,12 @@ def test_debe_dar_error_si_el_mail_no_tiene_caracteres_antes_del_arroba():
     service = MailPolicyService()
     with pytest.raises(MailNoValido):
         service.validar("@dominio.com")
+
+
+def test_debe_dar_error_si_el_mail_no_tiene_caracteres_entre_arroba_y_punto():
+    """
+    Verifica que el correo no es válido si no tiene caracteres entre el símbolo '@' y el punto.
+    """
+    service = MailPolicyService()
+    with pytest.raises(MailNoValido):
+        service.validar("correo@.com")
