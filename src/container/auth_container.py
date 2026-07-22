@@ -12,6 +12,7 @@ from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
+from src.auth.domain.services.mail_policy import MailPolicyService
 
 
 class ContainerRegister:
@@ -23,7 +24,8 @@ class ContainerRegister:
         password_service: PasswordProtocol, 
         mail_service: MailProtocol,        
         image_service: ImageProtocol,
-        password_policy: PasswordPolicyService
+        password_policy: PasswordPolicyService,
+        mail_policy : MailPolicyService
     ):
         self.settings = settings
         self.repository = repository
@@ -32,6 +34,7 @@ class ContainerRegister:
         self.mail_service = mail_service
         self.image_service = image_service
         self.password_policy = password_policy
+        self.mail_policy = mail_policy
     @property
     def register_use_case(self) -> RegisterUseCase:
 
@@ -43,7 +46,7 @@ class ContainerRegister:
             mail_service=self.mail_service,
             image_service=self.image_service,
             token_service=self.token_service,
-            
+            mail_policy=self.mail_policy
         )
 class ContainerLogin:
     def __init__(

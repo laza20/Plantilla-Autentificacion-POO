@@ -7,6 +7,7 @@ from src.auth.domain.protocols.mail_service import MailProtocol
 from src.auth.domain.protocols.image_service import ImageProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.services.password_policy import PasswordPolicyService
+from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.infrastructure.persistence.postgres.models import AuthUser, UserRegisterDTO, AuthUserNoTable
 from pydantic import ValidationError
 from src.auth.domain.exceptions.domain import LongitudExcedida
@@ -24,6 +25,7 @@ class RegisterUseCase:
         image_service: ImageProtocol,
         token_service: TokenProtocol,
         password_policy : PasswordPolicyService,
+        mail_policy : MailPolicyService,
         settings : Settings
     ):
         self.user_repository = user_repository
@@ -32,11 +34,14 @@ class RegisterUseCase:
         self.image_service = image_service
         self.token_service = token_service
         self.password_policy = password_policy
+        self.mail_policy = mail_policy
         self.settings = settings
 
     async def register(self, usuario:UserRegisterDTO, imagen:UploadFile | None) -> AuthUser:
         if usuario is None:
             raise SinCargas()
+
+        self.mail_policy.validar(usuario.email)
         
         objeto_usuario = self._normalizar_registro_a_cargar(usuario)
         self.password_policy.validar(objeto_usuario.password)

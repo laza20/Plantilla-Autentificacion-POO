@@ -23,6 +23,7 @@ from src.database.client import get_session
 from src.auth.domain.services.user_validation_service import UserValidationService
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
+from src.auth.domain.services.mail_policy import MailPolicyService
 
 def get_user_repository(session: Session = Depends(get_session)) -> UserRepository:
     return UserRepository(session)
@@ -65,7 +66,8 @@ def get_image_service(
 def get_password_policy(settings: Settings = Depends(get_settings)) -> PasswordPolicyService:
     return PasswordPolicyService()
 
-
+def get_mail_policy(settings: Settings = Depends(get_settings)) -> MailPolicyService:
+    return MailPolicyService()
 
 def get_register_use_case(
     settings: Settings = Depends(get_settings),
@@ -74,7 +76,8 @@ def get_register_use_case(
     password_service: PasswordProtocol = Depends(get_password_service),
     password_policy: PasswordPolicyService = Depends(get_password_policy),
     mail_service: MailProtocol = Depends(get_mail_service),
-    image_service: ImageProtocol = Depends(get_image_service)
+    image_service: ImageProtocol = Depends(get_image_service),
+    mail_policy : MailPolicyService = Depends(get_mail_policy)
 ) -> RegisterUseCase:
 
     return ContainerRegister(
@@ -84,7 +87,8 @@ def get_register_use_case(
         password_service=password_service,
         password_policy=password_policy,
         mail_service=mail_service,
-        image_service=image_service
+        image_service=image_service,
+        mail_policy=mail_policy
     ).register_use_case
 
 
