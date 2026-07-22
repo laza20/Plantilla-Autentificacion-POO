@@ -8,6 +8,7 @@ from src.test.unit.auth.domain.fakes.fake_user_repository import FakeUserReposit
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.test.config.config import TestSettings
 from test.unit.auth.domain.service import stub_password_policy_service
+from test.unit.auth.domain.service import stub_mail_policy_service
 
 
 class RegisterTestEnvironment:
@@ -19,6 +20,7 @@ class RegisterTestEnvironment:
         self.mail_service = stub_mail_service.StubMailService()
         self.image_service = stub_image_service.StubImageService()
         self.password_policy = stub_password_policy_service.StubPasswordPolicy()
+        self.mail_policy = stub_mail_policy_service.StubMailPolicy()
         self.settings = TestSettings()
 
     def use_case(self):
@@ -29,5 +31,6 @@ class RegisterTestEnvironment:
             image_service=self.image_service,
             token_service=self.token_service,
             password_policy=self.password_policy,
+            mail_policy=self.mail_policy,
             settings=self.settings,
         )
