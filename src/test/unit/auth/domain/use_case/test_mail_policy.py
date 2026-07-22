@@ -28,10 +28,19 @@ def test_debe_verificar_que_falla_si_no_tiene_punto():
     with pytest.raises(MailNoValido):
         service.validar("correo@sinpunto")
 
-def test_debe_verificar_si_el_correo_contiene_caracteres_luego_del_punto():
+def test_debe_dar_error_si_el_correo_no_contiene_caracteres_luego_del_punto():
     """
     Verifica que el correo no es válido si no tiene caracteres después del punto.
     """
     service = MailPolicyService()
     with pytest.raises(MailNoValido):
         service.validar("correo@dominio.")
+
+
+def test_debe_dar_error_si_el_mail_no_tiene_caracteres_antes_del_arroba():
+    """
+    Verifica que el correo no es válido si no tiene caracteres antes del símbolo '@'.
+    """
+    service = MailPolicyService()
+    with pytest.raises(MailNoValido):
+        service.validar("@dominio.com")
