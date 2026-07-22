@@ -19,3 +19,11 @@ def test_debe_verificar_que_falla_si_no_tiene_arroba():
     service = MailPolicyService()
     with pytest.raises(MailNoValido):
         service.validar("correo_sin_arroba.com")
+
+def test_debe_verificar_que_falla_si_no_tiene_punto():
+    """
+    Verifica que el correo no es válido por no tener un punto.
+    """
+    service = MailPolicyService()
+    with pytest.raises(MailNoValido):
+        service.validar("correo@sinpunto")
