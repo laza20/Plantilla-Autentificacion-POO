@@ -53,3 +53,10 @@ def test_debe_dar_error_si_el_mail_no_tiene_caracteres_entre_arroba_y_punto():
     service = MailPolicyService()
     with pytest.raises(MailNoValido):
         service.validar("correo@.com")
+
+def test_debe_verificar_correo_valido():
+    """
+    verifica que el correo es valido, no retorna nada.
+    """
+    service = MailPolicyService()
+    service.validar("correo@dominio.com")
