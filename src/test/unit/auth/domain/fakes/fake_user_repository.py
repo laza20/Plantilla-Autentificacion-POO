@@ -21,3 +21,10 @@ class FakeUserRepository:
         self._users[usuario.email] = copia_usuario
         self._next_id += 1
         return copia_usuario
+
+
+    def obtener_por_email(self, email: str) -> AuthUser | None:
+        """
+        Función para buscar un usuario por su correo electrónico o nombre de usuario.
+        """
+        return self._users.get(email)
