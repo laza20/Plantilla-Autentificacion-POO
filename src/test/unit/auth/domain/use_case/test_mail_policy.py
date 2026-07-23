@@ -60,3 +60,11 @@ def test_debe_verificar_correo_valido():
     """
     service = MailPolicyService()
     service.validar("correo@dominio.com")
+
+def test_debe_dar_error_con_dos_arrobas():
+    """
+    Verifica que el correo no es válido si tiene más de un símbolo '@'.
+    """
+    service = MailPolicyService()
+    with pytest.raises(MailNoValido):
+        service.validar("correo@@dominio.com")
