@@ -19,7 +19,7 @@ class StubTokenService:
         """
         if not self.fue_llamado:
             self._actualizar_llamada(user_id)
-            self.access_token_generado = f"access_token_{user_id}"
+        self.access_token_generado = f"access_token_{user_id}"
         return self.access_token_generado
 
     def create_refresh_token(self, user_id: int) -> str:
@@ -28,13 +28,11 @@ class StubTokenService:
         """
         if not self.fue_llamado:
             self._actualizar_llamada(user_id)
-            self.refresh_token_generado = f"refresh_token_{user_id}"
+        self.refresh_token_generado = f"refresh_token_{user_id}"
         return self.refresh_token_generado
 
     def create_user_tokens(self, user_id:int) -> UserTokens:
-        if not self.fue_llamado:
-            self._actualizar_llamada(user_id)
         return UserTokens(
-            access_token=self.create_access_token(str(user_id)),
-            refresh_token=self.create_refresh_token(str(user_id))
+            access_token=self.create_access_token(user_id),
+            refresh_token=self.create_refresh_token(user_id)
         )
