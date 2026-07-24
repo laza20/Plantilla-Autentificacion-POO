@@ -22,7 +22,7 @@ class UserValidationService:
 
     def verificacion_usuario(self, usuario:AuthUser)-> None:
         if usuario is None:
-            raise UsuarioNoEncontrado()
+            raise UsuarioNoEncontrado("Usuario no encontrado")
         
     def get_user(self, current_user:AuthUser)-> AuthUser:
         return self.user_repository.obtener_por_id(current_user.id_usuario)
