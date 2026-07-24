@@ -30,9 +30,9 @@ class LoginUseCase:
         self.cookies_service = cookies_service
         self.user_validation_service = user_validation_service
 
-    def login(self, mail: str, password: str, response:Response)-> LoginResponse:
+    def login(self, email: str, password: str, response:Response)-> LoginResponse:
         try:
-            usuario_db = self.user_validation_service.obtener_usuario_existente(mail)
+            usuario_db = self.user_validation_service.obtener_usuario_existente(email)
                 
             if not self.password_service.verify_password(password, usuario_db.password):
                 raise LoginError("Usuario o contraseña incorrectos")
