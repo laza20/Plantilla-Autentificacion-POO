@@ -43,3 +43,25 @@ def test_debe_dar_error_cuando_el_usuario_no_existe():
             password = "Password123!", 
             response=Response()
             )
+
+
+
+def test_debe_dar_error_cuando_la_contrasena_es_incorrecta():
+    """
+    Verifica que se devuelva un error cuando la contraseña es incorrecta.
+    """
+    context = LoginTestEnvironment()
+
+    usuario_existente = AuthUser(
+        email="test@test.com",
+        password="hashed_password@123"
+    )
+
+    context.user_repository.insertar(usuario_existente)
+
+    with pytest.raises(LoginError):
+        context.use_case().login(
+            email="test@test.com",
+            password="wrong_password",
+            response=Response()
+        )
