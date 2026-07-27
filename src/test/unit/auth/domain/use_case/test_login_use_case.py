@@ -26,8 +26,8 @@ def test_debe_logear_un_usuario_valido():
         response=Response()
     )
     
-    assert cookies.tokens.access_token == "access_token_1"
-    assert cookies.tokens.refresh_token == "refresh_token_1"
+    assert cookies.tokens.access_token == context.token_service.access_token_generado
+    assert cookies.tokens.refresh_token == context.token_service.refresh_token_generado
     assert cookies.tokens.token_type == "bearer"
 
 
