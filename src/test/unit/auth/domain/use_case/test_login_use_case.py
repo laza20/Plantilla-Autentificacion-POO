@@ -1,6 +1,9 @@
 from src.auth.infrastructure.persistence.postgres.models import AuthUser
 from src.test.fixtures.fixture_login_case import LoginTestEnvironment
 from fastapi import Response
+from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError, UsuarioNoEncontrado
+from src.auth.infrastructure.persistence.postgres.models import UserRegisterDTO
+import pytest
 
 
 def test_debe_logear_un_usuario_valido():
@@ -25,5 +28,18 @@ def test_debe_logear_un_usuario_valido():
     
     assert cookies.tokens.access_token == "access_token_1"
     assert cookies.tokens.refresh_token == "refresh_token_1"
+    assert cookies.tokens.token_type == "bearer"
 
+
+def test_debe_dar_error_cuando_el_usuario_no_existe():
+    """
+    Verifica que se devuelva un error cuando el usuario no existe.
+    """
+    context = LoginTestEnvironment()
     
+    with pytest.raises(UsuarioNoEncontrado):
+        context.use_case().login(        
+            email = "test@test.com",
+            password = "Password123!", 
+            response=Response()
+            )
