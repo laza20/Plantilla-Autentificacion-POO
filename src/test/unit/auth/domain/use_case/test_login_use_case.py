@@ -111,3 +111,27 @@ def test_verifica_que_cookies_service_es_llamado_correctamente():
     )
     
     assert context.cookies_service.fue_llamado is True
+
+
+def test_verifica_que_el_usuario_publico_se_retorna_correctamente():
+    """
+    Verifica que el usuario público se retorne correctamente al iniciar sesión.
+    """
+    context = LoginTestEnvironment()
+
+    usuario_existente = AuthUser(
+        email="test@test.com",
+        password="hashed_password@123",
+        imagen_url="http://example.com/image.jpg"
+    )
+
+    context.user_repository.insertar(usuario_existente)
+
+    cookies = context.use_case().login(
+        email="test@test.com",
+        password="password@123",
+        response=Response()
+    )
+
+    assert cookies.usuario.email == "test@test.com"
+    assert cookies.usuario.imagen_url == "http://example.com/image.jpg"
