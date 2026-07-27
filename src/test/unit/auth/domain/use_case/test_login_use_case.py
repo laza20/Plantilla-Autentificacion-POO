@@ -135,3 +135,29 @@ def test_verifica_que_el_usuario_publico_se_retorna_correctamente():
 
     assert cookies.usuario.email == "test@test.com"
     assert cookies.usuario.imagen_url == "http://example.com/image.jpg"
+
+
+
+
+def test_debe_verificar_el_id_del_usuario():
+    """
+    Verifica que el ID del usuario se pase correctamente al servicio de tokens al iniciar sesión.
+    """
+
+    context = LoginTestEnvironment()
+
+    usuario_existente = AuthUser(
+        email="test@test.com",
+        password="hashed_password@123",
+        imagen_url="http://example.com/image.jpg"
+    )
+
+    context.user_repository.insertar(usuario_existente)
+
+    cookies = context.use_case().login(
+        email="test@test.com",
+        password="password@123",
+        response=Response()
+    )
+
+    assert context.token_service.user_id_recibido == 1
