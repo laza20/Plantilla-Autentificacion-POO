@@ -65,3 +65,26 @@ def test_debe_dar_error_cuando_la_contrasena_es_incorrecta():
             password="wrong_password",
             response=Response()
         )
+
+
+def test_verifica_que_tokens_es_llamado_correctamente():
+    """
+    Verifica que los tokens de acceso y actualización se emitan correctamente al iniciar sesión.
+    """
+    context = LoginTestEnvironment()
+
+    usuario_existente = AuthUser(
+        email="test@test.com",
+        password="hashed_password@123"
+    )
+
+    context.user_repository.insertar(usuario_existente)
+
+
+    cookies = context.use_case().login(
+        email="test@test.com",
+        password="password@123",
+        response=Response()
+    )
+    
+    assert context.token_service.fue_llamado is True
