@@ -1,8 +1,7 @@
 from src.auth.infrastructure.persistence.postgres.models import AuthUser
 from src.test.fixtures.fixture_login_case import LoginTestEnvironment
 from fastapi import Response
-from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError, UsuarioNoEncontrado
-from src.auth.infrastructure.persistence.postgres.models import UserRegisterDTO
+from src.auth.domain.exceptions.usuarios_exceptions import LoginError, UsuarioNoEncontrado
 import pytest
 
 
