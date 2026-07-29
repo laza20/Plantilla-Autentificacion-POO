@@ -61,7 +61,7 @@ class TokenService:
                 "Token inválido o expirado"
             ) from e
         
-    def get_user_id_from_access_token(self, token:str)->str:
+    def get_user_id_from_access_token(self, token:str)->int:
         try:
             payload = self.decode_token(token)
             
