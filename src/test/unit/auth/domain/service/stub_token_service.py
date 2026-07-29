@@ -1,5 +1,6 @@
 from src.auth.infrastructure.persistence.postgres.models import UserTokens
-
+from src.auth.domain.exceptions.usuarios_exceptions import TokenInvalido
+from jose import JWTError
 
 
 class StubTokenService:
@@ -36,3 +37,16 @@ class StubTokenService:
             access_token=self.create_access_token(user_id),
             refresh_token=self.create_refresh_token(user_id)
         )
+    
+    def get_user_id_from_access_token(self, token:str)->int:
+        try:
+
+            tipo, token, user_id  = token.split("_")
+            
+            if tipo != "access" or token != "token":
+                raise TokenInvalido()
+            
+            return int(user_id)
+
+        except (ValueError, IndexError):
+            raise TokenInvalido()
