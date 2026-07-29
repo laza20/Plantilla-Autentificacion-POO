@@ -1,7 +1,7 @@
 from src.auth.domain.exceptions.domain import MailRepetido
 from typing import Dict
 from src.auth.infrastructure.persistence.postgres.models import AuthUser
-
+from src.database.enums.estado_entidad import EstadoEntidad
 
 class FakeUserRepository:
     def __init__(self):
@@ -28,3 +28,17 @@ class FakeUserRepository:
         Función para buscar un usuario por su correo electrónico o nombre de usuario.
         """
         return self._users.get(email)
+
+    def obtener_por_id_sin_activar(self, id_usuario: int) -> AuthUser | None:
+        """
+        Funcion para buscar un usuario sin activar, por medio de su id.
+        """
+        return self._users.get(id_usuario)
+
+    def activar(self, usuario: AuthUser) -> AuthUser:
+        """
+        Funcion encargada de activar a un usuario cuando se verifica el mail.
+        """
+        usuario.estado = EstadoEntidad.ACTIVO
+        usuario.is_verified = True
+        return usuario
