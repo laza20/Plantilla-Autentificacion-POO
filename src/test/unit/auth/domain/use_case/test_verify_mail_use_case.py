@@ -1,4 +1,4 @@
-from src.auth.domain.exceptions.tokens import TokenExpirado, TokenInvalido, VerificacionInvalida, VerificacionExpirada
+from src.auth.domain.exceptions.tokens import VerificacionInvalida
 import pytest
 from src.test.fixtures.fixture_verify_mail_case import VerifyEmailTestEnvironment
 from src.auth.infrastructure.persistence.postgres.models import AuthUser
@@ -75,3 +75,26 @@ def test_debe_verificar_que_se_llama_al_servicio_de_cookies():
     assert context.cookies_service.fue_llamado is True
     assert context.cookies_service.access_token == f"access_token_{usuario.id_usuario}"
     assert context.cookies_service.refresh_token is not None
+
+
+
+def test_debe_verificar_que_da_error_de_tipo_token_invalido_cuando_no_coincide_los_id():
+    """
+    El test se debe encargar de generar un error cuando el user_id no coincide con 
+    lo que debe coincidir.
+    """
+
+    context = VerifyEmailTestEnvironment()
+
+    usuario_existente = AuthUser(
+        email="test@test.com",
+        password="hashed_password@123"
+    )
+
+    usuario = context.repository.insertar(usuario_existente)
+
+    with pytest.raises(VerificacionInvalida):
+        context.use_case().verificar_mail(        
+            token="access_token_",
+            response=Response()
+            )
