@@ -24,9 +24,6 @@ class SinRefreshToken(UsuarioError):
     status_code = 401
     pass
 
-class TokenInvalido(UsuarioError):
-    status_code = 401
-    pass
 
 class UsuariosNoEncontrados(UsuarioError):
     status_code = 409
