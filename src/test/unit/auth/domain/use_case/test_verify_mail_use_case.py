@@ -50,3 +50,28 @@ def test_debe_verificar_que_los_tokens_sean_adecuados():
 
     assert tokens.access_token == context.token_service.access_token_generado
     assert tokens.refresh_token == context.token_service.refresh_token_generado
+
+
+def test_debe_verificar_que_se_llama_al_servicio_de_cookies():
+    """
+    El test se debe encargar de verificar que en el flujo de la activacion de la cuenta por medio
+    del mail enviado, las cookies se setean correctamente, en este caso el stub, que solo realiza
+    modificaciones de los parametros.
+    """
+
+    context = VerifyEmailTestEnvironment()
+
+    usuario_existente = AuthUser(
+        email="test@test.com",
+        password="hashed_password@123"
+    )
+
+    usuario = context.repository.insertar(usuario_existente)
+    context.use_case().verificar_mail(
+        token=f"access_token_{usuario.id_usuario}",
+        response=Response()
+    )
+
+    assert context.cookies_service.fue_llamado is True
+    assert context.cookies_service.access_token == f"access_token_{usuario.id_usuario}"
+    assert context.cookies_service.refresh_token is not None
