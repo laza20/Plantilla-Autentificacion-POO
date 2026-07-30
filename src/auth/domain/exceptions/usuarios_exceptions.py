@@ -12,6 +12,9 @@ class UsuarioNoEncontrado(UsuarioError):
     status_code = 409
     pass
 
+class UsuarioActivo(UsuarioError):
+    status_code = 400
+
 class NoAutenticado(UsuarioError):
     status_code = 401
     pass
