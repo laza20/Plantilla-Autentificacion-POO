@@ -1,4 +1,5 @@
 from src.auth.domain.exceptions.domain import MailRepetido
+from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
 from typing import Dict
 from src.auth.infrastructure.persistence.postgres.models import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
@@ -36,6 +37,8 @@ class FakeUserRepository:
         for usuario in self._users.values():
             if usuario.id_usuario == id_usuario:
                 return usuario
+
+        raise UsuarioNoEncontrado(f"No se encontro al usuario con el id {id_usuario}")
 
     def activar(self, usuario: AuthUser) -> AuthUser:
         """
