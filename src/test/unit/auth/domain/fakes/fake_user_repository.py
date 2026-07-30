@@ -33,7 +33,9 @@ class FakeUserRepository:
         """
         Funcion para buscar un usuario sin activar, por medio de su id.
         """
-        return self._users.get(id_usuario)
+        for usuario in self._users.values():
+            if usuario.id_usuario == id_usuario:
+                return usuario
 
     def activar(self, usuario: AuthUser) -> AuthUser:
         """
