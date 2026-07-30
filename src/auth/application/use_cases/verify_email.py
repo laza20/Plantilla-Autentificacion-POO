@@ -2,7 +2,7 @@ from src.auth.infrastructure.persistence.postgres.models import UserTokens
 from fastapi import Response
 import logging
 from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
-from src.auth.domain.exceptions.tokens import TokenExpirado, TokenInvalido, VerificacionInvalida, VerificacionExpirada
+from src.auth.domain.exceptions.tokens import TokenInvalido, VerificacionInvalida
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.infrastructure.security.security import Settings
 from src.auth.presentation.web.cookies.cookies import CookiesService
@@ -34,9 +34,6 @@ class VerifyMailUseCase:
             user_id_db = self.token_service.get_user_id_from_access_token(token)
             usuario = self.repository.obtener_por_id_sin_activar(user_id_db)
             usuario = self.repository.activar(usuario)
-            
-        except TokenExpirado:
-            raise VerificacionExpirada()
 
         except TokenInvalido:
             raise VerificacionInvalida()
