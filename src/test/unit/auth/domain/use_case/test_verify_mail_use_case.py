@@ -3,7 +3,7 @@ import pytest
 from src.test.fixtures.fixture_verify_mail_case import VerifyEmailTestEnvironment
 from src.auth.infrastructure.persistence.postgres.models import AuthUser
 from fastapi import Response
-from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
+from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioActivo
 from src.database.enums.estado_entidad import EstadoEntidad
 
 
@@ -108,6 +108,27 @@ def test_debe_dar_error_al_no_encontrar_al_user():
     context = VerifyEmailTestEnvironment()
 
     with pytest.raises(UsuarioNoEncontrado):
+        context.use_case().verificar_mail(        
+            token="access_token_1",
+            response=Response()
+            )
+
+def test_debe_dar_error_cuando_el_usuario_que_se_quiere_activar_ya_esta_activo():
+    """
+    El error se produce cuando al intentarse buscar el usuario por medio del metodo 
+    obtener_por_id_sin_activar, el usuario se encuentra pero ya esta activo.
+    """
+    context = VerifyEmailTestEnvironment()
+
+    usuario_existente = AuthUser(
+        email="test@test.com",
+        password="hashed_password@123",
+        estado=EstadoEntidad.ACTIVO
+    )
+
+    usuario = context.repository.insertar(usuario_existente)
+    print(usuario)
+    with pytest.raises(UsuarioActivo):
         context.use_case().verificar_mail(        
             token="access_token_1",
             response=Response()
