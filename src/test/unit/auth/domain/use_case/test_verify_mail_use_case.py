@@ -33,3 +33,20 @@ def test_debe_verificar_el_mail_y_activar_el_usuario():
     assert usuario_activado.is_verified is True
     assert context.token_service.user_id_recibido == usuario.id_usuario
 
+
+def test_debe_verificar_que_los_tokens_sean_adecuados():
+    """
+    Verifica que los tokens recibidos sean adeacuados en referencia a los tokens generados.
+    """
+    context = VerifyEmailTestEnvironment()
+
+    usuario_existente = AuthUser(
+        email="test@test.com",
+        password="hashed_password@123"
+    )
+
+    usuario = context.repository.insertar(usuario_existente)
+    tokens = context.use_case().verificar_mail(token= f"access_token_{usuario.id_usuario}", response= Response())
+
+    assert tokens.access_token == context.token_service.access_token_generado
+    assert tokens.refresh_token == context.token_service.refresh_token_generado
