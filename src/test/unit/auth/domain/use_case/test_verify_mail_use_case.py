@@ -3,6 +3,7 @@ import pytest
 from src.test.fixtures.fixture_verify_mail_case import VerifyEmailTestEnvironment
 from src.auth.infrastructure.persistence.postgres.models import AuthUser
 from fastapi import Response
+from src.database.enums.estado_entidad import EstadoEntidad
 
 
 def test_debe_verificar_el_mail_y_activar_el_usuario():
@@ -13,7 +14,6 @@ def test_debe_verificar_el_mail_y_activar_el_usuario():
     - verificar que el usuario exista.
     - validar el token recibido.
     - marcar al usuario como verificado y activo.
-    - generar nuevos tokens de autenticación.
     """
     context = VerifyEmailTestEnvironment()
 
@@ -23,8 +23,13 @@ def test_debe_verificar_el_mail_y_activar_el_usuario():
     )
 
     usuario = context.repository.insertar(usuario_existente)
-    tokens = context.use_case().verificar_mail(token= f"access_token_{usuario.id_usuario}", response= Response())
+    context.use_case().verificar_mail(
+        token=f"access_token_{usuario.id_usuario}",
+        response=Response()
+    )
+    usuario_activado = context.repository.obtener_por_email("test@test.com")
 
-    assert context.token_service.fue_llamado is True
+    assert usuario_activado.estado == EstadoEntidad.ACTIVO
+    assert usuario_activado.is_verified is True
     assert context.token_service.user_id_recibido == usuario.id_usuario
 
