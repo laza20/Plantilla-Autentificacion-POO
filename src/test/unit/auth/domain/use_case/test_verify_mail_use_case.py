@@ -3,6 +3,7 @@ import pytest
 from src.test.fixtures.fixture_verify_mail_case import VerifyEmailTestEnvironment
 from src.auth.infrastructure.persistence.postgres.models import AuthUser
 from fastapi import Response
+from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
 from src.database.enums.estado_entidad import EstadoEntidad
 
 
@@ -96,5 +97,18 @@ def test_debe_verificar_que_da_error_de_tipo_token_invalido_cuando_no_coincide_l
     with pytest.raises(VerificacionInvalida):
         context.use_case().verificar_mail(        
             token="access_token_",
+            response=Response()
+            )
+
+def test_debe_dar_error_al_no_encontrar_al_user():
+    """
+    El test genera un error del tipo UsuarioNoEncontrado cuando el token que se utiliza no tiene 
+    usuario para el id asociado.
+    """
+    context = VerifyEmailTestEnvironment()
+
+    with pytest.raises(UsuarioNoEncontrado):
+        context.use_case().verificar_mail(        
+            token="access_token_1",
             response=Response()
             )
