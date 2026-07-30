@@ -1,5 +1,5 @@
 from src.auth.domain.exceptions.domain import MailRepetido
-from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
+from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioActivo
 from typing import Dict
 from src.auth.infrastructure.persistence.postgres.models import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
@@ -36,6 +36,12 @@ class FakeUserRepository:
         """
         for usuario in self._users.values():
             if usuario.id_usuario == id_usuario:
+                if usuario.estado is EstadoEntidad.ACTIVO:
+                    raise UsuarioActivo("El usuario que quiere activar, ya se encuentra activo")
+
+                if usuario.is_verified is True:
+                    raise UsuarioActivo("El usuario que quiere activar, ya se encuentra activo")
+
                 return usuario
 
         raise UsuarioNoEncontrado(f"No se encontro al usuario con el id {id_usuario}")
