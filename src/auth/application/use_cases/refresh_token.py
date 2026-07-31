@@ -1,6 +1,7 @@
 from fastapi import Response
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.domain.protocols.token_service import TokenProtocol
+from src.auth.domain.exceptions.tokens import TokenInvalido, VerificacionInvalida
 
 class RefreshTokenUseCase:
     def __init__(
@@ -15,7 +16,10 @@ class RefreshTokenUseCase:
         """
         Servicio para refrescar el access token usando un refresh token válido.
         """
-        user_id = self.token_service.get_user_id_from_refresh_token(refresh_token)
+        try:
+            user_id = self.token_service.get_user_id_from_refresh_token(refresh_token)
+        except TokenInvalido:
+            raise VerificacionInvalida()
 
         new_access_token = self.token_service.create_access_token(user_id)
 
