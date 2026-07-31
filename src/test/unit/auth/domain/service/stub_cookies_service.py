@@ -18,6 +18,16 @@ class StubCookiesService:
         self.refresh_token = refresh_token
 
 
+    def set_access_cookie(
+        self,
+        response,
+        access_token: str
+    ):
+        self.fue_llamado = True
+        self.response = response
+        self.access_token = access_token
+
+
     def delete_auth_cookies(self, response):
         self.fue_llamado = True
         self.response = response
