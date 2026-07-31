@@ -100,7 +100,7 @@ def test_debe_verificar_que_da_error_de_tipo_token_invalido_cuando_no_coincide_l
             response=Response()
             )
 
-def test_debe_dar_error_al_no_encontrar_al_user():
+def test_debe_dar_error_cuando_no_se_encuentra_el_usuario():
     """
     El test genera un error del tipo UsuarioNoEncontrado cuando el token que se utiliza no tiene 
     usuario para el id asociado.
@@ -129,7 +129,7 @@ def test_debe_dar_error_cuando_el_usuario_que_se_quiere_activar_ya_esta_activo()
     usuario = context.repository.insertar(usuario_existente)
     with pytest.raises(UsuarioActivo):
         context.use_case().verificar_mail(        
-            token="access_token_1",
+            token=f"access_token_{usuario.id_usuario}",
             response=Response()
             )
 
