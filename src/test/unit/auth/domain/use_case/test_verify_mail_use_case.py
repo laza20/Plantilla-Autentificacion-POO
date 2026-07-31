@@ -127,9 +127,36 @@ def test_debe_dar_error_cuando_el_usuario_que_se_quiere_activar_ya_esta_activo()
     )
 
     usuario = context.repository.insertar(usuario_existente)
-    print(usuario)
     with pytest.raises(UsuarioActivo):
         context.use_case().verificar_mail(        
             token="access_token_1",
             response=Response()
             )
+
+
+@pytest.mark.parametrize(
+    "token",
+    [
+        "",
+        "hola",
+        "access",
+        "access_token",
+        "refresh_token_1",
+        "token_hola_1",
+        "hola_token_1",
+        "_access_token_1",
+        "access_token_",
+    ],
+)
+def test_debe_dar_error_cuando_el_formato_del_token_es_invalido(token):
+    """
+    Verifica que cualquier token con un formato inválido produzca
+    una excepción VerificacionInvalida.
+    """
+    context = VerifyEmailTestEnvironment()
+
+    with pytest.raises(VerificacionInvalida):
+        context.use_case().verificar_mail(
+            token=token,
+            response=Response(),
+        )
