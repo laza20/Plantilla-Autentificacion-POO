@@ -61,3 +61,15 @@ def test_debe_verificar_que_el_response_sea_correcto():
             response=response)
 
     assert context_refresh.cookies_service.response is response
+
+
+def test_debe_verificar_que_el_servicio_de_token_fue_llamado_con_el_id_correcto():
+    """
+    Verifica que el servicio de token haya sido llamado con el ID de usuario correcto.
+    """
+    context_refresh = RefreshTokenTestEnvironment()
+    user_id = 42
+    context_refresh.use_case().refreshed_token(refresh_token=f"refresh_token_{user_id}",
+            response=Response())
+
+    assert context_refresh.token_service.user_id_recibido == user_id
