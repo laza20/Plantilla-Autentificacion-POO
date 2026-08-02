@@ -49,3 +49,15 @@ def test_debe_dar_error_cuando_el_formato_del_token_es_invalido(token):
             refresh_token=token,
             response=Response(),
         )
+
+
+def test_debe_verificar_que_el_response_sea_correcto():
+    """
+    Verifica que el response tenga el access token correcto después de refrescar.
+    """
+    context_refresh = RefreshTokenTestEnvironment()
+    response = Response()
+    context_refresh.use_case().refreshed_token(refresh_token=f"refresh_token_1",
+            response=response)
+
+    assert context_refresh.cookies_service.response is response
