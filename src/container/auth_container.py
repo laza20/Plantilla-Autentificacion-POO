@@ -1,6 +1,7 @@
 from src.config.config import Settings
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
+from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.mail_service import MailProtocol
@@ -56,7 +57,8 @@ class ContainerLogin:
         token_service: TokenProtocol,
         password_service: PasswordProtocol,
         cookies_service: CookiesService,
-        user_validation_service: UserValidationService
+        user_validation_service: UserValidationService,
+        token_repository: TokenRepositoryProtocol
     ):
         self.settings = settings
         self.repository = repository
@@ -64,6 +66,7 @@ class ContainerLogin:
         self.password_service = password_service
         self.cookies_service = cookies_service
         self.user_validation_service = user_validation_service
+        self.token_repository = token_repository
         
 
     @property
@@ -75,7 +78,8 @@ class ContainerLogin:
             token_service=self.token_service,
             password_service=self.password_service,
             cookies_service = self.cookies_service,
-            user_validation_service = self.user_validation_service
+            user_validation_service = self.user_validation_service,
+            token_repository = self.token_repository
         )
 
 class ContainerVerifyMail:
