@@ -1,12 +1,14 @@
 from fastapi import Depends
 from sqlmodel import Session
 from src.auth.infrastructure.persistence.postgres.user_repository import UserRepository
+from src.auth.infrastructure.persistence.postgres.sesion_repository import SesionRepository
 from src.config.config import Settings, get_settings
 from src.container.auth_container import (
     ContainerRegister, ContainerLogin, 
     ContainerVerifyMail, ContainerLogout,
     ContainerRefreshToken)
 from src.auth.presentation.web.cookies.cookies import CookiesService
+from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.mail_service import MailProtocol
@@ -39,6 +41,9 @@ def get_user_validation_service(
 
 def get_cookies_service(settings: Settings = Depends(get_settings)) -> CookiesService:
     return CookiesService(settings=settings)
+
+def get_token_repository(session: Session = Depends(get_session)) -> TokenRepositoryProtocol:
+    return SesionRepository(session)
 
 def get_token_service(
     settings: Settings = Depends(get_settings)
@@ -98,7 +103,8 @@ def get_login_use_case(
     token_service: TokenProtocol = Depends(get_token_service),
     password_service: PasswordProtocol = Depends(get_password_service),
     cookies_service: CookiesService = Depends(get_cookies_service),
-    user_validation_service: UserValidationService = Depends(get_user_validation_service)
+    user_validation_service: UserValidationService = Depends(get_user_validation_service),
+    token_repository: TokenRepositoryProtocol = Depends(get_token_repository)
 ) -> LoginUseCase:
 
     return ContainerLogin(
@@ -107,7 +113,8 @@ def get_login_use_case(
         token_service=token_service,
         password_service=password_service,
         cookies_service=cookies_service,
-        user_validation_service=user_validation_service
+        user_validation_service=user_validation_service,
+        token_repository=token_repository
     ).login_use_case
 
 
