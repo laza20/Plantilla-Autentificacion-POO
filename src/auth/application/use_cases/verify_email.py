@@ -1,4 +1,4 @@
-from src.auth.infrastructure.persistence.postgres.models import UserTokens
+from auth.infrastructure.persistence.postgres.models_auth_users import UserTokens
 from fastapi import Response
 import logging
 from src.auth.domain.protocols.user_repository import UserRepositoryProtocol

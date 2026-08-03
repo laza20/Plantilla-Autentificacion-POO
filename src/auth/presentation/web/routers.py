@@ -1,4 +1,4 @@
-from src.auth.infrastructure.persistence.postgres.models import LoginResponse, UserRegisterDTO, UsuarioCreado
+from auth.infrastructure.persistence.postgres.models_auth_users import LoginResponse, UserRegisterDTO, UsuarioCreado
 from fastapi import APIRouter, Depends, status, Response, Path, HTTPException, UploadFile, Request
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.login import LoginUseCase

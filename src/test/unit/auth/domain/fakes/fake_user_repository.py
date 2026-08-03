@@ -1,7 +1,7 @@
 from src.auth.domain.exceptions.domain import MailRepetido
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioActivo
 from typing import Dict
-from src.auth.infrastructure.persistence.postgres.models import AuthUser
+from auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
 
 class FakeUserRepository:

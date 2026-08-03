@@ -1,6 +1,6 @@
 import pytest
 from src.test.fixtures.fixture_refresh_token_case import RefreshTokenTestEnvironment
-from src.auth.infrastructure.persistence.postgres.models import AuthUser
+from auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 from src.test.unit.auth.domain.fakes.fake_user_repository import FakeUserRepository
 from fastapi import Response
 from src.auth.domain.exceptions.tokens import VerificacionInvalida

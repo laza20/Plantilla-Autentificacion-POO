@@ -1,4 +1,4 @@
-from src.auth.infrastructure.persistence.postgres.models import LoginResponse, AuthUser, UsuarioLogeado
+from auth.infrastructure.persistence.postgres.models_auth_users import LoginResponse, AuthUser, UsuarioLogeado
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError
 from src.auth.domain.exceptions.domain import DomainError
 from fastapi import Response

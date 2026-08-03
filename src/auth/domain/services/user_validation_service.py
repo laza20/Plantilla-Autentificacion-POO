@@ -1,5 +1,5 @@
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
-from src.auth.infrastructure.persistence.postgres.models import AuthUser
+from auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
 from src.auth.infrastructure.security.security import Settings
 

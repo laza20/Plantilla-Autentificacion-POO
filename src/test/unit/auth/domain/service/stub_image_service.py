@@ -1,5 +1,5 @@
 from fastapi import UploadFile
-from src.auth.infrastructure.persistence.postgres.models import AuthUser
+from auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 
 class StubImageService:
     def __init__(self):

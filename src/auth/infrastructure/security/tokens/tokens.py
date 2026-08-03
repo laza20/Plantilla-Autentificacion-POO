@@ -5,7 +5,7 @@ from src.auth.domain.exceptions.tokens import TokenInvalido
 from jose import JWTError
 from fastapi import Depends
 from src.config.config import get_settings, Settings
-from src.auth.infrastructure.persistence.postgres.models import UserTokens
+from auth.infrastructure.persistence.postgres.models_auth_users import UserTokens
 
 
 class TokenService:

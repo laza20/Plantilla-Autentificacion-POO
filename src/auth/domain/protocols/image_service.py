@@ -1,6 +1,6 @@
 from typing import Protocol, runtime_checkable
 from fastapi import UploadFile
-from src.auth.infrastructure.persistence.postgres.models import AuthUser
+from auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 
 @runtime_checkable
 class ImageProtocol(Protocol):
