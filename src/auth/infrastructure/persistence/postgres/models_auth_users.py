@@ -1,9 +1,13 @@
-from typing import Optional, Literal
-from sqlmodel import SQLModel, Field, Date
+from typing import Optional, Literal, TYPE_CHECKING
+from sqlmodel import SQLModel, Field, Date, Relationship
 from datetime import date
 from src.database.enums.estado_entidad import EstadoEntidad
 from sqlalchemy import Column, text
 from sqlalchemy.types import Enum as SAEnum
+
+if TYPE_CHECKING:
+    from src.auth.infrastructure.persistence.postgres.models_sesiones import Sesiones
+    from src.auth.infrastructure.persistence.postgres.models_usuario import Usuario
 
 class AuthUser(SQLModel, table=True):
     __tablename__ = "auth_users"
@@ -44,6 +48,14 @@ class AuthUser(SQLModel, table=True):
         )
     )
     is_verified: bool = Field(default=False)
+
+    usuario: Optional["Usuario"] = Relationship(
+        back_populates="auth_user"
+    )
+
+    sesiones: list["Sesiones"] = Relationship(
+        back_populates="usuario"
+    )
 
 
 class AuthUserNoTable(SQLModel):
