@@ -11,7 +11,7 @@ class Sesiones(SQLModel, table=True):
 
     id_sesion: Optional[int] = Field(default=None, primary_key=True)
     
-    hash_refresh_token: str = Field(unique=True, index=True, nullable=False, max_length=64)
+    hash_refresh_token: str = Field(unique=True, index=True, nullable=False, max_length=254)
     user_agent: str = Field(default=None, max_length=254)
     ip: str = Field(default=None, max_length=254)
     inicio_sesion: Optional[datetime] = Field(default=None, sa_column=Column(DateTime ,server_default=text("CURRENT_TIMESTAMP")))
@@ -25,7 +25,7 @@ class Sesiones(SQLModel, table=True):
 
 class SesionesNoTable(SQLModel):
     id_sesion: Optional[int] = Field(default=None, primary_key=True)
-    hash_refresh_token: str = Field(unique=True, index=True, nullable=False, max_length=64)
+    hash_refresh_token: str = Field(unique=True, index=True, nullable=False, max_length=254)
     user_agent: str = Field(default=None, max_length=254)
     ip: str = Field(default=None, max_length=254)
     inicio_sesion: Optional[datetime] = Field(default=None, sa_column=Column(DateTime ,server_default=text("CURRENT_TIMESTAMP")))
