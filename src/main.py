@@ -5,7 +5,7 @@ from sqlmodel import SQLModel
 from src.database.client import engine
 from src.auth.domain.exceptions.domain import DomainError
 from fastapi.responses import JSONResponse
-
+from src.auth.infrastructure.persistence.postgres import *
 SQLModel.metadata.create_all(engine)
 app = FastAPI()
 
