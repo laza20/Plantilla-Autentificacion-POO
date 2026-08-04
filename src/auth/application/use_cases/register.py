@@ -8,7 +8,7 @@ from src.auth.domain.protocols.image_service import ImageProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.domain.services.mail_policy import MailPolicyService
-from auth.infrastructure.persistence.postgres.models_auth_users import AuthUser, UserRegisterDTO, AuthUserNoTable
+from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser, UserRegisterDTO, AuthUserNoTable
 from pydantic import ValidationError
 from src.auth.domain.exceptions.domain import LongitudExcedida
 from src.auth.infrastructure.security.security import Settings

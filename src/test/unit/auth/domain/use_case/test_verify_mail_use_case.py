@@ -1,7 +1,7 @@
 from src.auth.domain.exceptions.tokens import VerificacionInvalida
 import pytest
 from src.test.fixtures.fixture_verify_mail_case import VerifyEmailTestEnvironment
-from auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
+from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 from fastapi import Response
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioActivo
 from src.database.enums.estado_entidad import EstadoEntidad

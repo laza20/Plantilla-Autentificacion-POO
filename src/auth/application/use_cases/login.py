@@ -1,11 +1,12 @@
-from auth.infrastructure.persistence.postgres.models_auth_users import LoginResponse, AuthUser, UsuarioLogeado
+from src.auth.infrastructure.persistence.postgres.models_auth_users import LoginResponse, AuthUser, UsuarioLogeado
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError
 from src.auth.domain.exceptions.domain import DomainError
-from fastapi import Response
+from fastapi import Response, Request
 import logging
 from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
 from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
+from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
 from src.auth.infrastructure.security.security import Settings
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.domain.services.user_validation_service import UserValidationService
@@ -21,7 +22,8 @@ class LoginUseCase:
         settings : Settings,
         token_service: TokenProtocol,
         cookies_service: CookiesService,
-        user_validation_service: UserValidationService
+        user_validation_service: UserValidationService,
+        token_repository: TokenRepositoryProtocol
     ):
         self.user_repository = user_repository
         self.password_service = password_service
@@ -29,8 +31,9 @@ class LoginUseCase:
         self.token_service = token_service
         self.cookies_service = cookies_service
         self.user_validation_service = user_validation_service
+        self.token_repository = token_repository
 
-    def login(self, email: str, password: str, response:Response)-> LoginResponse:
+    def login(self, email: str, password: str, response:Response, request:Request)-> LoginResponse:
         try:
             usuario_db = self.user_validation_service.obtener_usuario_existente(email)
                 
@@ -43,6 +46,13 @@ class LoginUseCase:
                 login_response.tokens.access_token, 
                 login_response.tokens.refresh_token
                 )
+
+            self.token_repository.insertar_sesion(
+                hash_token=login_response.tokens.refresh_token,
+                id_usuario=usuario_db.id_usuario,
+                ip=self._obtener_ip(request),
+                user_agent=request.headers.get("user-agent", "Desconocido")
+            )
             return login_response
         
         except (UsuarioError, DomainError):
@@ -66,4 +76,12 @@ class LoginUseCase:
             email= usuario.email,
             imagen_url= usuario.imagen_url
         )
+
+    def _obtener_ip(self, request: Request) -> str:
+        forwarded = request.headers.get("X-Forwarded-For")
+
+        if forwarded:
+            return forwarded.split(",")[0].strip()
+
+        return request.client.host
 

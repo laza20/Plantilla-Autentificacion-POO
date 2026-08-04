@@ -1,4 +1,4 @@
-from auth.infrastructure.persistence.postgres.models_auth_users import LoginResponse, UserRegisterDTO, UsuarioCreado
+from src.auth.infrastructure.persistence.postgres.models_auth_users import LoginResponse, UserRegisterDTO, UsuarioCreado
 from fastapi import APIRouter, Depends, status, Response, Path, HTTPException, UploadFile, Request
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.login import LoginUseCase
@@ -62,10 +62,11 @@ async def verificar_mail(
 @router.post("/login", response_model=LoginResponse, status_code=status.HTTP_202_ACCEPTED)
 async def logearse(
     response: Response,
+    request: Request,
     login_use_case: LoginUseCase = Depends(get_login_use_case),
     usuario: OAuth2PasswordRequestForm = Depends()):
 
-    logeado = login_use_case.login(usuario.username, usuario.password, response)
+    logeado = login_use_case.login(usuario.username, usuario.password, response, request)
     return logeado
 
 

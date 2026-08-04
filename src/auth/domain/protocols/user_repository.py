@@ -1,5 +1,5 @@
 from typing import Protocol, runtime_checkable
-from auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
+from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 
 @runtime_checkable
 class UserRepositoryProtocol(Protocol):

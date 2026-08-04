@@ -4,10 +4,11 @@ from src.auth.infrastructure.security.tokens.tokens import TokenService, get_tok
 from src.config.config import get_settings, Settings
 from src.auth.infrastructure.persistence.postgres.user_repository import UserRepository
 from src.container.providers import get_user_repository
-from auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
+from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 from src.auth.domain.exceptions.usuarios_exceptions import (
-    NoAutenticado, SinAccessToken, TokenInvalido, UsuarioNoEncontrado
+    NoAutenticado, SinAccessToken, UsuarioNoEncontrado
 )
+from src.auth.domain.exceptions.tokens import TokenInvalido
 
 
 class AuthDependencies:
