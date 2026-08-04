@@ -1,4 +1,4 @@
-from auth.infrastructure.persistence.postgres.models_sesiones import SesionesNoTable
+from src.auth.infrastructure.persistence.postgres.models_sesiones import Sesiones
 from sqlalchemy.orm import Session
 
 
@@ -15,8 +15,8 @@ class SesionRepository:
         """
         Función para insertar un registro en la base de datos y retornar la sesión actualizada.
         """
-        sesion = SesionesNoTable(
-            hash_token=hash_token,
+        sesion = Sesiones(
+            hash_refresh_token=hash_token,
             id_usuario=id_usuario,
             ip=ip,
             user_agent=user_agent
