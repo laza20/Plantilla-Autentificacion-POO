@@ -10,6 +10,8 @@ from src.container.auth_container import (
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
+from src.auth.domain.protocols.user_repository import UsuarioRepositoryProtocol
+from src.auth.infrastructure.persistence.postgres.usuario_repository import UserRepository
 from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.mail_service import MailProtocol
 from src.auth.domain.protocols.image_service import ImageProtocol
@@ -26,6 +28,9 @@ from src.auth.domain.services.user_validation_service import UserValidationServi
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
+
+def get_user_repository(session: Session = Depends(get_session)) -> UsuarioRepositoryProtocol:
+    return UserRepository(session)
 
 def get_auth_user_repository(session: Session = Depends(get_session)) -> AuthUserRepository:
     return AuthUserRepository(session)
@@ -82,7 +87,8 @@ def get_register_use_case(
     password_policy: PasswordPolicyService = Depends(get_password_policy),
     mail_service: MailProtocol = Depends(get_mail_service),
     image_service: ImageProtocol = Depends(get_image_service),
-    mail_policy : MailPolicyService = Depends(get_mail_policy)
+    mail_policy : MailPolicyService = Depends(get_mail_policy),
+    usuario_repository: UsuarioRepositoryProtocol = Depends(get_user_repository)
 ) -> RegisterUseCase:
 
     return ContainerRegister(
@@ -93,7 +99,8 @@ def get_register_use_case(
         password_policy=password_policy,
         mail_service=mail_service,
         image_service=image_service,
-        mail_policy=mail_policy
+        mail_policy=mail_policy,
+        usuario_repository=usuario_repository
     ).register_use_case
 
 

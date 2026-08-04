@@ -1,6 +1,7 @@
 from src.config.config import Settings
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.domain.protocols.auth_user_repository import AuthUserRepositoryProtocol
+from src.auth.domain.protocols.user_repository import UsuarioRepositoryProtocol
 from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.protocols.password_service import PasswordProtocol
@@ -26,7 +27,8 @@ class ContainerRegister:
         mail_service: MailProtocol,        
         image_service: ImageProtocol,
         password_policy: PasswordPolicyService,
-        mail_policy : MailPolicyService
+        mail_policy : MailPolicyService,
+        usuario_repository: UsuarioRepositoryProtocol
     ):
         self.settings = settings
         self.auth_user_repository = auth_user_repository
@@ -36,6 +38,7 @@ class ContainerRegister:
         self.image_service = image_service
         self.password_policy = password_policy
         self.mail_policy = mail_policy
+        self.usuario_repository = usuario_repository
     @property
     def register_use_case(self) -> RegisterUseCase:
 
@@ -47,8 +50,11 @@ class ContainerRegister:
             mail_service=self.mail_service,
             image_service=self.image_service,
             token_service=self.token_service,
-            mail_policy=self.mail_policy
+            mail_policy=self.mail_policy,
+            usuario_repository=self.usuario_repository
         )
+
+        
 class ContainerLogin:
     def __init__(
         self,
