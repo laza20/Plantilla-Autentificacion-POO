@@ -6,9 +6,11 @@ from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.mail_service import MailProtocol
 from src.auth.domain.protocols.image_service import ImageProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
+from src.auth.domain.protocols.user_repository import UsuarioRepositoryProtocol
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser, UserRegisterDTO, AuthUserNoTable
+from src.auth.infrastructure.persistence.postgres.usuario_repository import Usuario
 from pydantic import ValidationError
 from src.auth.domain.exceptions.domain import LongitudExcedida
 from src.auth.infrastructure.security.security import Settings
@@ -26,7 +28,8 @@ class RegisterUseCase:
         token_service: TokenProtocol,
         password_policy : PasswordPolicyService,
         mail_policy : MailPolicyService,
-        settings : Settings
+        settings : Settings,
+        usuario_repository: UsuarioRepositoryProtocol
     ):
         self.auth_user_repository = auth_user_repository
         self.password_service = password_service
@@ -36,6 +39,7 @@ class RegisterUseCase:
         self.password_policy = password_policy
         self.mail_policy = mail_policy
         self.settings = settings
+        self.usuario_repository = usuario_repository
 
     async def register(self, usuario:UserRegisterDTO, imagen:UploadFile | None) -> AuthUser:
         if usuario is None:
@@ -62,6 +66,7 @@ class RegisterUseCase:
             asunto = "Activa tu cuenta"
         )   
 
+        self.usuario_repository.insertar(self._preparar_usuario_registro(usuario_creado))
         return usuario_creado
 
 
@@ -99,4 +104,13 @@ class RegisterUseCase:
             url=url,
             nombre_proyecto=self.settings.NOMBRE_APP,
         )
+
+    def _preparar_usuario_registro(self, usuario:AuthUser)->Usuario:
+        """
+        Funcion encargada de preparar el objeto Usuario para ser insertado en la base de datos.
+        """
+        usuario_orm = Usuario(
+            **usuario.model_dump()
+        )
+        return usuario_orm
 
