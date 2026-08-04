@@ -1,7 +1,7 @@
 from src.auth.infrastructure.persistence.postgres.models_auth_users import UserTokens
 from fastapi import Response
 import logging
-from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
+from src.auth.domain.protocols.auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.exceptions.tokens import TokenInvalido, VerificacionInvalida
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.infrastructure.security.security import Settings
@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 class VerifyMailUseCase:
     def __init__(
         self,
-        repository: UserRepositoryProtocol,
+        auth_user_repository: AuthUserRepositoryProtocol,
         settings : Settings,
         cookies_service: CookiesService,
         token_service: TokenProtocol
     ):
-        self.repository = repository
+        self.auth_user_repository = auth_user_repository
         self.settings = settings
         self.cookies_service = cookies_service
         self.token_service = token_service
@@ -32,8 +32,8 @@ class VerifyMailUseCase:
         """
         try:
             user_id_db = self.token_service.get_user_id_from_access_token(token)
-            usuario = self.repository.obtener_por_id_sin_activar(user_id_db)
-            usuario = self.repository.activar(usuario)
+            usuario = self.auth_user_repository.obtener_por_id_sin_activar(user_id_db)
+            usuario = self.auth_user_repository.activar(usuario)
 
         except TokenInvalido:
             raise VerificacionInvalida()

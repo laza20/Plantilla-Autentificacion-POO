@@ -2,7 +2,7 @@ from typing import Protocol, runtime_checkable
 from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 
 @runtime_checkable
-class UserRepositoryProtocol(Protocol):
+class AuthUserRepositoryProtocol(Protocol):
     """
     Contrato para repositorios de usuarios.
     
@@ -90,7 +90,7 @@ class UserRepositoryProtocol(Protocol):
         )
         # usuario.id_usuario = None (aún no existe)
         
-        usuario_creado = self.user_repository.insertar(usuario)
+        usuario_creado = self.auth_user_repository.insertar(usuario)
         
         # Ahora:
         print(usuario_creado.id_usuario)  # 1
@@ -140,14 +140,14 @@ class UserRepositoryProtocol(Protocol):
         user_id_db = self.token_service.get_user_id_from_access_token(token)
         # user_id_db = 1
         
-        usuario = self.user_repository.obtener_por_id_sin_activar(user_id_db)
+        usuario = self.auth_user_repository.obtener_por_id_sin_activar(user_id_db)
         # usuario = AuthUser(id_usuario=1, email="...", is_verified=False, ...)
         
         if usuario is None:
             raise ValueError("Usuario no encontrado")
         
         # Ahora lo activas
-        usuario = self.user_repository.activar(usuario)
+        usuario = self.auth_user_repository.activar(usuario)
         
         Caso de uso específico:
         -----------------------
@@ -197,11 +197,11 @@ class UserRepositoryProtocol(Protocol):
         Ejemplo práctico:
         -----------------
         # En AuthService.verificar_mail()
-        usuario = self.user_repository.obtener_por_id_sin_activar(user_id)
+        usuario = self.auth_user_repository.obtener_por_id_sin_activar(user_id)
         # usuario.is_verified = False
         # usuario.estado = PENDIENTE
         
-        usuario_activado = self.user_repository.activar(usuario)
+        usuario_activado = self.auth_user_repository.activar(usuario)
         
         # Ahora:
         print(usuario_activado.is_verified)  # True
@@ -258,7 +258,7 @@ class UserRepositoryProtocol(Protocol):
         email = "juan@example.com"
         password = "MiContraseña123!"
         
-        usuario_db = self.user_repository.obtener_por_email(email)
+        usuario_db = self.auth_user_repository.obtener_por_email(email)
         # usuario_db = AuthUser(...) si existe y está ACTIVO
         # usuario_db = None si no existe o no está verificado
         
@@ -319,7 +319,7 @@ class UserRepositoryProtocol(Protocol):
             current_user: AuthUser = Depends(get_current_user)
         ):
             usuario = auth_service.get_user(current_user)
-            # Internamente: self.user_repository.obtener_por_id(current_user.id_usuario)
+            # Internamente: self.auth_user_repository.obtener_por_id(current_user.id_usuario)
             return usuario
         
         Flujo típico:

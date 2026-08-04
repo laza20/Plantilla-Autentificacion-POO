@@ -1,6 +1,6 @@
 from src.config.config import Settings
 from src.auth.presentation.web.cookies.cookies import CookiesService
-from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
+from src.auth.domain.protocols.auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.protocols.password_service import PasswordProtocol
@@ -20,7 +20,7 @@ class ContainerRegister:
     def __init__(
         self,
         settings: Settings,
-        repository: UserRepositoryProtocol,
+        auth_user_repository: AuthUserRepositoryProtocol,
         token_service: TokenProtocol,
         password_service: PasswordProtocol, 
         mail_service: MailProtocol,        
@@ -29,7 +29,7 @@ class ContainerRegister:
         mail_policy : MailPolicyService
     ):
         self.settings = settings
-        self.repository = repository
+        self.auth_user_repository = auth_user_repository
         self.token_service = token_service
         self.password_service = password_service
         self.mail_service = mail_service
@@ -41,7 +41,7 @@ class ContainerRegister:
 
         return RegisterUseCase(
             settings=self.settings,
-            user_repository=self.repository,
+            auth_user_repository=self.auth_user_repository,
             password_service=self.password_service,
             password_policy=self.password_policy,
             mail_service=self.mail_service,
@@ -53,7 +53,7 @@ class ContainerLogin:
     def __init__(
         self,
         settings: Settings,
-        repository: UserRepositoryProtocol,
+        auth_user_repository: AuthUserRepositoryProtocol,
         token_service: TokenProtocol,
         password_service: PasswordProtocol,
         cookies_service: CookiesService,
@@ -61,7 +61,7 @@ class ContainerLogin:
         token_repository: TokenRepositoryProtocol
     ):
         self.settings = settings
-        self.repository = repository
+        self.auth_user_repository = auth_user_repository
         self.token_service = token_service
         self.password_service = password_service
         self.cookies_service = cookies_service
@@ -74,7 +74,7 @@ class ContainerLogin:
 
         return LoginUseCase(
             settings=self.settings,
-            user_repository=self.repository,
+            auth_user_repository=self.auth_user_repository,
             token_service=self.token_service,
             password_service=self.password_service,
             cookies_service = self.cookies_service,
@@ -86,19 +86,19 @@ class ContainerVerifyMail:
     def __init__(
         self,
         settings: Settings,
-        repository: UserRepositoryProtocol,
+        auth_user_repository: AuthUserRepositoryProtocol,
         token_service: TokenProtocol,
         cookies_service: CookiesService
     ):
         self.settings = settings
-        self.repository = repository
+        self.auth_user_repository = auth_user_repository
         self.token_service = token_service
         self.cookies_service = cookies_service
     @property
     def verify_mail_use_case(self) -> VerifyMailUseCase:
 
         return VerifyMailUseCase(
-            repository=self.repository,
+            auth_user_repository=self.auth_user_repository,
             settings=self.settings,
             cookies_service=self.cookies_service,
             token_service=self.token_service

@@ -1,7 +1,7 @@
 from src.auth.domain.exceptions.domain import SinCargas
 from fastapi import UploadFile
 import logging
-from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
+from src.auth.domain.protocols.auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.mail_service import MailProtocol
 from src.auth.domain.protocols.image_service import ImageProtocol
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class RegisterUseCase:
     def __init__(
         self,
-        user_repository: UserRepositoryProtocol,
+        auth_user_repository: AuthUserRepositoryProtocol,
         password_service: PasswordProtocol,
         mail_service: MailProtocol,
         image_service: ImageProtocol,
@@ -28,7 +28,7 @@ class RegisterUseCase:
         mail_policy : MailPolicyService,
         settings : Settings
     ):
-        self.user_repository = user_repository
+        self.auth_user_repository = auth_user_repository
         self.password_service = password_service
         self.mail_service = mail_service
         self.image_service = image_service
@@ -51,7 +51,7 @@ class RegisterUseCase:
         if imagen is not None:
             objeto_usuario = self.image_service.insertar_imagen(objeto_usuario, imagen, servicio="usuarios")
 
-        usuario_creado = self.user_repository.insertar(objeto_usuario)
+        usuario_creado = self.auth_user_repository.insertar(objeto_usuario)
 
         token_verificacion = self.token_service.create_access_token(str(usuario_creado.id_usuario))
         cuerpo_correo = self._generar_correo_verificacion(token_verificacion)

@@ -3,7 +3,7 @@ from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginEr
 from src.auth.domain.exceptions.domain import DomainError
 from fastapi import Response, Request
 import logging
-from src.auth.domain.protocols.user_repository import UserRepositoryProtocol
+from src.auth.domain.protocols.auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class LoginUseCase:
     def __init__(
         self,
-        user_repository: UserRepositoryProtocol,
+        auth_user_repository: AuthUserRepositoryProtocol,
         password_service: PasswordProtocol,
         settings : Settings,
         token_service: TokenProtocol,
@@ -25,7 +25,7 @@ class LoginUseCase:
         user_validation_service: UserValidationService,
         token_repository: TokenRepositoryProtocol
     ):
-        self.user_repository = user_repository
+        self.auth_user_repository = auth_user_repository
         self.password_service = password_service
         self.settings = settings
         self.token_service = token_service

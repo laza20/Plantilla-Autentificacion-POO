@@ -125,7 +125,7 @@ Esto habilita la **Inversión de Dependencias (DIP)**: el Caso de Uso de alto ni
     └── auth/
         ├── domain/                          # ── CAPA DE DOMINIO (núcleo, sin infraestructura) ──
         │   ├── protocols/                   # "Puertos" — contratos que la infraestructura debe cumplir
-        │   │   ├── user_repository.py       # UserRepositoryProtocol
+        │   │   ├── auth_user_repository.py       # UserRepositoryProtocol
         │   │   ├── token_service.py         # TokenProtocol
         │   │   ├── password_service.py      # PasswordProtocol
         │   │   ├── mail_service.py          # MailProtocol
@@ -150,7 +150,7 @@ Esto habilita la **Inversión de Dependencias (DIP)**: el Caso de Uso de alto ni
         ├── infrastructure/                  # ── CAPA DE INFRAESTRUCTURA (implementaciones concretas) ──
         │   ├── persistence/postgres/
         │   │   ├── models.py                # AuthUser (tabla) + DTOs de entrada/salida (SQLModel)
-        │   │   └── user_repository.py       # UserRepository — implementa UserRepositoryProtocol
+        │   │   └── auth_user_repository.py       # UserRepository — implementa UserRepositoryProtocol
         │   ├── security/
         │   │   ├── security.py              # PasswordService (Argon2) — implementa PasswordProtocol
         │   │   └── tokens/
@@ -188,7 +188,7 @@ Esto habilita la **Inversión de Dependencias (DIP)**: el Caso de Uso de alto ni
 2. FastAPI enruta la petición a `routers.py :: logearse()`.
 3. FastAPI resuelve la dependencia `Depends(get_login_use_case)` **antes** de ejecutar la función del endpoint. Esto dispara una cadena de resolución definida en `providers.py`:
    - `get_settings()` → instancia única de `Settings`.
-   - `get_user_repository()` → construye `UserRepository(session)`, donde `session` proviene de `get_session()` (generador con `yield`, ciclo de vida por petición).
+   - `get_auth_user_repository()` → construye `UserRepository(session)`, donde `session` proviene de `get_session()` (generador con `yield`, ciclo de vida por petición).
    - `get_token_service()` → construye `TokenService(settings)`, devuelto **tipado como `TokenProtocol`**.
    - `get_password_service()` → construye `PasswordService(settings)`, tipado como `PasswordProtocol`.
    - `get_cookies_service()` → construye `CookiesService(settings)`.
@@ -221,7 +221,7 @@ Cliente HTTP
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ container/providers.py :: get_login_use_case                                │
 │   ├─ get_settings()                                                         │
-│   ├─ get_user_repository()   → UserRepository                               │
+│   ├─ get_auth_user_repository()   → UserRepository                               │
 │   ├─ get_token_service()     → TokenService (protocolo TokenProtocol)       │
 │   ├─ get_password_service()  → PasswordService (protocolo PasswordProtocol) │
 │   ├─ get_cookies_service()   → CookiesService                               │
@@ -253,7 +253,7 @@ Cliente HTTP
     ▼
 ┌────────────────────────────────────┐
 │ infrastructure/persistence/        │
-│ postgres/user_repository.py        │   ← Infraestructura de Persistencia
+│ postgres/auth_user_repository.py        │   ← Infraestructura de Persistencia
 │ UserRepository.obtener_por_email() │
 └────────────────────────────────────┘
     │
@@ -345,7 +345,7 @@ Gracias a este diseño, el manejo de errores está completamente centralizado: *
 | Archivo | Clase / Función | Rol |
 |---|---|---|
 | `persistence/postgres/models.py` | `AuthUser` (tabla), `UsuarioCreado`, `UserRegisterDTO`, `UserTokens`, `UsuarioLogeado`, `LoginResponse`, `AuthUserNoImage` | Modelo de tabla + DTOs de entrada/salida, todos `SQLModel` |
-| `persistence/postgres/user_repository.py` | `UserRepository` | Implementación concreta de `UserRepositoryProtocol` sobre `Session` de SQLModel |
+| `persistence/postgres/auth_user_repository.py` | `UserRepository` | Implementación concreta de `UserRepositoryProtocol` sobre `Session` de SQLModel |
 | `security/security.py` | `PasswordService`, `get_password_service` | Hash/verificación Argon2 (`pwdlib.PasswordHash.recommended()`) |
 | `security/tokens/tokens.py` | `TokenService`, `get_token_service` | Codificación/decodificación JWT (`python-jose`), cálculo de expiración |
 | `mail/mail.py` | `MailService`, `get_mail_service` | Renderizado Jinja2 + envío async vía `FastMail` |
@@ -655,7 +655,7 @@ Los protocolos están segmentados por responsabilidad concreta (`PasswordProtoco
 class LoginUseCase:
     def __init__(
         self,
-        user_repository: UserRepositoryProtocol,   # ← abstracción
+        auth_user_repository: UserRepositoryProtocol,   # ← abstracción
         password_service: PasswordProtocol,          # ← abstracción
         token_service: TokenProtocol,                 # ← abstracción
         ...

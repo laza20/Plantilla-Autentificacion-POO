@@ -233,8 +233,8 @@ class TokenProtocol(Protocol):
         user_id_db = self.token_service.get_user_id_from_access_token(token)
         # user_id_db = "123"
         
-        usuario = self.user_repository.obtener_por_id_sin_activar(int(user_id_db))
-        usuario = self.user_repository.activar(usuario)
+        usuario = self.auth_user_repository.obtener_por_id_sin_activar(int(user_id_db))
+        usuario = self.auth_user_repository.activar(usuario)
         
         Notas de implementación:
         -----------------------

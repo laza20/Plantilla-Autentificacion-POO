@@ -1,6 +1,6 @@
 from fastapi import Depends
 from sqlmodel import Session
-from src.auth.infrastructure.persistence.postgres.user_repository import UserRepository
+from src.auth.infrastructure.persistence.postgres.auth_user_repository import AuthUserRepository
 from src.auth.infrastructure.persistence.postgres.sesion_repository import SesionRepository
 from src.config.config import Settings, get_settings
 from src.container.auth_container import (
@@ -27,15 +27,15 @@ from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
 
-def get_user_repository(session: Session = Depends(get_session)) -> UserRepository:
-    return UserRepository(session)
+def get_auth_user_repository(session: Session = Depends(get_session)) -> AuthUserRepository:
+    return AuthUserRepository(session)
 
 def get_user_validation_service(
-    repository: UserRepository = Depends(get_user_repository),
+    auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
     settings: Settings = Depends(get_settings)
 ) -> UserValidationService:
     return UserValidationService(
-        user_repository=repository, 
+        auth_user_repository=auth_user_repository, 
         settings=settings
     )
 
@@ -76,7 +76,7 @@ def get_mail_policy(settings: Settings = Depends(get_settings)) -> MailPolicySer
 
 def get_register_use_case(
     settings: Settings = Depends(get_settings),
-    repository: UserRepository = Depends(get_user_repository),
+    auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
     token_service: TokenProtocol = Depends(get_token_service),
     password_service: PasswordProtocol = Depends(get_password_service),
     password_policy: PasswordPolicyService = Depends(get_password_policy),
@@ -87,7 +87,7 @@ def get_register_use_case(
 
     return ContainerRegister(
         settings=settings,
-        repository=repository,
+        auth_user_repository=auth_user_repository,
         token_service=token_service,
         password_service=password_service,
         password_policy=password_policy,
@@ -99,7 +99,7 @@ def get_register_use_case(
 
 def get_login_use_case(
     settings: Settings = Depends(get_settings),
-    repository: UserRepository = Depends(get_user_repository),
+    auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
     token_service: TokenProtocol = Depends(get_token_service),
     password_service: PasswordProtocol = Depends(get_password_service),
     cookies_service: CookiesService = Depends(get_cookies_service),
@@ -109,7 +109,7 @@ def get_login_use_case(
 
     return ContainerLogin(
         settings=settings,
-        repository=repository,
+        auth_user_repository=auth_user_repository,
         token_service=token_service,
         password_service=password_service,
         cookies_service=cookies_service,
@@ -120,14 +120,14 @@ def get_login_use_case(
 
 def get_verify_mail_use_case(
     settings: Settings = Depends(get_settings),
-    repository: UserRepository = Depends(get_user_repository),
+    auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
     cookies_service: CookiesService = Depends(get_cookies_service),
     token_service: TokenProtocol = Depends(get_token_service)
 ) -> VerifyMailUseCase:
 
     return ContainerVerifyMail(
         settings=settings,
-        repository=repository,
+        auth_user_repository=auth_user_repository,
         cookies_service=cookies_service,
         token_service=token_service
     ).verify_mail_use_case

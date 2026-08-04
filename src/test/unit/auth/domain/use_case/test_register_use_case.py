@@ -78,7 +78,7 @@ async def test_no_debe_registrar_un_email_duplicado():
         password="hashed_password"
     )
 
-    context.user_repository.insertar(usuario_existente)
+    context.auth_user_repository.insertar(usuario_existente)
 
     usuario = UserRegisterDTO(
         email="test@test.com",

@@ -106,7 +106,7 @@ class PasswordProtocol(Protocol):
         # Ahora objeto_usuario.password = "$argon2id$v=19$..."
         
         # Guardar en BD (el password ya es un hash)
-        usuario_creado = self.user_repository.insertar(objeto_usuario)
+        usuario_creado = self.auth_user_repository.insertar(objeto_usuario)
         # En BD se almacena el hash, nunca el password original
         """
         ...
@@ -181,7 +181,7 @@ class PasswordProtocol(Protocol):
         Flujo en AuthService:
         --------------------
         # En AuthService.login()
-        usuario_db = self.user_repository.obtener_por_email(email)
+        usuario_db = self.auth_user_repository.obtener_por_email(email)
         
         # usuario_db.password es el hash en BD
         # password es lo que ingresó el usuario

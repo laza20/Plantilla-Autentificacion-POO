@@ -16,7 +16,7 @@ def test_debe_logear_un_usuario_valido():
         password="hashed_password@123"
     )
 
-    context.user_repository.insertar(usuario_existente)
+    context.auth_user_repository.insertar(usuario_existente)
 
 
     cookies = context.use_case().login(
@@ -56,7 +56,7 @@ def test_debe_dar_error_cuando_la_contrasena_es_incorrecta():
         password="hashed_password@123"
     )
 
-    context.user_repository.insertar(usuario_existente)
+    context.auth_user_repository.insertar(usuario_existente)
 
     with pytest.raises(LoginError):
         context.use_case().login(
@@ -77,7 +77,7 @@ def test_verifica_que_tokens_es_llamado_correctamente():
         password="hashed_password@123"
     )
 
-    context.user_repository.insertar(usuario_existente)
+    context.auth_user_repository.insertar(usuario_existente)
 
 
     cookies = context.use_case().login(
@@ -100,7 +100,7 @@ def test_verifica_que_cookies_service_es_llamado_correctamente():
         password="hashed_password@123"
     )
 
-    context.user_repository.insertar(usuario_existente)
+    context.auth_user_repository.insertar(usuario_existente)
 
 
     cookies = context.use_case().login(
@@ -124,7 +124,7 @@ def test_verifica_que_el_usuario_publico_se_retorna_correctamente():
         imagen_url="http://example.com/image.jpg"
     )
 
-    context.user_repository.insertar(usuario_existente)
+    context.auth_user_repository.insertar(usuario_existente)
 
     cookies = context.use_case().login(
         email="test@test.com",
@@ -151,7 +151,7 @@ def test_debe_verificar_el_id_del_usuario():
         imagen_url="http://example.com/image.jpg"
     )
 
-    context.user_repository.insertar(usuario_existente)
+    context.auth_user_repository.insertar(usuario_existente)
 
     cookies = context.use_case().login(
         email="test@test.com",

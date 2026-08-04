@@ -2,8 +2,8 @@ from fastapi import HTTPException, Request, Depends
 from jose import JWTError
 from src.auth.infrastructure.security.tokens.tokens import TokenService, get_token_service
 from src.config.config import get_settings, Settings
-from src.auth.infrastructure.persistence.postgres.user_repository import UserRepository
-from src.container.providers import get_user_repository
+from src.auth.infrastructure.persistence.postgres.auth_user_repository import AuthUserRepository
+from src.container.providers import get_auth_user_repository
 from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 from src.auth.domain.exceptions.usuarios_exceptions import (
     NoAutenticado, SinAccessToken, UsuarioNoEncontrado
@@ -16,11 +16,11 @@ class AuthDependencies:
         self,
         settings: Settings,
         token_service: TokenService,
-        user_repository: UserRepository
+        auth_user_repository: AuthUserRepository
     ):
         self.settings = settings
         self.token_service = token_service
-        self.user_repository = user_repository
+        self.auth_user_repository = auth_user_repository
 
     async def get_current_user(
         self, 
@@ -45,7 +45,7 @@ class AuthDependencies:
             raise TokenInvalido("Token inválido o expirado")
 
         try:
-            usuario = self.user_repository.obtener_por_id(user_id)
+            usuario = self.auth_user_repository.obtener_por_id(user_id)
             return usuario
         except UsuarioNoEncontrado:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
@@ -84,13 +84,13 @@ class AuthDependencies:
 def get_auth_dependencies(
     settings: Settings = Depends(get_settings),
     token_service: TokenService = Depends(get_token_service),
-    user_repository: UserRepository = Depends(get_user_repository)
+    auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository)
 ) -> AuthDependencies:
     """Factory para inyectar AuthDependencies en endpoints."""
     return AuthDependencies(
         settings=settings,
         token_service=token_service,
-        user_repository=user_repository
+        auth_user_repository=auth_user_repository
     )
 
 

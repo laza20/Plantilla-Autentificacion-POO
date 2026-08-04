@@ -3,7 +3,7 @@ from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthU
 from src.database.enums.estado_entidad import EstadoEntidad
 from src.auth.domain.exceptions.domain import MailRepetido
 
-class UserRepository:
+class AuthUserRepository:
     def __init__(self, session: Session):
         self.session = session
 

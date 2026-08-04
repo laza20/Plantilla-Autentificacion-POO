@@ -1,5 +1,5 @@
 from src.test.unit.auth.domain.service import stub_token_service
-from src.test.unit.auth.domain.fakes.fake_user_repository import FakeUserRepository
+from src.test.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.test.config.config import TestSettings
 from test.unit.auth.domain.service import stub_cookies_service

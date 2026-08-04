@@ -145,7 +145,7 @@ class ImageProtocol(Protocol):
         # myapp/usuarios/abc123
         
         # Ahora guardas el usuario en BD con estos datos
-        usuario_creado = self.user_repository.insertar(usuario_actualizado)
+        usuario_creado = self.auth_user_repository.insertar(usuario_actualizado)
         
         Notas de implementación:
         -----------------------
