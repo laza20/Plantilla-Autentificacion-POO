@@ -5,6 +5,7 @@ from src.test.unit.auth.domain.service import (
     stub_token_service
 )
 from src.test.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
+from src.test.unit.auth.domain.fakes.fake_usuario_repository import FakeUsuarioRepository
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.test.config.config import TestSettings
 from test.unit.auth.domain.service import stub_password_policy_service
@@ -22,6 +23,7 @@ class RegisterTestEnvironment:
         self.password_policy = stub_password_policy_service.StubPasswordPolicy()
         self.mail_policy = stub_mail_policy_service.StubMailPolicy()
         self.settings = TestSettings()
+        self.usuario_repository = FakeUsuarioRepository()
 
     def use_case(self):
         return RegisterUseCase(
@@ -33,4 +35,5 @@ class RegisterTestEnvironment:
             password_policy=self.password_policy,
             mail_policy=self.mail_policy,
             settings=self.settings,
+            usuario_repository=self.usuario_repository
         )
