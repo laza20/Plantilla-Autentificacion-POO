@@ -326,3 +326,13 @@ class TokenProtocol(Protocol):
         - El método es stateless (no consulta BD)
         """
         ...
+
+    def hash_token(self, token: str) -> str:
+        """
+        Función encargada de generar un hash irreversible a partir de un token en texto plano.
+        - Se utiliza para persistir una representación segura del refresh_token en la base de datos
+        (tabla `sesiones`), evitando guardar el token crudo.
+        - El mismo hash se recalcula a partir del token recibido en la cookie para buscar y eliminar
+        la sesión correspondiente durante el logout.
+        """
+        ...
