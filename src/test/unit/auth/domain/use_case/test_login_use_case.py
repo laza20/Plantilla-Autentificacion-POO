@@ -166,3 +166,27 @@ def test_debe_verificar_el_id_del_usuario():
     )
 
     assert context.token_service.user_id_recibido == 1
+
+
+def test_debe_verificar_que_el_token_repository_fue_llamado_correctamente():
+    """
+    Verifica que el repositorio de tokens se llame correctamente al iniciar sesión.
+    """
+
+    context = LoginTestEnvironment()
+
+    usuario_existente = AuthUser(
+        email="test@test.com",
+        password="hashed_password@123"
+    )
+
+    context.auth_user_repository.insertar(usuario_existente)
+
+    cookies = context.use_case().login(
+        email="test@test.com",
+        password="password@123",
+        response=context.response,
+        request=context.request
+    )
+
+    assert context.token_repository.fue_llamado is True
