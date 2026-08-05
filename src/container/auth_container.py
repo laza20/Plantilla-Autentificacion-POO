@@ -114,14 +114,20 @@ class ContainerVerifyMail:
 class ContainerLogout:
     def __init__(
         self,
-        cookies_service: CookiesService
+        cookies_service: CookiesService,
+        token_service: TokenProtocol,
+        token_repository: TokenRepositoryProtocol
     ):
         self.cookies_service = cookies_service
+        self.token_service = token_service
+        self.token_repository = token_repository
     @property
     def logout_use_case(self) -> LogoutUseCase:
 
         return LogoutUseCase(
-            cookies_service=self.cookies_service
+            cookies_service=self.cookies_service,
+            token_service=self.token_service,
+            token_repository=self.token_repository
         )
     
 class ContainerRefreshToken:
