@@ -23,12 +23,12 @@ def test_debe_verificar_el_mail_y_activar_el_usuario():
         password="hashed_password@123"
     )
 
-    usuario = context.repository.insertar(usuario_existente)
+    usuario = context.auth_user_repository.insertar(usuario_existente)
     context.use_case().verificar_mail(
         token=f"access_token_{usuario.id_usuario}",
         response=Response()
     )
-    usuario_activado = context.repository.obtener_por_email("test@test.com")
+    usuario_activado = context.auth_user_repository.obtener_por_email("test@test.com")
 
     assert usuario_activado.estado == EstadoEntidad.ACTIVO
     assert usuario_activado.is_verified is True
@@ -46,7 +46,7 @@ def test_debe_verificar_que_los_tokens_sean_adecuados():
         password="hashed_password@123"
     )
 
-    usuario = context.repository.insertar(usuario_existente)
+    usuario = context.auth_user_repository.insertar(usuario_existente)
     tokens = context.use_case().verificar_mail(token= f"access_token_{usuario.id_usuario}", response= Response())
 
     assert tokens.access_token == context.token_service.access_token_generado
@@ -67,7 +67,7 @@ def test_debe_verificar_que_se_llama_al_servicio_de_cookies():
         password="hashed_password@123"
     )
 
-    usuario = context.repository.insertar(usuario_existente)
+    usuario = context.auth_user_repository.insertar(usuario_existente)
     context.use_case().verificar_mail(
         token=f"access_token_{usuario.id_usuario}",
         response=Response()
@@ -92,7 +92,7 @@ def test_debe_verificar_que_da_error_de_tipo_token_invalido_cuando_no_coincide_l
         password="hashed_password@123"
     )
 
-    usuario = context.repository.insertar(usuario_existente)
+    usuario = context.auth_user_repository.insertar(usuario_existente)
 
     with pytest.raises(VerificacionInvalida):
         context.use_case().verificar_mail(        
@@ -126,7 +126,7 @@ def test_debe_dar_error_cuando_el_usuario_que_se_quiere_activar_ya_esta_activo()
         estado=EstadoEntidad.ACTIVO
     )
 
-    usuario = context.repository.insertar(usuario_existente)
+    usuario = context.auth_user_repository.insertar(usuario_existente)
     with pytest.raises(UsuarioActivo):
         context.use_case().verificar_mail(        
             token=f"access_token_{usuario.id_usuario}",
