@@ -99,10 +99,12 @@ async def ver_usuario(
 @router.post("/Logout")
 async def logout(
     response: Response,
+    request: Request,
     logout_service: LogoutUseCase = Depends(get_logout_service)
     ):
     """
     End point encargado de desloguear un usuario.
     """
-    logout_service.logout(response)
+    refresh_token = request.cookies.get("refresh_token")
+    logout_service.logout(refresh_token=refresh_token,response=response)
     return {"message": "Sesión cerrada"}
