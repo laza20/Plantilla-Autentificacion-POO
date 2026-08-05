@@ -6,6 +6,7 @@ from jose import JWTError
 from fastapi import Depends
 from src.config.config import get_settings, Settings
 from src.auth.infrastructure.persistence.postgres.models_auth_users import UserTokens
+import hashlib
 
 
 class TokenService:
@@ -89,6 +90,16 @@ class TokenService:
 
         except JWTError as e:
             raise TokenInvalido("Refresh token inválido o expirado")
+
+    def hash_token(self, token: str) -> str:
+        """
+        Función encargada de generar un hash irreversible a partir de un token en texto plano.
+        - Se utiliza para persistir una representación segura del refresh_token en la base de datos
+        (tabla `sesiones`), evitando guardar el token crudo.
+        - El mismo hash se recalcula a partir del token recibido en la cookie para buscar y eliminar
+        la sesión correspondiente durante el logout.
+        """
+        return hashlib.sha256(token.encode()).hexdigest()
 
 
     def _encode_token(self, payload: Dict[str, any], expires_delta: timedelta) -> str:
