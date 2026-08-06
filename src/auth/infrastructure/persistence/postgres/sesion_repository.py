@@ -25,3 +25,17 @@ class SesionRepository:
         self.session.commit()
         self.session.refresh(sesion)
         return sesion
+
+
+    def eliminar_por_hash(
+        self,
+        hash_token: str
+    ) -> None:
+        """
+        Función para eliminar una sesión de la base de datos utilizando el hash del refresh token.
+        """
+        sesion = self.session.query(Sesiones).filter_by(hash_refresh_token=hash_token).first()
+        if sesion:
+            print("AAA")
+            self.session.delete(sesion)
+            self.session.commit()
