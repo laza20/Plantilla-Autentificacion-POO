@@ -46,9 +46,9 @@ class LoginUseCase:
                 login_response.tokens.access_token, 
                 login_response.tokens.refresh_token
                 )
-
-            self.token_repository.insertar_sesion(
-                hash_token=login_response.tokens.refresh_token,
+            hashed_token = self.token_service.hash_token(login_response.tokens.refresh_token)
+            self._insertar_sesion(
+                hashed_token=hashed_token,
                 id_usuario=usuario_db.id_usuario,
                 ip=self._obtener_ip(request),
                 user_agent=request.headers.get("user-agent", "Desconocido")
@@ -85,3 +85,10 @@ class LoginUseCase:
 
         return request.client.host
 
+    def _insertar_sesion(self, hashed_token:str, id_usuario:int, ip:str, user_agent:str):
+        self.token_repository.insertar_sesion(
+            hash_token=hashed_token,
+            id_usuario=id_usuario,
+            ip=ip,
+            user_agent=user_agent
+        )
