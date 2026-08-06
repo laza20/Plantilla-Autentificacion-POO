@@ -28,3 +28,15 @@ class FakeSesionRepository:
         self.fue_llamado = True
         self.hash_refresh_token = hash_token
         return copia_sesion
+
+    def eliminar_por_hash(self, hash_token: str):
+        """
+        Función para eliminar un registro en la base de datos por hash.
+        """
+        if hash_token in self._sesiones:
+            del self._sesiones[hash_token]
+            self.fue_llamado = True
+            self.hash_refresh_token = hash_token
+            return True
+        else:
+            return False
