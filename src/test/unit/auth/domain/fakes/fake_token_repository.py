@@ -7,6 +7,7 @@ class FakeSesionRepository:
         self._sesiones: Dict[str, Sesiones] = {}
         self.fue_llamado: bool = False
         self.hash_refresh_token: str = ""
+        self.token_eliminado: str = ""
 
     def insertar_sesion(
         self,
@@ -36,7 +37,7 @@ class FakeSesionRepository:
         if hash_token in self._sesiones:
             del self._sesiones[hash_token]
             self.fue_llamado = True
-            self.hash_refresh_token = hash_token
+            self.token_eliminado = hash_token
             return True
         else:
             return False
