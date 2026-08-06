@@ -18,6 +18,7 @@ class LogoutUseCase:
         """
         Servicio para deslogear a un usuario.
         """
+        print(refresh_token)
         hashed_token = self.token_service.hash_token(refresh_token)
         self.token_repository.eliminar_por_hash(hashed_token)
         self.cookies_service.delete_auth_cookies(response)
