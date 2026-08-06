@@ -52,7 +52,6 @@ class StubTokenService:
 
     def get_user_id_from_refresh_token(self, token:str)->int:
         try:
-
             tipo, token, user_id  = token.split("_")
             
             if tipo != "refresh" or token != "token":
@@ -62,3 +61,6 @@ class StubTokenService:
 
         except:
             raise TokenInvalido()
+
+    def hash_token(self, token: str) -> str:
+        return f"hashed_{token}"
