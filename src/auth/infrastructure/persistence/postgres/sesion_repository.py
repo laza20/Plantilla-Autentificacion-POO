@@ -36,6 +36,5 @@ class SesionRepository:
         """
         sesion = self.session.query(Sesiones).filter_by(hash_refresh_token=hash_token).first()
         if sesion:
-            print("AAA")
             self.session.delete(sesion)
             self.session.commit()
