@@ -1,5 +1,6 @@
 from src.auth.infrastructure.persistence.postgres.models_auth_users import LoginResponse, UserRegisterDTO, UsuarioCreado
 from fastapi import APIRouter, Depends, status, Response, Path, HTTPException, UploadFile, Request
+from src.auth.presentation.web.utils.request_metadata import RequestMetadata
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.login import LoginUseCase
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
@@ -66,7 +67,11 @@ async def logearse(
     login_use_case: LoginUseCase = Depends(get_login_use_case),
     usuario: OAuth2PasswordRequestForm = Depends()):
 
-    logeado = login_use_case.login(usuario.username, usuario.password, response, request)
+    request_metadata = RequestMetadata(request)
+    ip = request_metadata.get_ip()
+    user_agent = request_metadata.get_user_agent()
+
+    logeado = login_use_case.login(usuario.username, usuario.password, ip, user_agent, response)
     return logeado
 
 
