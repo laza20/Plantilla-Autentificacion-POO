@@ -21,8 +21,9 @@ def test_debe_logear_un_usuario_valido():
     cookies = context.use_case().login(
         email="test@test.com",
         password="password@123",
-        response=context.response,
-        request=context.request
+        ip="127.0.0.1",
+        user_agent="Test User Agent",
+        response=context.response
     )
     
     assert cookies.tokens.access_token == context.token_service.access_token_generado
@@ -40,8 +41,9 @@ def test_debe_dar_error_cuando_el_usuario_no_existe():
         context.use_case().login(        
             email = "test@test.com",
             password = "Password123!", 
-            response=context.response,
-            request=context.request
+            ip="127.0.0.1",
+            user_agent="Test User Agent",
+            response=context.response
             )
 
 
@@ -63,8 +65,9 @@ def test_debe_dar_error_cuando_la_contrasena_es_incorrecta():
         context.use_case().login(
             email="test@test.com",
             password="wrong_password",
-            response=context.response,
-            request=context.request
+            ip="127.0.0.1",
+            user_agent="Test User Agent",
+            response=context.response
         )
 
 
@@ -85,8 +88,9 @@ def test_verifica_que_tokens_es_llamado_correctamente():
     cookies = context.use_case().login(
         email="test@test.com",
         password="password@123",
-        response=context.response,
-        request=context.request
+        ip="127.0.0.1",
+        user_agent="Test User Agent",
+        response=context.response
     )
     
     assert context.token_service.fue_llamado is True
@@ -109,8 +113,9 @@ def test_verifica_que_cookies_service_es_llamado_correctamente():
     cookies = context.use_case().login(
         email="test@test.com",
         password="password@123",
-        response=context.response,
-        request=context.request
+        ip="127.0.0.1",
+        user_agent="Test User Agent",
+        response=context.response
     )
     
     assert context.cookies_service.fue_llamado is True
@@ -133,8 +138,9 @@ def test_verifica_que_el_usuario_publico_se_retorna_correctamente():
     cookies = context.use_case().login(
         email="test@test.com",
         password="password@123",
-        response=context.response,
-        request=context.request
+        ip="127.0.0.1",
+        user_agent="Test User Agent",
+        response=context.response
     )
 
     assert cookies.usuario.email == "test@test.com"
@@ -161,8 +167,9 @@ def test_debe_verificar_el_id_del_usuario():
     cookies = context.use_case().login(
         email="test@test.com",
         password="password@123",
-        response=context.response,
-        request=context.request
+        ip="127.0.0.1",
+        user_agent="Test User Agent",
+        response=context.response
     )
 
     assert context.token_service.user_id_recibido == 1
@@ -185,8 +192,9 @@ def test_debe_verificar_que_el_token_repository_fue_llamado_correctamente():
     cookies = context.use_case().login(
         email="test@test.com",
         password="password@123",
-        response=context.response,
-        request=context.request
+        ip="127.0.0.1",
+        user_agent="Test User Agent",
+        response=context.response
     )
 
     assert context.token_repository.fue_llamado is True
