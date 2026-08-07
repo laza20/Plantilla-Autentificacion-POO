@@ -38,3 +38,12 @@ class SesionRepository:
         if sesion:
             self.session.delete(sesion)
             self.session.commit()
+
+    def listar_sesiones(
+        self,
+        id_usuario: int
+    ) -> list[Sesiones]:
+        """
+        Función para listar todas las sesiones activas de un usuario específico.
+        """
+        return self.session.query(Sesiones).filter_by(id_usuario=id_usuario).all()

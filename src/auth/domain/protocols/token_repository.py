@@ -1,5 +1,5 @@
 from typing import Protocol, runtime_checkable
-from src.auth.infrastructure.persistence.postgres.models_sesiones import SesionesNoTable as Sesion
+from src.auth.infrastructure.persistence.postgres.models_sesiones import SesionesVisual as Sesiones
 
 
 @runtime_checkable
@@ -14,9 +14,8 @@ class TokenRepositoryProtocol(Protocol):
 
     def listar_sesiones(
         self,
-        id_usuario: int,
-        ip: str
-    ) -> list[Sesion]: ...
+        id_usuario: int
+    ) -> list[Sesiones]: ...
 
     def eliminar_sesion(
         self,
