@@ -33,7 +33,7 @@ class LoginUseCase:
         self.user_validation_service = user_validation_service
         self.token_repository = token_repository
 
-    def login(self, email: str, password: str, response:Response, request:Request)-> LoginResponse:
+    def login(self, email: str, password: str, ip:str, user_agent:str, response:Response)-> LoginResponse:
         try:
             usuario_db = self.user_validation_service.obtener_usuario_existente(email)
                 
@@ -50,8 +50,8 @@ class LoginUseCase:
             self._insertar_sesion(
                 hashed_token=hashed_token,
                 id_usuario=usuario_db.id_usuario,
-                ip=self._obtener_ip(request),
-                user_agent=request.headers.get("user-agent", "Desconocido")
+                ip=ip,
+                user_agent=user_agent
             )
             return login_response
         
@@ -76,14 +76,6 @@ class LoginUseCase:
             email= usuario.email,
             imagen_url= usuario.imagen_url
         )
-
-    def _obtener_ip(self, request: Request) -> str:
-        forwarded = request.headers.get("X-Forwarded-For")
-
-        if forwarded:
-            return forwarded.split(",")[0].strip()
-
-        return request.client.host
 
     def _insertar_sesion(self, hashed_token:str, id_usuario:int, ip:str, user_agent:str):
         self.token_repository.insertar_sesion(
