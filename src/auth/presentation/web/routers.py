@@ -2,15 +2,17 @@ from src.auth.infrastructure.persistence.postgres.models_auth_users import Login
 from fastapi import APIRouter, Depends, status, Response, Path, HTTPException, UploadFile, Request
 from src.auth.presentation.web.utils.request_metadata import RequestMetadata
 from src.auth.application.use_cases.register import RegisterUseCase
+from src.auth.application.use_cases.listar_sesiones import ListarSesionesUseCase
 from src.auth.application.use_cases.login import LoginUseCase
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
+from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.container.providers import (
     get_register_use_case, get_login_use_case, 
     get_verify_mail_use_case, get_user_validation_service, 
-    get_logout_service, get_refresh_token_service)
+    get_logout_service, get_refresh_token_service, get_token_repository, get_listar_sesiones_use_case)
 from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.application.dtos import parse_usuario_form
 from src.config.config import settings
@@ -113,3 +115,18 @@ async def logout(
     refresh_token = request.cookies.get("refresh_token")
     logout_service.logout(refresh_token=refresh_token,response=response)
     return {"message": "Sesión cerrada"}
+
+
+@router.get("/listar_sesiones")
+async def list_sesions(
+    request: Request,
+    user_validation_service: UserValidationService = Depends(get_user_validation_service),
+    listar_sesiones_use_case: ListarSesionesUseCase = Depends(get_listar_sesiones_use_case),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    End point encargado de listar las sesiones activas de un usuario.
+    """
+    ip = RequestMetadata(request).get_ip()
+    id_usuario = user_validation_service.get_user(current_user).id_usuario
+    return listar_sesiones_use_case.ejecutar(id_usuario=id_usuario, ip=ip)
