@@ -3,6 +3,7 @@ from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.domain.protocols.auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.protocols.user_repository import UsuarioRepositoryProtocol
 from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
+from src.auth.application.use_cases.listar_sesiones import ListarSesionesUseCase
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.protocols.password_service import PasswordProtocol
 from src.auth.domain.protocols.mail_service import MailProtocol
@@ -15,6 +16,19 @@ from src.auth.domain.services.user_validation_service import UserValidationServi
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
+
+
+class ContainerListarSesiones:
+    def __init__(
+        self,
+        token_repository: TokenRepositoryProtocol
+    ):
+        self.token_repository = token_repository
+    @property
+    def listar_sesiones_use_case(self) -> ListarSesionesUseCase:
+        return ListarSesionesUseCase(
+            token_repository=self.token_repository
+            )
 
 
 class ContainerRegister:
