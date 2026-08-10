@@ -41,3 +41,14 @@ class FakeSesionRepository:
             return True
         else:
             return False
+
+
+    def listar_sesiones(self, id_usuario: int):
+        """
+        Función para listar todas las sesiones de un usuario.
+        """
+        self.fue_llamado = True
+        sesiones_usuario = [
+            sesion for sesion in self._sesiones.values() if sesion.id_usuario == id_usuario
+        ]
+        return sesiones_usuario
