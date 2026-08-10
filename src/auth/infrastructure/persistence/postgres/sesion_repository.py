@@ -47,3 +47,17 @@ class SesionRepository:
         Función para listar todas las sesiones activas de un usuario específico.
         """
         return self.session.query(Sesiones).filter_by(id_usuario=id_usuario).all()
+
+
+    def eliminar_sesion(
+        self,
+        id_sesion: int,
+        id_usuario: int
+    ) -> None:
+        """
+        Función para eliminar una sesión específica de un usuario.
+        """
+        sesion = self.session.query(Sesiones).filter_by(id_sesion=id_sesion, id_usuario=id_usuario).first()
+        if sesion:
+            self.session.delete(sesion)
+            self.session.commit()
