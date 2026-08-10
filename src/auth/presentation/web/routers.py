@@ -130,3 +130,18 @@ async def list_sesions(
     ip = RequestMetadata(request).get_ip()
     id_usuario = user_validation_service.get_user(current_user).id_usuario
     return listar_sesiones_use_case.ejecutar(id_usuario=id_usuario, ip=ip)
+
+
+@router.delete("/eliminar_sesion/{id_sesion}")
+async def eliminar_sesion(
+    id_sesion: int = Path(..., description="ID de la sesión a eliminar"),
+    user_validation_service: UserValidationService = Depends(get_user_validation_service),
+    token_repository: TokenRepositoryProtocol = Depends(get_token_repository),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    End point encargado de eliminar una sesión activa de un usuario.
+    """
+    id_usuario = user_validation_service.get_user(current_user).id_usuario
+    token_repository.eliminar_sesion(id_sesion=id_sesion, id_usuario=id_usuario)
+    return {"message": "Sesión eliminada"}
