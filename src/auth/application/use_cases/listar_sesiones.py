@@ -11,12 +11,12 @@ class ListarSesionesUseCase:
 
     def ejecutar(self, id_usuario:int, ip:str) -> ListaSesiones:
         sesiones = self.token_repository.listar_sesiones(id_usuario=id_usuario)
-        return self._trasnformar_sesiones(sesiones, ip)
+        return self._transformar_sesiones(sesiones, ip)
 
-    def _trasnformar_sesiones(self, sesiones: list[SesionesVisual], ip:str) -> ListaSesiones:
-        sesiones_trasnformadas = [SesionesVisual(**s.dict()) for s in sesiones]
-        for s in sesiones_trasnformadas:
+    def _transformar_sesiones(self, sesiones: list[SesionesVisual], ip:str) -> ListaSesiones:
+        sesiones_transformadas = [SesionesVisual(**s.dict()) for s in sesiones]
+        for s in sesiones_transformadas:
             if s.ip == ip:
                 s.es_actual = True
-        return ListaSesiones(sesiones=sesiones_trasnformadas)
+        return ListaSesiones(sesiones=sesiones_transformadas)
 
