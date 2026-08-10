@@ -19,3 +19,14 @@ def test_listar_sesiones_usuario_logeado_correctamente():
     assert sesiones.sesiones[0].id_usuario == 1
     assert sesiones.sesiones[0].ip == "127.0.0.1"
     assert sesiones.sesiones[0].user_agent == "sample_user_agent"
+
+
+def test_listar_sesiones_usuario_sin_sesiones():
+    """
+    Verifica que se devuelva una lista vacía si el usuario no tiene sesiones activas.
+    """
+    contex_listar_sesion = ListarSesionesEnvironment()
+
+    sesiones = contex_listar_sesion.use_case().ejecutar(id_usuario=2, ip="127.0.0.1")
+
+    assert len(sesiones.sesiones) == 0
