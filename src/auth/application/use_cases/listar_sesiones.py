@@ -14,7 +14,7 @@ class ListarSesionesUseCase:
         return self._transformar_sesiones(sesiones, ip)
 
     def _transformar_sesiones(self, sesiones: list[SesionesVisual], ip:str) -> ListaSesiones:
-        sesiones_transformadas = [SesionesVisual(**s.dict()) for s in sesiones]
+        sesiones_transformadas = [SesionesVisual(**s.model_dump()) for s in sesiones]
         for s in sesiones_transformadas:
             if s.ip == ip:
                 s.es_actual = True
