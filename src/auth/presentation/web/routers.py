@@ -4,6 +4,7 @@ from src.auth.presentation.web.utils.request_metadata import RequestMetadata
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.listar_sesiones import ListarSesionesUseCase
 from src.auth.application.use_cases.login import LoginUseCase
+from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
 from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
@@ -12,7 +13,8 @@ from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.container.providers import (
     get_register_use_case, get_login_use_case, 
     get_verify_mail_use_case, get_user_validation_service, 
-    get_logout_service, get_refresh_token_service, get_token_repository, get_listar_sesiones_use_case)
+    get_logout_service, get_refresh_token_service, get_listar_sesiones_use_case,
+    get_eliminar_sesiones_use_case)
 from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.application.dtos import parse_usuario_form
 from src.config.config import settings
@@ -136,12 +138,12 @@ async def list_sesions(
 async def eliminar_sesion(
     id_sesion: int = Path(..., description="ID de la sesión a eliminar"),
     user_validation_service: UserValidationService = Depends(get_user_validation_service),
-    token_repository: TokenRepositoryProtocol = Depends(get_token_repository),
+    eliminar_sesiones_use_case: EliminarSesionesUseCase = Depends(get_eliminar_sesiones_use_case),
     current_user: dict = Depends(get_current_user)
 ):
     """
     End point encargado de eliminar una sesión activa de un usuario.
     """
     id_usuario = user_validation_service.get_user(current_user).id_usuario
-    token_repository.eliminar_sesion(id_sesion=id_sesion, id_usuario=id_usuario)
+    eliminar_sesiones_use_case.ejecutar(id_sesion=id_sesion, id_usuario=id_usuario)
     return {"message": "Sesión eliminada"}
