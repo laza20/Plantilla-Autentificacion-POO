@@ -6,8 +6,9 @@ from src.config.config import Settings, get_settings
 from src.container.auth_container import (
     ContainerRegister, ContainerLogin, 
     ContainerVerifyMail, ContainerLogout,
-    ContainerRefreshToken, ContainerListarSesiones)
+    ContainerRefreshToken, ContainerListarSesiones, ContainerEliminarSesiones)
 from src.auth.presentation.web.cookies.cookies import CookiesService
+from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
 from src.auth.application.use_cases.listar_sesiones import ListarSesionesUseCase
 from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
@@ -166,4 +167,9 @@ def get_listar_sesiones_use_case(
     token_repository: TokenRepositoryProtocol = Depends(get_token_repository)
 ) -> ListarSesionesUseCase:
     return ContainerListarSesiones(token_repository=token_repository).listar_sesiones_use_case
+
+def get_eliminar_sesiones_use_case(
+    token_repository: TokenRepositoryProtocol = Depends(get_token_repository)
+) -> EliminarSesionesUseCase:
+    return ContainerEliminarSesiones(token_repository=token_repository).eliminar_sesiones_use_case
 
