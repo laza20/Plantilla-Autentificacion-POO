@@ -8,6 +8,7 @@ class FakeSesionRepository:
         self.fue_llamado: bool = False
         self.hash_refresh_token: str = ""
         self.token_eliminado: str = ""
+        self._next_sesion_id = 1
 
     def insertar_sesion(
         self,
@@ -25,7 +26,9 @@ class FakeSesionRepository:
             user_agent=user_agent
         )
         copia_sesion = sesion.model_copy()
+        copia_sesion.id_sesion = self._next_sesion_id
         self._sesiones[hash_token] = copia_sesion
+        self._next_sesion_id += 1
         self.fue_llamado = True
         self.hash_refresh_token = hash_token
         return copia_sesion
@@ -52,3 +55,16 @@ class FakeSesionRepository:
             sesion for sesion in self._sesiones.values() if sesion.id_usuario == id_usuario
         ]
         return sesiones_usuario
+
+    def eliminar_sesion(self, id_sesion: int, id_usuario: int):
+        """
+        Función para eliminar una sesión específica de un usuario.
+        """
+        self.fue_llamado = True
+        for hash_refresh_token, sesion in list(self._sesiones.items()):
+            if sesion.id_sesion == id_sesion and sesion.id_usuario == id_usuario:
+                del self._sesiones[hash_refresh_token]
+                self.token_eliminado = hash_refresh_token
+                return True
+            
+        return False
