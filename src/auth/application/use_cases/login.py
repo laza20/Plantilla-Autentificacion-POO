@@ -33,7 +33,7 @@ class LoginUseCase:
         self.user_validation_service = user_validation_service
         self.token_repository = token_repository
 
-    def login(self, email: str, password: str, ip:str, user_agent:str, response:Response)-> LoginResponse:
+    def ejecutar(self, email: str, password: str, ip:str, user_agent:str, response:Response)-> LoginResponse:
         try:
             usuario_db = self.user_validation_service.obtener_usuario_existente(email)
                 

@@ -41,7 +41,7 @@ class RegisterUseCase:
         self.settings = settings
         self.usuario_repository = usuario_repository
 
-    async def register(self, usuario:UserRegisterDTO, imagen:UploadFile | None) -> AuthUser:
+    async def ejecutar(self, usuario:UserRegisterDTO, imagen:UploadFile | None) -> AuthUser:
         if usuario is None:
             raise SinCargas()
 

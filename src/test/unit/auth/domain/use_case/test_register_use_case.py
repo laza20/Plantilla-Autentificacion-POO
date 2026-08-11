@@ -19,7 +19,7 @@ async def test_debe_registrar_un_usuario_valido_sin_imagen():
         email = "test@test.com",
         password = "Password123!"
     )
-    usuario_creado = await context.use_case().register(
+    usuario_creado = await context.use_case().ejecutar(
         usuario,
         imagen=None
     )
@@ -39,7 +39,7 @@ async def test_debe_crear_un_usuario():
         password = "Password123!"
     )
 
-    usuario_creado = await context.use_case().register(
+    usuario_creado = await context.use_case().ejecutar(
         usuario,
         imagen=None
     )
@@ -58,7 +58,7 @@ async def test_debe_hashear_la_contraseña_del_usuario():
         password = "Password123!"
     )
 
-    usuario_creado = await context.use_case().register(
+    usuario_creado = await context.use_case().ejecutar(
         usuario,
         imagen=None
     )
@@ -86,7 +86,7 @@ async def test_no_debe_registrar_un_email_duplicado():
     )
 
     with pytest.raises(MailRepetido):
-        await context.use_case().register(
+        await context.use_case().ejecutar(
             usuario,
             imagen=None
         )
@@ -100,7 +100,7 @@ async def test_no_debe_registrar_un_usuario_sin_datos():
     context = RegisterTestEnvironment()
 
     with pytest.raises(SinCargas):
-        await context.use_case().register(None, imagen=None)
+        await context.use_case().ejecutar(None, imagen=None)
 
 
 @pytest.mark.asyncio
@@ -115,7 +115,7 @@ async def test_registro_verifica_normalizacion_de_datos():
         password="Password123!"
     )
 
-    usuario_creado = await context.use_case().register(
+    usuario_creado = await context.use_case().ejecutar(
         usuario,
         imagen=None
         )
@@ -137,7 +137,7 @@ async def test_debe_lanzar_error_si_el_email_supera_la_longitud_maxima():
 
 
     with pytest.raises(LongitudExcedida):
-        await context.use_case().register(usuario, imagen=None)
+        await context.use_case().ejecutar(usuario, imagen=None)
 
 @pytest.mark.asyncio
 async def test_debe_registrar_un_usuario_con_imagen():
@@ -154,7 +154,7 @@ async def test_debe_registrar_un_usuario_con_imagen():
         filename="foto.jpg",
         file=BytesIO(b"contenido")
     )
-    usuario_creado = await context.use_case().register(
+    usuario_creado = await context.use_case().ejecutar(
         usuario,
         imagen=imagen
     )
@@ -177,7 +177,7 @@ async def test_debe_utilizar_el_servicio_de_imagenes_cuando_se_envia_una_imagen(
         file=BytesIO(b"contenido")
     )
 
-    await context.use_case().register(usuario, imagen=imagen)
+    await context.use_case().ejecutar(usuario, imagen=imagen)
 
     assert context.image_service.fue_llamado is True
     assert context.image_service.imagen_recibida == imagen
@@ -196,7 +196,7 @@ async def test_debe_generar_un_correo_con_el_token_de_activacion():
         password = "Password123!"
     )
 
-    usuario_creado = await context.use_case().register(
+    usuario_creado = await context.use_case().ejecutar(
         usuario,
         imagen=None
     )
@@ -217,7 +217,7 @@ async def test_debe_generar_un_token_de_activacion():
         password = "Password123!"
     )
 
-    usuario_creado = await context.use_case().register(
+    usuario_creado = await context.use_case().ejecutar(
         usuario,
         imagen=None
     )
@@ -240,7 +240,7 @@ async def test_debe_dar_error_al_incumplir_politica_de_contraseña():
     )
 
     with pytest.raises(ContraseñaNoSegura):
-        await context.use_case().register(usuario, imagen=None)
+        await context.use_case().ejecutar(usuario, imagen=None)
 
 
 @pytest.mark.asyncio
@@ -257,4 +257,4 @@ async def test_debe_dar_error_al_incumplir_politica_de_mail():
     )
 
     with pytest.raises(MailNoValido):
-        await context.use_case().register(usuario, imagen=None)
+        await context.use_case().ejecutar(usuario, imagen=None)

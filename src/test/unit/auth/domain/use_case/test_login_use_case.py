@@ -18,7 +18,7 @@ def test_debe_logear_un_usuario_valido():
     context.auth_user_repository.insertar(usuario_existente)
 
 
-    cookies = context.use_case().login(
+    cookies = context.use_case().ejecutar(
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
@@ -38,7 +38,7 @@ def test_debe_dar_error_cuando_el_usuario_no_existe():
     context = LoginTestEnvironment()
     
     with pytest.raises(UsuarioNoEncontrado):
-        context.use_case().login(        
+        context.use_case().ejecutar(        
             email = "test@test.com",
             password = "Password123!", 
             ip="127.0.0.1",
@@ -62,7 +62,7 @@ def test_debe_dar_error_cuando_la_contrasena_es_incorrecta():
     context.auth_user_repository.insertar(usuario_existente)
 
     with pytest.raises(LoginError):
-        context.use_case().login(
+        context.use_case().ejecutar(
             email="test@test.com",
             password="wrong_password",
             ip="127.0.0.1",
@@ -85,7 +85,7 @@ def test_verifica_que_tokens_es_llamado_correctamente():
     context.auth_user_repository.insertar(usuario_existente)
 
 
-    cookies = context.use_case().login(
+    cookies = context.use_case().ejecutar(
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
@@ -110,7 +110,7 @@ def test_verifica_que_cookies_service_es_llamado_correctamente():
     context.auth_user_repository.insertar(usuario_existente)
 
 
-    cookies = context.use_case().login(
+    cookies = context.use_case().ejecutar(
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
@@ -135,7 +135,7 @@ def test_verifica_que_el_usuario_publico_se_retorna_correctamente():
 
     context.auth_user_repository.insertar(usuario_existente)
 
-    cookies = context.use_case().login(
+    cookies = context.use_case().ejecutar(
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
@@ -164,7 +164,7 @@ def test_debe_verificar_el_id_del_usuario():
 
     context.auth_user_repository.insertar(usuario_existente)
 
-    cookies = context.use_case().login(
+    cookies = context.use_case().ejecutar(
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
@@ -189,7 +189,7 @@ def test_debe_verificar_que_el_token_repository_fue_llamado_correctamente():
 
     context.auth_user_repository.insertar(usuario_existente)
 
-    cookies = context.use_case().login(
+    cookies = context.use_case().ejecutar(
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",

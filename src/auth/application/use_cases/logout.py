@@ -14,7 +14,7 @@ class LogoutUseCase:
         self.token_service = token_service
         self.token_repository = token_repository
 
-    def logout(self, refresh_token: str, response: Response):
+    def ejecutar(self, refresh_token: str, response: Response):
         """
         Servicio para deslogear a un usuario.
         """

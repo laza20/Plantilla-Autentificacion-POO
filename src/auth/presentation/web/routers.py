@@ -44,7 +44,7 @@ async def crear_usuario(
     8. Devuelve el nuevo usuario creado.
     """
     usuario, imagen = datos
-    usuario_nuevo = await register_use_case.register(usuario, imagen)
+    usuario_nuevo = await register_use_case.ejecutar(usuario, imagen)
     return usuario_nuevo
 
 @router.get("/verificar/{token}", status_code=status.HTTP_200_OK)
@@ -56,7 +56,7 @@ async def verificar_mail(
     End point el cual permite la verificacion de una cuenta por medio de un token enviado al correo del usuario.
     """
     try:
-        verify_mail.verificar_mail(token, response)
+        verify_mail.ejecutar(token, response)
         return {"status": "success", "message": "¡Cuenta activada con éxito!"}
     except VerificacionExpirada:
         raise HTTPException(status_code=400, detail="Token expirado")
@@ -75,7 +75,7 @@ async def logearse(
     ip = request_metadata.get_ip()
     user_agent = request_metadata.get_user_agent()
 
-    logeado = login_use_case.login(usuario.username, usuario.password, ip, user_agent, response)
+    logeado = login_use_case.ejecutar(usuario.username, usuario.password, ip, user_agent, response)
     return logeado
 
 
@@ -90,7 +90,7 @@ async def refresh_token(
     if not refresh_token:
         raise SinRefreshToken("No hay refresh token en la cookie")
 
-    refresh_token_service.refreshed_token(refresh_token, response)
+    refresh_token_service.ejecutar(refresh_token, response)
 
     return {"message": "Access token renovado"}
 
@@ -115,7 +115,7 @@ async def logout(
     End point encargado de desloguear un usuario.
     """
     refresh_token = request.cookies.get("refresh_token")
-    logout_service.logout(refresh_token=refresh_token,response=response)
+    logout_service.ejecutar(refresh_token=refresh_token,response=response)
     return {"message": "Sesión cerrada"}
 
 

@@ -24,7 +24,7 @@ class VerifyMailUseCase:
         self.cookies_service = cookies_service
         self.token_service = token_service
 
-    def verificar_mail(self, token: str, response:Response)-> UserTokens:
+    def ejecutar(self, token: str, response:Response)-> UserTokens:
         """
         Funcion encargada de verificar el mail del usuario utilizando un token de verificación.
         El token se decodifica para obtener el ID del usuario, luego se busca el usuario en la base de datos y se activa su cuenta.

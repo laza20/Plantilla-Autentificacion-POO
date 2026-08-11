@@ -16,7 +16,7 @@ def test_debe_verificar_el_flujo_correcto_del_refresh():
 
     usuario = context_repository.insertar(usuario_existente)
 
-    context_refresh.use_case().refreshed_token(refresh_token=f"refresh_token_{usuario.id_usuario}",
+    context_refresh.use_case().ejecutar(refresh_token=f"refresh_token_{usuario.id_usuario}",
             response=Response())
         
     assert context_refresh.token_service.user_id_recibido == usuario.id_usuario
@@ -45,7 +45,7 @@ def test_debe_dar_error_cuando_el_formato_del_token_es_invalido(token):
     context = RefreshTokenTestEnvironment()
 
     with pytest.raises(VerificacionInvalida):
-        context.use_case().refreshed_token(
+        context.use_case().ejecutar(
             refresh_token=token,
             response=Response(),
         )
@@ -57,7 +57,7 @@ def test_debe_verificar_que_el_response_sea_correcto():
     """
     context_refresh = RefreshTokenTestEnvironment()
     response = Response()
-    context_refresh.use_case().refreshed_token(refresh_token=f"refresh_token_1",
+    context_refresh.use_case().ejecutar(refresh_token=f"refresh_token_1",
             response=response)
 
     assert context_refresh.cookies_service.response is response
@@ -69,7 +69,7 @@ def test_debe_verificar_que_el_servicio_de_token_fue_llamado_con_el_id_correcto(
     """
     context_refresh = RefreshTokenTestEnvironment()
     user_id = 42
-    context_refresh.use_case().refreshed_token(refresh_token=f"refresh_token_{user_id}",
+    context_refresh.use_case().ejecutar(refresh_token=f"refresh_token_{user_id}",
             response=Response())
 
     assert context_refresh.token_service.user_id_recibido == user_id

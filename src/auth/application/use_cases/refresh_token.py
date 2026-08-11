@@ -12,7 +12,7 @@ class RefreshTokenUseCase:
         self.token_service = token_service
         self.cookies_service = cookies_service
 
-    def refreshed_token(self, refresh_token: str, response:Response):
+    def ejecutar(self, refresh_token: str, response:Response):
         """
         Servicio para refrescar el access token usando un refresh token válido.
         """
