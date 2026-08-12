@@ -145,5 +145,5 @@ async def eliminar_sesion(
     End point encargado de eliminar una sesión activa de un usuario.
     """
     id_usuario = user_validation_service.get_user(current_user).id_usuario
-    eliminar_sesiones_use_case.ejecutar(id_sesion=id_sesion, id_usuario=id_usuario)
-    return {"message": "Sesión eliminada"}
+    resultado = eliminar_sesiones_use_case.ejecutar(id_sesion=id_sesion, id_usuario=id_usuario)
+    return resultado

@@ -61,3 +61,6 @@ class SesionRepository:
         if sesion:
             self.session.delete(sesion)
             self.session.commit()
+            return True
+
+        return False
