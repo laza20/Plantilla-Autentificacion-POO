@@ -1,4 +1,5 @@
 from src.test.fixtures.fixture_listar_sesiones import ListarSesionesEnvironment
+from test.factories.factory_sesiones import crear_sesion_de_prueba
 
 
 def test_listar_sesiones_usuario_logeado_correctamente():
@@ -7,18 +8,13 @@ def test_listar_sesiones_usuario_logeado_correctamente():
     """
     contex_listar_sesion = ListarSesionesEnvironment()
 
-    contex_listar_sesion.token_repository.insertar_sesion(
-        hash_token="sample_hash_token",
-        id_usuario=1,
-        ip="127.0.0.1",
-        user_agent="sample_user_agent"
-    )
+    crear_sesion_de_prueba(contex_listar_sesion.token_repository)
 
     sesiones = contex_listar_sesion.use_case().ejecutar(id_usuario=1, ip="127.0.0.1")
     assert len(sesiones.sesiones) == 1
     assert sesiones.sesiones[0].id_usuario == 1
     assert sesiones.sesiones[0].ip == "127.0.0.1"
-    assert sesiones.sesiones[0].user_agent == "sample_user_agent"
+    assert sesiones.sesiones[0].user_agent == "user_agent_1"
 
 
 def test_listar_sesiones_usuario_sin_sesiones():
@@ -37,17 +33,13 @@ def test_debe_listar_varias_sesiones_y_marcar_la_actual():
     """
     contex_listar_sesion = ListarSesionesEnvironment()
 
-    contex_listar_sesion.token_repository.insertar_sesion(
-        hash_token="hash_token_1",
-        id_usuario=1,
-        ip="127.0.0.1",
-        user_agent="user_agent_1")
-
-    contex_listar_sesion.token_repository.insertar_sesion(
-        hash_token="hash_token_2",
-        id_usuario=1,
-        ip="128.0.0.1",
-        user_agent="user_agent_2")
+    crear_sesion_de_prueba(contex_listar_sesion.token_repository)
+    crear_sesion_de_prueba(
+        contex_listar_sesion.token_repository,  
+        hash_token="hash_token_2", 
+        ip= "128.0.0.1", 
+        user_agent="user_agent_2"
+        )
 
     sesiones = contex_listar_sesion.use_case().ejecutar(id_usuario=1, ip="127.0.0.1")
 
@@ -62,17 +54,13 @@ def test_debe_listar_varias_sesiones_sin_la_ip_actual():
     """
     contex_listar_sesion = ListarSesionesEnvironment()
 
-    contex_listar_sesion.token_repository.insertar_sesion(
-        hash_token="hash_token_1",
-        id_usuario=1,
-        ip="127.0.0.1",
-        user_agent="user_agent_1")
-
-    contex_listar_sesion.token_repository.insertar_sesion(
-        hash_token="hash_token_2",
-        id_usuario=1,
-        ip="128.0.0.1",
-        user_agent="user_agent_2")
+    crear_sesion_de_prueba(contex_listar_sesion.token_repository)
+    crear_sesion_de_prueba(
+        contex_listar_sesion.token_repository,  
+        hash_token="hash_token_2", 
+        ip= "128.0.0.1", 
+        user_agent="user_agent_2"
+        )
 
     sesiones = contex_listar_sesion.use_case().ejecutar(id_usuario=1, ip="129.0.0.1")
 
