@@ -1,5 +1,6 @@
 from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 from src.test.fixtures.fixture_login_case import LoginTestEnvironment
+from src.test.factories.factory_usuarios import crear_usuario_de_prueba
 from src.auth.domain.exceptions.usuarios_exceptions import LoginError, UsuarioNoEncontrado
 import pytest
 
@@ -10,13 +11,7 @@ def test_debe_logear_un_usuario_valido():
     """
     context = LoginTestEnvironment()
 
-    usuario_existente = AuthUser(
-        email="test@test.com",
-        password="hashed_password@123"
-    )
-
-    context.auth_user_repository.insertar(usuario_existente)
-
+    crear_usuario_de_prueba(context.auth_user_repository)
 
     cookies = context.use_case().ejecutar(
         email="test@test.com",
@@ -54,12 +49,7 @@ def test_debe_dar_error_cuando_la_contrasena_es_incorrecta():
     """
     context = LoginTestEnvironment()
 
-    usuario_existente = AuthUser(
-        email="test@test.com",
-        password="hashed_password@123"
-    )
-
-    context.auth_user_repository.insertar(usuario_existente)
+    crear_usuario_de_prueba(context.auth_user_repository)
 
     with pytest.raises(LoginError):
         context.use_case().ejecutar(
@@ -77,15 +67,10 @@ def test_verifica_que_tokens_es_llamado_correctamente():
     """
     context = LoginTestEnvironment()
 
-    usuario_existente = AuthUser(
-        email="test@test.com",
-        password="hashed_password@123"
-    )
-
-    context.auth_user_repository.insertar(usuario_existente)
+    crear_usuario_de_prueba(context.auth_user_repository)
 
 
-    cookies = context.use_case().ejecutar(
+    context.use_case().ejecutar(
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
@@ -102,15 +87,9 @@ def test_verifica_que_cookies_service_es_llamado_correctamente():
     """
     context = LoginTestEnvironment()
 
-    usuario_existente = AuthUser(
-        email="test@test.com",
-        password="hashed_password@123"
-    )
+    crear_usuario_de_prueba(context.auth_user_repository)
 
-    context.auth_user_repository.insertar(usuario_existente)
-
-
-    cookies = context.use_case().ejecutar(
+    context.use_case().ejecutar(
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
@@ -126,14 +105,7 @@ def test_verifica_que_el_usuario_publico_se_retorna_correctamente():
     Verifica que el usuario público se retorne correctamente al iniciar sesión.
     """
     context = LoginTestEnvironment()
-
-    usuario_existente = AuthUser(
-        email="test@test.com",
-        password="hashed_password@123",
-        imagen_url="http://example.com/image.jpg"
-    )
-
-    context.auth_user_repository.insertar(usuario_existente)
+    crear_usuario_de_prueba(context.auth_user_repository, imagen_url="http://example.com/image.jpg")
 
     cookies = context.use_case().ejecutar(
         email="test@test.com",
@@ -156,15 +128,9 @@ def test_debe_verificar_el_id_del_usuario():
 
     context = LoginTestEnvironment()
 
-    usuario_existente = AuthUser(
-        email="test@test.com",
-        password="hashed_password@123",
-        imagen_url="http://example.com/image.jpg"
-    )
+    crear_usuario_de_prueba(context.auth_user_repository, imagen_url="http://example.com/image.jpg")
 
-    context.auth_user_repository.insertar(usuario_existente)
-
-    cookies = context.use_case().ejecutar(
+    context.use_case().ejecutar(
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
@@ -182,14 +148,9 @@ def test_debe_verificar_que_el_token_repository_fue_llamado_correctamente():
 
     context = LoginTestEnvironment()
 
-    usuario_existente = AuthUser(
-        email="test@test.com",
-        password="hashed_password@123"
-    )
+    crear_usuario_de_prueba(context.auth_user_repository)
 
-    context.auth_user_repository.insertar(usuario_existente)
-
-    cookies = context.use_case().ejecutar(
+    context.use_case().ejecutar(
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
