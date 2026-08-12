@@ -1,5 +1,5 @@
 from src.test.fixtures.fixture_eliminar_sesiones import EliminarSesionesEnvironment
-from src.test.factories.factory_eliminar_sesiones import crear_sesion_de_prueba
+from test.factories.factory_sesiones import crear_sesion_de_prueba
 
 def test_eliminar_sesion_correctamente():
     """
