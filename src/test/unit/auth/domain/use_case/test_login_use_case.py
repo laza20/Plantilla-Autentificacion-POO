@@ -1,4 +1,3 @@
-from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 from src.test.fixtures.fixture_login_case import LoginTestEnvironment
 from src.test.factories.factory_usuarios import crear_usuario_de_prueba
 from src.auth.domain.exceptions.usuarios_exceptions import LoginError, UsuarioNoEncontrado

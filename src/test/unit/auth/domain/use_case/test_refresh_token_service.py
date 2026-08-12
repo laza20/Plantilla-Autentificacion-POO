@@ -2,19 +2,16 @@ import pytest
 from src.test.fixtures.fixture_refresh_token_case import RefreshTokenTestEnvironment
 from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 from src.test.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
+from src.test.factories.factory_usuarios import crear_usuario_de_prueba
 from fastapi import Response
 from src.auth.domain.exceptions.tokens import VerificacionInvalida
+
 
 def test_debe_verificar_el_flujo_correcto_del_refresh():
     context_refresh = RefreshTokenTestEnvironment()
     context_repository = FakeUserRepository()
 
-    usuario_existente = AuthUser(
-        email="test@test.com",
-        password="hashed_password@123"
-    )
-
-    usuario = context_repository.insertar(usuario_existente)
+    usuario = crear_usuario_de_prueba(context_repository)
 
     context_refresh.use_case().ejecutar(refresh_token=f"refresh_token_{usuario.id_usuario}",
             response=Response())
