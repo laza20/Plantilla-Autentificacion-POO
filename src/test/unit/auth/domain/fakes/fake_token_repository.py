@@ -65,7 +65,8 @@ class FakeSesionRepository:
             if sesion.id_sesion == id_sesion and sesion.id_usuario == id_usuario:
                 del self._sesiones[hash_refresh_token]
                 self.token_eliminado = hash_refresh_token
-                return
+                return True
 
             
         self.token_eliminado = None
+        return False
