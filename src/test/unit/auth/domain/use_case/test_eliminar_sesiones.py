@@ -21,3 +21,23 @@ def test_eliminar_sesion_correctamente():
 
     assert context.token_repository.fue_llamado is True
     assert context.token_repository.token_eliminado == sesion_insertada.hash_refresh_token
+
+def test_eliminar_sesion_que_no_existe():
+    """
+    El test debe verificar que el usuario quiere eliminar una sesion que no existe.
+    """
+    context = EliminarSesionesEnvironment()
+    id_usuario = 1
+    hash_token = "hash_token_1"
+
+    sesion_insertada = context.token_repository.insertar_sesion(
+        hash_token=hash_token,
+        id_usuario=id_usuario,
+        ip="127.0.0.1",
+        user_agent="user_agent_1")
+
+
+    resultado = context.use_case().ejecutar(id_sesion=5, id_usuario=sesion_insertada.id_usuario)
+
+    assert context.token_repository.fue_llamado is True
+    assert context.token_repository.token_eliminado == None
