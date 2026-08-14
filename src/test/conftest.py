@@ -3,7 +3,7 @@ from src.main import app
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def test_client():
     with TestClient(app) as client:
         yield client
