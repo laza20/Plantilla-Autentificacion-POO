@@ -10,6 +10,7 @@ from fastapi import status
 from src.container.providers import get_register_use_case
 from src.config.config import settings
 import pytest
+from io import BytesIO
 
 def test_register_crear_correctamente(test_client):
     usuario_retorno = AuthUser(
@@ -74,3 +75,30 @@ def test_debe_dar_error_por_datos_mal_enviados(test_client):
     )
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+def test_debe_registrar_correctamente_con_imagen(test_client):
+    usuario_retorno = AuthUser(
+            **{
+                "email": "test@test.com",
+                "password": "password@123",
+                "imagen_url": "https://res.cloudinary.com/demo/image/upload/foto.jpg"
+            }
+        )
+    app.dependency_overrides[get_register_use_case] = crear_override(resultado=usuario_retorno)
+    response = test_client.post(
+        f"/{settings.NOMBRE_APP}/usuarios/registrar",
+        data={
+            "email": "test@test.com",
+            "password": "password@123",
+        },
+        files={
+            "imagen": (
+                "foto.jpg",
+                BytesIO(b"contenido falso de una imagen"),
+                "image/jpeg",
+            )
+        }
+    )
+
+    assert response.json()["imagen_url"] == "https://res.cloudinary.com/demo/image/upload/foto.jpg"
