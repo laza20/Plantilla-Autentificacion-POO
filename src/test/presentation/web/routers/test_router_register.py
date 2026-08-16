@@ -3,9 +3,9 @@ from src.test.presentation.web.overrides.override_register import crear_override
 from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 from src.auth.domain.exceptions.domain import (
     MailRepetido, LongitudExcedida, ContraseñaNoSegura,
-    LimiteTamañoSuperado, ExtensionNoPermitida, ErrorCloudinary
+    LimiteTamañoSuperado, ExtensionNoPermitida, ErrorCloudinary,
+    SinCargas
     )
-from src.auth.domain.exceptions.domain import SinCargas
 from fastapi import status
 from src.container.providers import get_register_use_case
 from src.config.config import settings
