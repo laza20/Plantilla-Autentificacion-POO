@@ -61,3 +61,16 @@ def test_debe_lanzar_excepciones(test_client, exception):
 
     assert response.status_code == exception.status_code
     assert "email" not in response.json()
+
+
+def test_debe_dar_error_por_datos_mal_enviados(test_client):
+    app.dependency_overrides[get_register_use_case] = crear_override(excepcion=status.HTTP_422_UNPROCESSABLE_CONTENT)
+
+    response = test_client.post(
+        f"/{settings.NOMBRE_APP}/usuarios/registrar",
+        data={            
+            "mail": "test@test.com",
+            "password": "password@123"}
+    )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
