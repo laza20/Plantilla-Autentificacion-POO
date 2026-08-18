@@ -19,7 +19,10 @@ def test_ver_usuario_correctamente(test_client):
         )
 
     app.dependency_overrides[get_current_user] = lambda: {"id_usuario": 1, "email": "test@test.com"}
-    app.dependency_overrides[get_user_validation_service] = crear_override(stub_class=StubCurrentUserUseCase, resultado=usuario_esperado)
+    app.dependency_overrides[get_user_validation_service] = crear_override(
+        stub_class=StubCurrentUserUseCase, 
+        resultado=usuario_esperado
+        )
 
     response = test_client.get(f"/{settings.NOMBRE_APP}/usuarios/user/current")
   
@@ -27,3 +30,14 @@ def test_ver_usuario_correctamente(test_client):
     assert response.json()["id_usuario"] == usuario_esperado.id_usuario
     assert response.json()["email"] == usuario_esperado.email
     assert response.json()["password"] == usuario_esperado.password
+
+
+def test_debe_error_si_el_usuario_no_esta_autenticado(test_client):
+
+    app.dependency_overrides[get_user_validation_service] = crear_override(
+        stub_class=StubCurrentUserUseCase
+        )
+
+    response = test_client.get(f"/{settings.NOMBRE_APP}/usuarios/user/current")
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
