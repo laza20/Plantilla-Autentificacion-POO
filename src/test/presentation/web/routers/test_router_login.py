@@ -97,4 +97,21 @@ def test_debe_fallar_al_no_enviar_todos_los_campos(test_client):
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
+def test_debe_fallar_al_mandar_los_campos_incorrectos(test_client):
     
+    app.dependency_overrides[get_login_use_case] = crear_override(
+        stub_class=StubLoginUseCase
+        )
+
+    response = test_client.post(
+        f"/{settings.NOMBRE_APP}/usuarios/login",
+        data={
+            "username": "test@test.com",
+            "contraseña": "12345868"
+        },
+        headers={
+            "User-Agent": "pytest"
+        }
+    )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
