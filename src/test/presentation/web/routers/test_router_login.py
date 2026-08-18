@@ -46,3 +46,34 @@ def test_logear_usuario_correctamente(test_client):
     assert data["usuario"]["imagen_url"] == usuario_logeado.usuario.imagen_url
 
 
+def test_verificar_que_el_logeo_correcto_devuelva_un_status_correcto(test_client):
+    usuario = UsuarioLogeado(
+        email="test@test.com"
+    )
+    token = UserTokens(
+        access_token="access_token_1",
+        refresh_token="refresh_token_1"
+    )
+
+    usuario_logeado = LoginResponse(
+        tokens=token,
+        usuario=usuario
+    )
+    
+    app.dependency_overrides[get_login_use_case] = crear_override(
+        stub_class=StubLoginUseCase, 
+        resultado=usuario_logeado
+        )
+
+    response = test_client.post(
+        f"/{settings.NOMBRE_APP}/usuarios/login",
+        data={
+            "username": "test@test.com",
+            "password": "password@123"
+        },
+        headers={
+            "User-Agent": "pytest"
+        }
+    )
+
+    assert response.status_code == status.HTTP_202_ACCEPTED
