@@ -37,3 +37,19 @@ def test_debe_dar_error_por_contraseña_sin_caracter_especial():
     with pytest.raises(ContraseñaNoSegura):
         service.validar("PASSWORDASASA123")
 
+
+def test_debe_pasar_correctamente():
+    """
+    Verifica que la contraseña cumpla con las condiciones
+    """
+    service = PasswordPolicyService()
+    service.validar("Pasworddd123@")
+
+
+def test_debe_dar_error_por_ser_muy_corta():
+    """
+    Verifica que la contraseña no cumple con la política de seguridad al ser demaciada corta.
+    """
+    service = PasswordPolicyService()
+    with pytest.raises(ContraseñaNoSegura):
+        service.validar("Pa1@")
