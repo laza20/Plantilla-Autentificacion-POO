@@ -77,3 +77,24 @@ def test_verificar_que_el_logeo_correcto_devuelva_un_status_correcto(test_client
     )
 
     assert response.status_code == status.HTTP_202_ACCEPTED
+
+
+def test_debe_fallar_al_no_enviar_todos_los_campos(test_client):
+    
+    app.dependency_overrides[get_login_use_case] = crear_override(
+        stub_class=StubLoginUseCase
+        )
+
+    response = test_client.post(
+        f"/{settings.NOMBRE_APP}/usuarios/login",
+        data={
+            "username": "test@test.com"
+        },
+        headers={
+            "User-Agent": "pytest"
+        }
+    )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    
