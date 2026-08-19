@@ -36,3 +36,30 @@ def test_eliminar_sesion(test_client):
     data = response.json()
     assert response.status_code == status.HTTP_200_OK
     assert data["message"] == sesion_resultado["message"]
+
+
+def test_no_se_encontro_la_sesion_a_eliminar(test_client):
+    usuario = AuthUser(
+        id_usuario=1,
+        email="test@test.com",
+        password="password@123"
+    )
+
+    sesion_resultado = {"message": "La sesion que se quiso eliminar, no pudo ser encontrada"}
+    app.dependency_overrides[get_current_user] = lambda: {"id_usuario": 1, "email": "test@test.com"}
+    app.dependency_overrides[get_user_validation_service] = crear_override(
+        stub_class=StubCurrentUserUseCase, 
+        resultado=usuario
+        )
+
+    app.dependency_overrides[get_eliminar_sesiones_use_case] = crear_override(
+        stub_class=StubEliminarSesionesUseCase,
+        resultado=sesion_resultado
+    )
+
+    response = test_client.delete(
+        f"/{settings.NOMBRE_APP}/usuarios/eliminar_sesion/{5}"
+    )
+
+    data = response.json()
+    assert data["message"] == sesion_resultado["message"]
