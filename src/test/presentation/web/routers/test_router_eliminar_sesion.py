@@ -10,19 +10,14 @@ from src.config.config import settings
 from src.main import app
 
 id_sesion = 1
-def test_debe_listar_sesiones(test_client):
+def test_eliminar_sesion(test_client):
     usuario = AuthUser(
         id_usuario=1,
         email="test@test.com",
         password="password@123"
     )
 
-    sesiones = {
-        "id_sesion":1,
-        "hash_refresh_token":"hash_refresh_token_1",
-        "ip": "localhost",
-        "id_usuario": 1
-    }
+    sesion_resultado = {"message": "Sesión eliminada"}
     app.dependency_overrides[get_current_user] = lambda: {"id_usuario": 1, "email": "test@test.com"}
     app.dependency_overrides[get_user_validation_service] = crear_override(
         stub_class=StubCurrentUserUseCase, 
@@ -31,7 +26,7 @@ def test_debe_listar_sesiones(test_client):
 
     app.dependency_overrides[get_eliminar_sesiones_use_case] = crear_override(
         stub_class=StubEliminarSesionesUseCase,
-        resultado=sesiones
+        resultado=sesion_resultado
     )
 
     response = test_client.delete(
@@ -40,7 +35,4 @@ def test_debe_listar_sesiones(test_client):
 
     data = response.json()
     assert response.status_code == status.HTTP_200_OK
-    assert data["id_sesion"] == sesiones["id_sesion"]
-    assert data["hash_refresh_token"] == sesiones["hash_refresh_token"]
-    assert data["ip"] == sesiones["ip"]
-    assert data["id_usuario"] == sesiones["id_usuario"]
+    assert data["message"] == sesion_resultado["message"]
