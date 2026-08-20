@@ -3,10 +3,10 @@ from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginEr
 from src.auth.domain.exceptions.domain import DomainError
 from fastapi import Response, Request
 import logging
-from src.auth.domain.protocols.auth_user_repository import AuthUserRepositoryProtocol
-from src.auth.domain.protocols.password_service import PasswordProtocol
-from src.auth.domain.protocols.token_service import TokenProtocol
-from src.auth.domain.protocols.sesion_repository import TokenRepositoryProtocol
+from src.auth.domain.protocols.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth.domain.protocols.protocol_password_service import PasswordProtocol
+from src.auth.domain.protocols.protocol_token_service import TokenProtocol
+from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
 from src.auth.infrastructure.security.security import Settings
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.domain.services.user_validation_service import UserValidationService

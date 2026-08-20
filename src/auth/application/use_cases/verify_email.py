@@ -1,9 +1,9 @@
 from src.auth.infrastructure.persistence.postgres.models_auth_users import UserTokens
 from fastapi import Response
 import logging
-from src.auth.domain.protocols.auth_user_repository import AuthUserRepositoryProtocol
+from src.auth.domain.protocols.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.exceptions.tokens import TokenInvalido, VerificacionInvalida
-from src.auth.domain.protocols.token_service import TokenProtocol
+from src.auth.domain.protocols.protocol_token_service import TokenProtocol
 from src.auth.infrastructure.security.security import Settings
 from src.auth.presentation.web.cookies.cookies import CookiesService
 

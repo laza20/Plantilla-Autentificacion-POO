@@ -1,6 +1,6 @@
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
 from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
-from src.auth.domain.protocols.auth_user_repository import AuthUserRepositoryProtocol
+from src.auth.domain.protocols.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.infrastructure.security.security import Settings
 
 class UserValidationService:

@@ -1,7 +1,7 @@
 from fastapi import Response
 from src.auth.presentation.web.cookies.cookies import CookiesService
-from src.auth.domain.protocols.token_service import TokenProtocol
-from src.auth.domain.protocols.sesion_repository import TokenRepositoryProtocol
+from src.auth.domain.protocols.protocol_token_service import TokenProtocol
+from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
 
 class LogoutUseCase:
     def __init__(

@@ -1,6 +1,6 @@
 from fastapi import Response
 from src.auth.presentation.web.cookies.cookies import CookiesService
-from src.auth.domain.protocols.token_service import TokenProtocol
+from src.auth.domain.protocols.protocol_token_service import TokenProtocol
 from src.auth.domain.exceptions.tokens import TokenInvalido, VerificacionInvalida
 
 class RefreshTokenUseCase:

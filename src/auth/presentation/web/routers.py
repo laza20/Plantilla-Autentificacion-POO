@@ -7,7 +7,7 @@ from src.auth.application.use_cases.login import LoginUseCase
 from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
-from src.auth.domain.protocols.sesion_repository import TokenRepositoryProtocol
+from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.container.providers import (
