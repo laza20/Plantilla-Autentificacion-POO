@@ -10,7 +10,7 @@ from src.container.auth_container import (
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
 from src.auth.application.use_cases.listar_sesiones import ListarSesionesUseCase
-from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
+from src.auth.domain.protocols.sesion_repository import TokenRepositoryProtocol
 from src.auth.domain.protocols.token_service import TokenProtocol
 from src.auth.domain.protocols.user_repository import UsuarioRepositoryProtocol
 from src.auth.infrastructure.persistence.postgres.usuario_repository import UserRepository

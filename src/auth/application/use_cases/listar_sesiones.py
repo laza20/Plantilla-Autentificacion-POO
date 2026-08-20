@@ -1,4 +1,4 @@
-from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
+from src.auth.domain.protocols.sesion_repository import TokenRepositoryProtocol
 from src.auth.infrastructure.persistence.postgres.models_sesiones import ListaSesiones, SesionesVisual
 
 

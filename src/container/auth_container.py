@@ -2,7 +2,7 @@ from src.config.config import Settings
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.domain.protocols.auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.protocols.user_repository import UsuarioRepositoryProtocol
-from src.auth.domain.protocols.token_repository import TokenRepositoryProtocol
+from src.auth.domain.protocols.sesion_repository import TokenRepositoryProtocol
 from src.auth.application.use_cases.listar_sesiones import ListarSesionesUseCase
 from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
 from src.auth.domain.protocols.token_service import TokenProtocol
