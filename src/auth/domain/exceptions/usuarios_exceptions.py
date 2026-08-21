@@ -1,4 +1,5 @@
 from src.auth.domain.exceptions.domain import DomainError
+from fastapi import status
 
 class UsuarioError(DomainError):
     status_code = 400
@@ -7,6 +8,12 @@ class UsuarioError(DomainError):
 class LoginError(UsuarioError):
     status_code = 400
     pass
+
+class UsuarioNoModificado(UsuarioError): 
+    status_code = status.HTTP_409_CONFLICT
+    def __init__(self, message: str = "No se pudo modificar la contraseña"):
+        super().__init__(message)
+
 
 class UsuarioNoEncontrado(UsuarioError):
     status_code = 409
