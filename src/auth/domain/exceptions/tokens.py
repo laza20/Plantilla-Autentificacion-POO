@@ -18,6 +18,16 @@ class VerificacionExpirada(TokenException):
     def __init__(self, message: str = "El enlace de verificación ha expirado"):
         super().__init__(message)
 
+class TokenNoDesactivado(TokenException): 
+    status_code = status.HTTP_409_CONFLICT
+    def __init__(self, message: str = "El token no pudo ser desactivado"):
+        super().__init__(message)
+
+class TokenNoVerificado(TokenException): 
+    status_code = status.HTTP_409_CONFLICT
+    def __init__(self, message: str = "El token no pudo ser verificado correctamente."):
+        super().__init__(message)
+
 
 class TokenInvalido(TokenException):
     status_code = status.HTTP_401_UNAUTHORIZED
