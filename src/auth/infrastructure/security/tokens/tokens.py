@@ -7,6 +7,7 @@ from fastapi import Depends
 from src.config.config import get_settings, Settings
 from src.auth.infrastructure.persistence.postgres.models_auth_users import UserTokens
 import hashlib
+import secrets
 
 
 class TokenService:
@@ -101,6 +102,9 @@ class TokenService:
         """
         return hashlib.sha256(token.encode()).hexdigest()
 
+    def generar_token_plano(self)->str:
+        return secrets.token_urlsafe(32)
+        
 
     def _encode_token(self, payload: Dict[str, any], expires_delta: timedelta) -> str:
         """
