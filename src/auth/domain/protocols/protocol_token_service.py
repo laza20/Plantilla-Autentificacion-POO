@@ -339,3 +339,6 @@ class TokenProtocol(Protocol):
 
 
     def generar_token_plano(self)->str: pass
+
+
+    def invalidar_tokens_anteriores(self, id_usuario:int)->bool:pass
