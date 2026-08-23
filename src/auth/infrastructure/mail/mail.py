@@ -40,6 +40,16 @@ class MailService:
         
         return cuerpo_html
 
+    def generar_correo_recuperacion(self, url: str, nombre_proyecto: str) -> str:
+        template = self.env.get_template("verificacion.html")
+        
+        cuerpo_html = template.render(
+            url_verificacion=url,
+            nombre_app=nombre_proyecto
+        )
+        
+        return cuerpo_html
+
     async def enviar_mail(self, email_destino: str, cuerpo_html: str, asunto:str)-> None:
         """
         asunto debe contener el asunto por el que se envia el mail, por ejemplo
