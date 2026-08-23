@@ -336,3 +336,6 @@ class TokenProtocol(Protocol):
         la sesión correspondiente durante el logout.
         """
         ...
+
+
+    def generar_token_plano(self)->str: pass
