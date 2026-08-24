@@ -17,6 +17,7 @@ from src.auth.domain.services.user_validation_service import UserValidationServi
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
+from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.domain.protocols.protocol_recover_password_repository import RecuperarContraseñaProtocol
 from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
@@ -205,4 +206,21 @@ class ContainerSolicitudRecuperacion:
             mail_service = self.mail_service, 
             token_service = self.token_service,
             settings=self.settings
+        )
+
+
+class ContainerVerificarTokenRecuperacion:
+    def __init__(
+        self,
+        recuperar_contraseña_repository: RecuperarContraseñaProtocol,
+        token_service: TokenProtocol,
+    ):
+        self.recuperar_contraseña_repository = recuperar_contraseña_repository
+        self.token_service = token_service
+
+    @property
+    def verificar_token_recuperacion_use_case(self) -> VerificarTokenUseCase:
+        return VerificarTokenUseCase(
+            recuperar_contraseña_repository = self.recuperar_contraseña_repository,
+            token_service = self.token_service
         )

@@ -7,11 +7,11 @@ from src.container.auth_container import (
     ContainerRegister, ContainerLogin, 
     ContainerVerifyMail, ContainerLogout,
     ContainerRefreshToken, ContainerListarSesiones, ContainerEliminarSesiones,
-    ContainerSolicitudRecuperacion)
+    ContainerSolicitudRecuperacion, ContainerVerificarTokenRecuperacion)
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
 from src.auth.application.use_cases.listar_sesiones import ListarSesionesUseCase
-from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
+from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
 from src.auth.domain.protocols.protocol_token_service import TokenProtocol
@@ -203,3 +203,13 @@ def get_solicitud_recuperacion_contraseña_use_case(
         token_service=token_service,
         settings=settings
     ).solicitud_recuperacion_use_case
+
+
+def get_verificar_token_recuperacion_contraseña_use_case(
+    recuperar_contraseña_repository: RecuperarContraseñaProtocol = Depends(get_recuperar_contraseña_repository),
+    token_service: TokenProtocol = Depends(get_token_service)
+) -> SolicitudRecuperacionUseCase:
+    return ContainerVerificarTokenRecuperacion(
+        recuperar_contraseña_repository = recuperar_contraseña_repository,
+        token_service=token_service,
+    ).verificar_token_recuperacion_use_case
