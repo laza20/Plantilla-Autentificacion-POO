@@ -16,7 +16,10 @@ from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
+from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
+from src.auth.domain.protocols.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 
 class ContainerEliminarSesiones:
     def __init__(
@@ -170,4 +173,36 @@ class ContainerRefreshToken:
         return RefreshTokenUseCase(
             cookies_service=self.cookies_service,
             token_service = self.token_service
+        )
+
+
+
+class ContainerSolicitudRecuperacion:
+    def __init__(
+        self,
+        recuperar_contraseña_repository: RecuperarContraseñaProtocol,
+        unit_of_work_service: UnitOfWorkProtocol,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        mail_service: MailProtocol,
+        token_service: TokenProtocol,
+        settings: Settings
+    ):
+
+        self.recuperar_contraseña_repository = recuperar_contraseña_repository
+        self.unit_of_work_service = unit_of_work_service
+        self.auth_user_repository = auth_user_repository
+        self.mail_service = mail_service
+        self.token_service = token_service
+        self.settings = settings
+
+    @property
+    def solicitud_recuperacion_use_case(self) -> SolicitudRecuperacionUseCase:
+
+        return SolicitudRecuperacionUseCase(
+            recuperar_contraseña_repository = self.recuperar_contraseña_repository,
+            unit_of_work_service = self.unit_of_work_service,
+            auth_user_repository = self.auth_user_repository,
+            mail_service = self.mail_service, 
+            token_service = self.token_service,
+            settings=self.settings
         )

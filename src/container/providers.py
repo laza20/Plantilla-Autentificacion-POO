@@ -6,15 +6,22 @@ from src.config.config import Settings, get_settings
 from src.container.auth_container import (
     ContainerRegister, ContainerLogin, 
     ContainerVerifyMail, ContainerLogout,
-    ContainerRefreshToken, ContainerListarSesiones, ContainerEliminarSesiones)
+    ContainerRefreshToken, ContainerListarSesiones, ContainerEliminarSesiones,
+    ContainerSolicitudRecuperacion)
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
 from src.auth.application.use_cases.listar_sesiones import ListarSesionesUseCase
+from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
+from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
 from src.auth.domain.protocols.protocol_token_service import TokenProtocol
 from src.auth.domain.protocols.protocol_user_repository import UsuarioRepositoryProtocol
 from src.auth.infrastructure.persistence.postgres.usuario_repository import UserRepository
+from src.auth.infrastructure.persistence.postgres.recover_password_repository import RecoverPasswordRepository
+from src.auth.infrastructure.persistence.postgres.unit_of_work import UnitOfWork
 from src.auth.domain.protocols.protocol_password_service import PasswordProtocol
+from src.auth.domain.protocols.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.protocol_mail_service import MailProtocol
 from src.auth.domain.protocols.protocol_image_service import ImageProtocol
 from src.auth.infrastructure.security.tokens.tokens import TokenService
@@ -30,6 +37,13 @@ from src.auth.domain.services.user_validation_service import UserValidationServi
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
+
+
+def get_recuperar_contraseña_repository(session: Session = Depends(get_session)) -> RecuperarContraseñaProtocol:
+    return RecoverPasswordRepository(session)
+
+def get_unit_of_work(session: Session = Depends(get_session)) -> UnitOfWorkProtocol:
+    return UnitOfWork(session)
 
 def get_user_repository(session: Session = Depends(get_session)) -> UsuarioRepositoryProtocol:
     return UserRepository(session)
@@ -173,3 +187,19 @@ def get_eliminar_sesiones_use_case(
 ) -> EliminarSesionesUseCase:
     return ContainerEliminarSesiones(token_repository=token_repository).eliminar_sesiones_use_case
 
+def get_solicitud_recuperacion_contraseña_use_case(
+    recuperar_contraseña_repository: RecuperarContraseñaProtocol = Depends(get_recuperar_contraseña_repository),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
+    auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
+    mail_service: MailProtocol = Depends(get_mail_service),
+    token_service: TokenProtocol = Depends(get_token_service),
+    settings: Settings = Depends(get_settings)
+) -> SolicitudRecuperacionUseCase:
+    return ContainerSolicitudRecuperacion(
+        recuperar_contraseña_repository = recuperar_contraseña_repository,
+        unit_of_work_service = unit_of_work_service,
+        auth_user_repository=auth_user_repository,
+        mail_service = mail_service,
+        token_service=token_service,
+        settings=settings
+    ).solicitud_recuperacion_use_case
