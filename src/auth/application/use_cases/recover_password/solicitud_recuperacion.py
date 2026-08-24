@@ -4,7 +4,7 @@ from src.auth.domain.protocols.protocol_auth_user_repository import AuthUserRepo
 from src.auth.domain.protocols.protocol_token_service import TokenProtocol
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
 from src.auth.domain.protocols.protocol_mail_service import MailProtocol
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from src.auth.infrastructure.security.security import Settings
 
 
@@ -32,7 +32,7 @@ class SolicitudRecuperacionUseCase:
         if not usuario_encontrado:
             raise UsuarioNoEncontrado()
 
-        fecha_actual = datetime.now(timezone.utc)
+        fecha_actual = datetime.now(timezone.utc) + timedelta(minutes=30)
 
         token_recuperacion = self.token_service.generar_token_plano()
         token_hash = self.token_service.hash_token(token_recuperacion)
