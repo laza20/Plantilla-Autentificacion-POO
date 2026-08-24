@@ -7,20 +7,21 @@ from src.auth.application.use_cases.login import LoginUseCase
 from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
-from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
+from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.container.providers import (
     get_register_use_case, get_login_use_case, 
     get_verify_mail_use_case, get_user_validation_service, 
     get_logout_service, get_refresh_token_service, get_listar_sesiones_use_case,
-    get_eliminar_sesiones_use_case)
+    get_eliminar_sesiones_use_case, get_solicitud_recuperacion_contraseña_use_case)
 from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.application.dtos import parse_usuario_form
 from src.config.config import settings
 from fastapi.security import OAuth2PasswordRequestForm
 from src.auth.presentation.web.guards import get_current_user
 from src.auth.domain.exceptions.tokens import VerificacionInvalida, VerificacionExpirada
+from src.auth.infrastructure.persistence.postgres.schemas.schemas_recepcion import SolicitudRecuperacionRequest
 
 router = APIRouter(prefix=f"/{settings.NOMBRE_APP}/usuarios",
                    tags=["USUARIOS"],
@@ -146,4 +147,13 @@ async def eliminar_sesion(
     """
     id_usuario = user_validation_service.get_user(current_user).id_usuario
     resultado = eliminar_sesiones_use_case.ejecutar(id_sesion=id_sesion, id_usuario=id_usuario)
+    return resultado
+
+
+@router.post("/solicitud/recuperacion")
+async def solicitud_recuperacion(
+    body: SolicitudRecuperacionRequest,
+    solicitur_recuperacion_use_case: SolicitudRecuperacionUseCase = Depends(get_solicitud_recuperacion_contraseña_use_case)
+):
+    resultado = await solicitur_recuperacion_use_case.ejecutar(body.email)
     return resultado
