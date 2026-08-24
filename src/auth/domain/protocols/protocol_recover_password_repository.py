@@ -21,8 +21,7 @@ class RecuperarContraseñaProtocol(Protocol):
 
     def verificar_token(
             self,
-            id_usuario:int,
-            expira_en:datetime,
+            tiempo_actual:datetime,
             token_hash:str
     )->bool:pass
 
