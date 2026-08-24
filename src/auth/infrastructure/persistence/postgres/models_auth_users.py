@@ -8,6 +8,8 @@ from sqlalchemy.types import Enum as SAEnum
 if TYPE_CHECKING:
     from src.auth.infrastructure.persistence.postgres.models_sesiones import Sesiones
     from src.auth.infrastructure.persistence.postgres.models_usuario import Usuario
+    from src.auth.infrastructure.persistence.postgres.models_recover_password import RecoverPassword
+    from src.auth.infrastructure.persistence.postgres.models_history_password import HistoryPassword
 
 class AuthUser(SQLModel, table=True):
     __tablename__ = "auth_users"
@@ -54,6 +56,14 @@ class AuthUser(SQLModel, table=True):
     )
 
     sesiones: list["Sesiones"] = Relationship(
+        back_populates="usuario"
+    )
+
+    recover_password: list["RecoverPassword"] = Relationship(
+        back_populates="usuario"
+    )
+
+    history_password: list["HistoryPassword"] = Relationship(
         back_populates="usuario"
     )
 

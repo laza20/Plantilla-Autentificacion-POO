@@ -6,7 +6,7 @@ from sqlalchemy import Column, text
 if TYPE_CHECKING:
     from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 
-class HisoryPassword(SQLModel, table=True):
+class HistoryPassword(SQLModel, table=True):
     __tablename__ = "history_password"
 
     id_history_password: Optional[int] = Field(default=None, primary_key=True)
