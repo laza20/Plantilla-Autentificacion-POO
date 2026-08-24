@@ -14,14 +14,10 @@ class RecuperarContraseñaProtocol(Protocol):
     def insertar_recuperacion_contraseña(
             self,
             id_usuario:int, 
-            token_hash:str, 
+            token_hash:str,
             fecha_expiracion:datetime )->bool:pass
 
-    def insertar_history_password(
-            self, 
-            id_usuario:int, 
-            password_hash_anterior:str, 
-            fecha_cambio:datetime)->bool:pass
+
 
     def verificar_token(
             self,
@@ -29,3 +25,10 @@ class RecuperarContraseñaProtocol(Protocol):
             expira_en:datetime,
             token_hash:str
     )->bool:pass
+
+
+    def invalidar_tokens_anteriores(self, id_usuario:int)->None:pass
+    """
+    los tokens no utilizado tienen por defecto el campo usado:false, por ende, si se pide un nuevo token
+    de recuperacion, los token no utilizados cambian su estado a true
+    """
