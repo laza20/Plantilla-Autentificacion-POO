@@ -44,7 +44,7 @@ class MailService:
         template = self.env.get_template("recuperacion_contraseña.html")
         
         cuerpo_html = template.render(
-            url_verificacion=url,
+            url_reset=url,
             nombre_app=nombre_proyecto
         )
         
