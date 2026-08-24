@@ -41,7 +41,7 @@ class MailService:
         return cuerpo_html
 
     def generar_correo_recuperacion(self, url: str, nombre_proyecto: str) -> str:
-        template = self.env.get_template("verificacion.html")
+        template = self.env.get_template("recuperacion_contraseña.html")
         
         cuerpo_html = template.render(
             url_verificacion=url,
