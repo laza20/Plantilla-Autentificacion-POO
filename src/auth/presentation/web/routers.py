@@ -5,16 +5,19 @@ from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.listar_sesiones import ListarSesionesUseCase
 from src.auth.application.use_cases.login import LoginUseCase
 from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
+from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
+from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 from src.container.providers import (
     get_register_use_case, get_login_use_case, 
     get_verify_mail_use_case, get_user_validation_service, 
     get_logout_service, get_refresh_token_service, get_listar_sesiones_use_case,
-    get_eliminar_sesiones_use_case, get_solicitud_recuperacion_contraseña_use_case)
+    get_eliminar_sesiones_use_case, get_solicitud_recuperacion_contraseña_use_case,
+    get_verificar_token_recuperacion_contraseña_use_case, get_cookies_service)
 from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.application.dtos import parse_usuario_form
 from src.config.config import settings
@@ -157,3 +160,22 @@ async def solicitud_recuperacion(
 ):
     resultado = await solicitur_recuperacion_use_case.ejecutar(body.email)
     return resultado
+
+
+@router.get("/recuperar/password/{token}", status_code=status.HTTP_200_OK)
+async def verificar_token_recuperacion(
+    response: Response,
+    token: str = Path(..., description="Token de recuperacion enviado al correo"),
+    verificar_token_recuperacion_contraseña_use_case: VerificarTokenUseCase = Depends(get_verificar_token_recuperacion_contraseña_use_case),
+    cookies_service: CookiesService = Depends(get_cookies_service)):
+    """
+    End point el cual permite la recuperacion de una contraseña por medio de un token enviado al correo del usuario.
+    """
+    reset_token = verificar_token_recuperacion_contraseña_use_case.ejecutar(token)
+    cookies_service.set_reset_cookie(
+        reset_token=reset_token,
+        response=response,
+        url=f"/{settings.NOMBRE_APP}/usuarios/recuperar/contraseña"
+    )
+    
+    return {"message": "Configuracion realizada correctamente."}
