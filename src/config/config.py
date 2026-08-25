@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     REFRESH_TOKEN_DURATION: int
+    RESET_PASSWORD_TOKEN_EXPIRE_MINUTES: int
     
     #Mail settings
 
