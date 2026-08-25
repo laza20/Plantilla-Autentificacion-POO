@@ -104,6 +104,17 @@ class TokenService:
 
     def generar_token_plano(self)->str:
         return secrets.token_urlsafe(32)
+
+    def create_reset_token(self, user_id: str) -> str:
+        return self._encode_token(
+            {
+                "sub": str(user_id),
+                "type": "reset"
+            },
+            timedelta(
+                minutes=self.settings.RESET_PASSWORD_TOKEN_EXPIRE_MINUTES
+            )
+        )
         
 
     def _encode_token(self, payload: Dict[str, any], expires_delta: timedelta) -> str:
@@ -120,6 +131,7 @@ class TokenService:
     def _obtener_tiempo_expiracion(self, expires_delta:timedelta)->int:
         expire = datetime.now(timezone.utc) + expires_delta
         return int(expire.timestamp())
+        
 
     
 def get_token_service(settings: Settings = Depends(get_settings)) -> TokenService:
