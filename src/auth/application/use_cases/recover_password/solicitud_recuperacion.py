@@ -32,7 +32,7 @@ class SolicitudRecuperacionUseCase:
         if not usuario_encontrado:
             raise UsuarioNoEncontrado()
 
-        fecha_actual = datetime.now(timezone.utc) + timedelta(minutes=30)
+        expira = datetime.now(timezone.utc) + timedelta(minutes=self.settings.RESET_PASSWORD_TOKEN_EXPIRE_MINUTES)
 
         token_recuperacion = self.token_service.generar_token_plano()
         token_hash = self.token_service.hash_token(token_recuperacion)
@@ -44,7 +44,7 @@ class SolicitudRecuperacionUseCase:
             usuario_recuperacion = self.recuperar_contraseña_repository.insertar_recuperacion_contraseña(
                 usuario_encontrado.id_usuario, 
                 token_hash,
-                fecha_actual
+                expira
             )
 
             if not usuario_recuperacion:
