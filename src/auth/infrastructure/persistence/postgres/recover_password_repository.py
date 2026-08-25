@@ -1,6 +1,6 @@
 from src.auth.infrastructure.persistence.postgres.models_recover_password import RecoverPassword
 from sqlalchemy.orm import Session
-from sqlmodel import update
+from sqlmodel import update, select
 from datetime import datetime
 
 
@@ -34,6 +34,27 @@ class RecoverPasswordRepository:
         )
         self.session.add(recover_password)
         return True
+
+
+    def verificar_token(
+            self,
+            tiempo_actual:datetime,
+            token_hash:str)->RecoverPassword | bool:
+
+        statement = select(RecoverPassword).where(
+            RecoverPassword.token_hash == token_hash,
+            RecoverPassword.usado == False
+        )
+
+        recover_password = self.session.exec(statement).first()
+
+        if recover_password is None:
+            return False
+
+        if recover_password.expira_en >= tiempo_actual:
+            return False
+
+        return recover_password
 
 
         

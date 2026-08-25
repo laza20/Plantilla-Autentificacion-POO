@@ -1,5 +1,6 @@
 from typing import Protocol, runtime_checkable
 from datetime import datetime
+from src.auth.infrastructure.persistence.postgres.models_recover_password import RecoverPassword
 
 @runtime_checkable
 class RecuperarContraseñaProtocol(Protocol):
@@ -23,7 +24,7 @@ class RecuperarContraseñaProtocol(Protocol):
             self,
             tiempo_actual:datetime,
             token_hash:str
-    )->bool:pass
+    )-> RecoverPassword | bool :pass
 
 
     def invalidar_tokens_anteriores(self, id_usuario:int)->None:pass
