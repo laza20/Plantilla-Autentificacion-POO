@@ -73,3 +73,16 @@ class CookiesService:
             "samesite": "none" if self.settings.is_prod else "lax"
         }
 
+
+    def set_reset_cookie(self, reset_token:str, response:Response, url:str):
+        max_age = self.settings.RESET_PASSWORD_TOKEN_EXPIRE_MINUTES * 60
+
+        response.set_cookie(
+            key="reset_token",
+            value=reset_token,
+            max_age=max_age,
+            httponly=True,
+            secure=self.settings.is_prod,
+            samesite="none" if self.settings.is_prod else "lax",
+            path=url
+        )
