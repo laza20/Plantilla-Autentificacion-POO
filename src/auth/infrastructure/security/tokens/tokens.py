@@ -83,6 +83,9 @@ class TokenService:
         try:
             payload = self.decode_token(token)
 
+            if payload.get("type") != "refresh":
+                raise TokenInvalido()
+
             user_id = payload.get("sub")
             if not user_id:
                 raise TokenInvalido("Refresh token inválido")
