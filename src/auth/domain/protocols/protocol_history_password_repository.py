@@ -7,4 +7,11 @@ class HistoryRepositoryProtocol(Protocol):
       self, 
       id_usuario:int, 
       password_hash_anterior:str, 
-      fecha_cambio:datetime)->bool:pass
+      fecha_cambio:datetime)->bool:
+      """
+      Permite insertar dentro de la tabla de history password repository, esta tabla permite llevar una correlacion de
+      las contraseñas de los usuarios.
+      """
+
+      pass
+  
