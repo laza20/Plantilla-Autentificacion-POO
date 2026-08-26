@@ -32,7 +32,7 @@ class SolicitudRecuperacionUseCase:
         if not usuario_encontrado:
             raise UsuarioNoEncontrado()
 
-        expira = datetime.now(timezone.utc) + timedelta(minutes=self.settings.RESET_PASSWORD_TOKEN_EXPIRE_MINUTES)
+        expira = datetime.now(timezone.utc) + timedelta(minutes=self.settings.VERIFY_MAIL_RECUPERACION)
 
         token_recuperacion = self.token_service.generar_token_plano()
         token_hash = self.token_service.hash_token(token_recuperacion)
