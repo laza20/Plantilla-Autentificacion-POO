@@ -341,3 +341,5 @@ class TokenProtocol(Protocol):
     def generar_token_plano(self)->str: pass
 
     def create_reset_token(self, user_id: str) -> str:pass
+
+    def get_current_reset_scope(self, token: str) -> str:pass

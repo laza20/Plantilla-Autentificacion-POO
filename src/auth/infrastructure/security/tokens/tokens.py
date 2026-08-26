@@ -1,7 +1,7 @@
 from datetime import datetime, timezone, timedelta
 from jose import jwt
 from typing import Dict
-from src.auth.domain.exceptions.tokens import TokenInvalido
+from src.auth.domain.exceptions.tokens import TokenInvalido, TokenResetInactivo
 from jose import JWTError
 from fastapi import Depends
 from src.config.config import get_settings, Settings
@@ -94,6 +94,22 @@ class TokenService:
 
         except JWTError as e:
             raise TokenInvalido("Refresh token inválido o expirado")
+
+    def get_current_reset_scope(self, token:str)->str:
+        try:
+            payload = self.decode_token(token)
+
+            if payload.get("type") != "reset":
+                raise TokenInvalido()
+
+            user_id = payload.get("sub")
+            if not user_id:
+                raise TokenResetInactivo()
+            
+            return user_id
+
+        except JWTError as e:
+            raise TokenInvalido("Reset token inválido o expirado")
 
     def hash_token(self, token: str) -> str:
         """
