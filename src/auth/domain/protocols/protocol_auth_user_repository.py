@@ -1,5 +1,6 @@
 from typing import Protocol, runtime_checkable
 from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
+from datetime import datetime
 
 @runtime_checkable
 class AuthUserRepositoryProtocol(Protocol):
@@ -341,3 +342,15 @@ class AuthUserRepositoryProtocol(Protocol):
         - Este método se llama en endpoints autenticados para obtener datos del usuario
         """
         ...
+
+    def modificar_contraseña(
+            self, 
+            id_usuario:int, 
+            contraseña_nueva:str,
+            fecha_actual:datetime)->bool: 
+          """
+          El metodo se encarga de modificar la contraseña de un usuario, en la misma se recibe el id del usuario
+          para ser utilizado como condicion, la contraseña ya hasheado para se insertada y la fecha actual para 
+          insertarla en el campo updated_at, campo que representa la ultima modificacion del usuario.
+          """
+          pass
