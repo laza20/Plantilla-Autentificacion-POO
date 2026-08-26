@@ -1,7 +1,8 @@
-from sqlmodel import Session, select
+from sqlmodel import Session, select, update
 from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
 from src.auth.domain.exceptions.domain import MailRepetido
+from datetime import datetime
 
 class AuthUserRepository:
     def __init__(self, session: Session):
@@ -62,3 +63,20 @@ class AuthUserRepository:
         return self.session.exec(statement).first()
 
 
+    def modificar_contraseña(
+            self, 
+            id_usuario:int, 
+            nueva_contraseña:str, 
+            fecha_actual:datetime)->bool: 
+
+        
+        statement = (
+            update(AuthUser)
+            .where(
+                AuthUser.id_usuario == id_usuario,
+                AuthUser.is_verified == True
+            )
+            .values(updated_at=fecha_actual, password=nueva_contraseña)
+        )
+
+        self.session.exec(statement)
