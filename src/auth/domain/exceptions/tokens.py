@@ -34,6 +34,11 @@ class TokenInvalido(TokenException):
     def __init__(self, message: str = "Token de ingreso invalido."):
         super().__init__(message)
 
+class TokenResetInactivo(TokenException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    def __init__(self, message: str = "Tu sesión de recuperación expiró, volvé a solicitar el link."):
+        super().__init__(message)
+
 
 class VerificacionInvalida(TokenException):
     status_code = status.HTTP_401_UNAUTHORIZED
