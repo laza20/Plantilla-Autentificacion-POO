@@ -66,7 +66,7 @@ class AuthUserRepository:
     def modificar_contraseña(
             self, 
             id_usuario:int, 
-            nueva_contraseña:str, 
+            contraseña_nueva:str, 
             fecha_actual:datetime)->bool: 
 
         
@@ -76,7 +76,8 @@ class AuthUserRepository:
                 AuthUser.id_usuario == id_usuario,
                 AuthUser.is_verified == True
             )
-            .values(updated_at=fecha_actual, password=nueva_contraseña)
+            .values(updated_at=fecha_actual, password=contraseña_nueva)
         )
 
-        self.session.exec(statement)
+        resultado = self.session.exec(statement)
+        return resultado.rowcount > 0
