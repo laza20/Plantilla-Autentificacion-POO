@@ -12,19 +12,23 @@ from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
+from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
 from src.container.providers import (
     get_register_use_case, get_login_use_case, 
     get_verify_mail_use_case, get_user_validation_service, 
     get_logout_service, get_refresh_token_service, get_listar_sesiones_use_case,
     get_eliminar_sesiones_use_case, get_solicitud_recuperacion_contraseña_use_case,
-    get_verificar_token_recuperacion_contraseña_use_case, get_cookies_service)
+    get_verificar_token_recuperacion_contraseña_use_case, get_cookies_service,
+    get_recuperar_contraseña_use_case, get_token_service)
 from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.application.dtos import parse_usuario_form
 from src.config.config import settings
 from fastapi.security import OAuth2PasswordRequestForm
 from src.auth.presentation.web.guards import get_current_user
 from src.auth.domain.exceptions.tokens import VerificacionInvalida, VerificacionExpirada
-from src.auth.infrastructure.persistence.postgres.schemas.schemas_recepcion import SolicitudRecuperacionRequest
+from src.auth.infrastructure.security.tokens.tokens import TokenService
+from src.auth.infrastructure.persistence.postgres.schemas.schemas_recepcion import (
+    SolicitudRecuperacionRequest, ModificarPassword)
 
 router = APIRouter(prefix=f"/{settings.NOMBRE_APP}/usuarios",
                    tags=["USUARIOS"],
@@ -175,7 +179,28 @@ async def verificar_token_recuperacion(
     cookies_service.set_reset_cookie(
         reset_token=reset_token,
         response=response,
-        url=f"/{settings.NOMBRE_APP}/usuarios/recuperar/contraseña"
+        url=f"/{settings.NOMBRE_APP}/usuarios/modificar/password"
     )
     
     return {"message": "Configuracion realizada correctamente."}
+
+
+@router.patch("/modificar/password", status_code=status.HTTP_200_OK)
+async def modificar_password(
+    request: Request,
+    body: ModificarPassword,
+    recuperar_contraseña_use_case: RecuperarContraseñaUseCase = Depends(
+        get_recuperar_contraseña_use_case
+    ),
+    token_service: TokenService = Depends(get_token_service)
+):
+    reset_token = request.cookies.get("reset_token")
+
+    payload = token_service.decode_token(reset_token)
+    id_usuario = payload["sub"]
+    resultado = recuperar_contraseña_use_case.ejecutar(
+        id_usuario = int(id_usuario),
+        nueva_contraseña = body.password
+        )
+
+    return resultado
