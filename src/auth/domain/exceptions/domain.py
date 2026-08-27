@@ -59,3 +59,8 @@ class MailRepetido(DomainError):
     status_code = status.HTTP_409_CONFLICT
     def __init__(self, message: str = "El correo electrónico ya está en uso."):
         super().__init__(message)
+
+class ErrorCreacion(DomainError):
+    status_code = status.HTTP_409_CONFLICT
+    def __init__(self, message: str = "No se pudo crear de manera correcta el registro."):
+        super().__init__(message)
