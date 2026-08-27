@@ -7,20 +7,23 @@ from src.container.auth_container import (
     ContainerRegister, ContainerLogin, 
     ContainerVerifyMail, ContainerLogout,
     ContainerRefreshToken, ContainerListarSesiones, ContainerEliminarSesiones,
-    ContainerSolicitudRecuperacion, ContainerVerificarTokenRecuperacion)
+    ContainerSolicitudRecuperacion, ContainerVerificarTokenRecuperacion, ContainerRecuperarContraseña)
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
 from src.auth.application.use_cases.listar_sesiones import ListarSesionesUseCase
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
+from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
 from src.auth.domain.protocols.protocol_token_service import TokenProtocol
 from src.auth.domain.protocols.protocol_user_repository import UsuarioRepositoryProtocol
 from src.auth.infrastructure.persistence.postgres.usuario_repository import UserRepository
 from src.auth.infrastructure.persistence.postgres.recover_password_repository import RecoverPasswordRepository
+from src.auth.infrastructure.persistence.postgres.history_password_repository import HistoryPasswordRepository
 from src.auth.infrastructure.persistence.postgres.unit_of_work import UnitOfWork
 from src.auth.domain.protocols.protocol_password_service import PasswordProtocol
 from src.auth.domain.protocols.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from src.auth.domain.protocols.protocol_history_password_repository import HistoryRepositoryProtocol
 from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.protocol_mail_service import MailProtocol
 from src.auth.domain.protocols.protocol_image_service import ImageProtocol
@@ -38,6 +41,8 @@ from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
 
+def get_history_password_repository(session: Session = Depends(get_session)) -> HistoryRepositoryProtocol:
+    return HistoryPasswordRepository(session)
 
 def get_recuperar_contraseña_repository(session: Session = Depends(get_session)) -> RecuperarContraseñaProtocol:
     return RecoverPasswordRepository(session)
@@ -208,8 +213,26 @@ def get_solicitud_recuperacion_contraseña_use_case(
 def get_verificar_token_recuperacion_contraseña_use_case(
     recuperar_contraseña_repository: RecuperarContraseñaProtocol = Depends(get_recuperar_contraseña_repository),
     token_service: TokenProtocol = Depends(get_token_service)
-) -> SolicitudRecuperacionUseCase:
+) -> VerificarTokenUseCase:
     return ContainerVerificarTokenRecuperacion(
         recuperar_contraseña_repository = recuperar_contraseña_repository,
         token_service=token_service,
     ).verificar_token_recuperacion_use_case
+
+
+def get_recuperar_contraseña_use_case(
+        recuperar_contraseña_repository: RecuperarContraseñaProtocol = Depends(get_recuperar_contraseña_repository),
+        unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
+        password_service: PasswordProtocol = Depends(get_password_service),
+        history_contraseña_repository: HistoryRepositoryProtocol = Depends(get_history_password_repository),
+        password_policy : PasswordPolicyService = Depends(get_password_policy),
+        auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
+) -> RecuperarContraseñaUseCase:
+    return ContainerRecuperarContraseña(
+            recuperar_contraseña_repository = recuperar_contraseña_repository,
+            unit_of_work_service = unit_of_work_service,
+            password_service = password_service,
+            history_contraseña_repository = history_contraseña_repository,
+            password_policy = password_policy,
+            auth_user_repository = auth_user_repository
+    ).recuperar_contraseña_use_case

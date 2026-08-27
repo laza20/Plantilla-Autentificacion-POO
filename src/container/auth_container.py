@@ -18,8 +18,10 @@ from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
+from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.domain.protocols.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from src.auth.domain.protocols.protocol_history_password_repository import HistoryRepositoryProtocol
 from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 
 class ContainerEliminarSesiones:
@@ -223,4 +225,32 @@ class ContainerVerificarTokenRecuperacion:
         return VerificarTokenUseCase(
             recuperar_contraseña_repository = self.recuperar_contraseña_repository,
             token_service = self.token_service
+        )
+
+
+class ContainerRecuperarContraseña:
+    def __init__(
+            self,
+            recuperar_contraseña_repository: RecuperarContraseñaProtocol,
+            unit_of_work_service: UnitOfWorkProtocol,
+            password_service: PasswordProtocol,
+            history_contraseña_repository: HistoryRepositoryProtocol,
+            password_policy : PasswordPolicyService,
+            auth_user_repository: AuthUserRepositoryProtocol
+        ):
+            self.recuperar_contraseña_repository = recuperar_contraseña_repository
+            self.unit_of_work_service = unit_of_work_service
+            self.password_service = password_service
+            self.history_contraseña_repository = history_contraseña_repository
+            self.password_policy = password_policy
+            self.auth_user_repository = auth_user_repository
+    @property
+    def recuperar_contraseña_use_case(self) -> RecuperarContraseñaUseCase:
+        return RecuperarContraseñaUseCase(
+            recuperar_contraseña_repository = self.recuperar_contraseña_repository,
+            unit_of_work_service = self.unit_of_work_service,
+            password_service = self.password_service,
+            history_contraseña_repository = self.history_contraseña_repository,
+            password_policy = self.password_policy,
+            auth_user_repository = self.auth_user_repository
         )
