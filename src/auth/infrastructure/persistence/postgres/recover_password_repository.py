@@ -9,7 +9,7 @@ class RecoverPasswordRepository:
         self.session = session
 
 
-    def invalidar_tokens_anteriores(self, id_usuario: int) -> None:
+    def invalidar_tokens_anteriores(self, id_usuario: int) -> bool:
         statement = (
             update(RecoverPassword)
             .where(
@@ -19,8 +19,10 @@ class RecoverPasswordRepository:
             .values(usado=True)
         )
 
-        self.session.exec(statement)
+        resultado = self.session.exec(statement)
+        return resultado.rowcount > 0
 
+    
     def insertar_recuperacion_contraseña(
             self,
             id_usuario:int, 
@@ -56,5 +58,6 @@ class RecoverPasswordRepository:
 
         return recover_password
 
-
-        
+    def desactivar_token_utilizado(self, id_usuario: int)->bool:
+        resultado = self.invalidar_tokens_anteriores(id_usuario=id_usuario)
+        return resultado
