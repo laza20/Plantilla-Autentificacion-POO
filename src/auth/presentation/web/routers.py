@@ -126,13 +126,15 @@ async def ver_usuario(
 async def logout(
     response: Response,
     request: Request,
-    logout_service: LogoutUseCase = Depends(get_logout_service)
+    logout_service: LogoutUseCase = Depends(get_logout_service),
+    cookies_service: CookiesService = Depends(get_cookies_service)
     ):
     """
     End point encargado de desloguear un usuario.
     """
     refresh_token = request.cookies.get("refresh_token")
-    logout_service.ejecutar(refresh_token=refresh_token,response=response)
+    logout_service.ejecutar(refresh_token=refresh_token)
+    cookies_service.delete_auth_cookies(response=response)
     return {"message": "Sesión cerrada"}
 
 
