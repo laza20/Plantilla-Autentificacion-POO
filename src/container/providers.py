@@ -147,16 +147,11 @@ def get_login_use_case(
 
 
 def get_verify_mail_use_case(
-    settings: Settings = Depends(get_settings),
     auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
-    cookies_service: CookiesService = Depends(get_cookies_service),
     token_service: TokenProtocol = Depends(get_token_service)
 ) -> VerifyMailUseCase:
-
     return ContainerVerifyMail(
-        settings=settings,
         auth_user_repository=auth_user_repository,
-        cookies_service=cookies_service,
         token_service=token_service
     ).verify_mail_use_case
 

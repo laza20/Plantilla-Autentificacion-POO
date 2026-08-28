@@ -123,22 +123,16 @@ class ContainerLogin:
 class ContainerVerifyMail:
     def __init__(
         self,
-        settings: Settings,
         auth_user_repository: AuthUserRepositoryProtocol,
         token_service: TokenProtocol,
-        cookies_service: CookiesService
     ):
-        self.settings = settings
         self.auth_user_repository = auth_user_repository
         self.token_service = token_service
-        self.cookies_service = cookies_service
     @property
     def verify_mail_use_case(self) -> VerifyMailUseCase:
 
         return VerifyMailUseCase(
             auth_user_repository=self.auth_user_repository,
-            settings=self.settings,
-            cookies_service=self.cookies_service,
             token_service=self.token_service
         )
     

@@ -59,12 +59,18 @@ async def crear_usuario(
 async def verificar_mail(
     response: Response,
     token: str = Path(..., description="Token de verificación enviado al correo"),
-    verify_mail: VerifyMailUseCase = Depends(get_verify_mail_use_case)):
+    verify_mail: VerifyMailUseCase = Depends(get_verify_mail_use_case),
+    cookies_service: CookiesService = Depends(get_cookies_service)):
     """
     End point el cual permite la verificacion de una cuenta por medio de un token enviado al correo del usuario.
     """
     try:
-        verify_mail.ejecutar(token, response)
+        tokens = verify_mail.ejecutar(token)
+        cookies_service.set_auth_cookies(
+            response = response, 
+            access_token = tokens.access_token, 
+            refresh_token = tokens.refresh_token
+            )
         return {"status": "success", "message": "¡Cuenta activada con éxito!"}
     except VerificacionExpirada:
         raise HTTPException(status_code=400, detail="Token expirado")
