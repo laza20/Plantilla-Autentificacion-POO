@@ -126,21 +126,17 @@ def get_register_use_case(
 
 
 def get_login_use_case(
-    settings: Settings = Depends(get_settings),
     auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
     token_service: TokenProtocol = Depends(get_token_service),
     password_service: PasswordProtocol = Depends(get_password_service),
-    cookies_service: CookiesService = Depends(get_cookies_service),
     user_validation_service: UserValidationService = Depends(get_user_validation_service),
     token_repository: TokenRepositoryProtocol = Depends(get_token_repository)
 ) -> LoginUseCase:
 
     return ContainerLogin(
-        settings=settings,
         auth_user_repository=auth_user_repository,
         token_service=token_service,
         password_service=password_service,
-        cookies_service=cookies_service,
         user_validation_service=user_validation_service,
         token_repository=token_repository
     ).login_use_case

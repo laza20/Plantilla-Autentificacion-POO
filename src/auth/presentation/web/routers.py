@@ -83,14 +83,20 @@ async def logearse(
     response: Response,
     request: Request,
     login_use_case: LoginUseCase = Depends(get_login_use_case),
-    usuario: OAuth2PasswordRequestForm = Depends()):
+    usuario: OAuth2PasswordRequestForm = Depends(),
+    cookies_service: CookiesService = Depends(get_cookies_service)):
 
     request_metadata = RequestMetadata(request)
     ip = request_metadata.get_ip()
     user_agent = request_metadata.get_user_agent()
 
-    logeado = login_use_case.ejecutar(usuario.username, usuario.password, ip, user_agent, response)
-    return logeado
+    login_response = login_use_case.ejecutar(usuario.username, usuario.password, ip, user_agent)
+    cookies_service.set_auth_cookies(
+        response, 
+        login_response.tokens.access_token,
+        login_response.tokens.refresh_token
+        )
+    return login_response
 
 
 @router.post("/Refresh/Token")

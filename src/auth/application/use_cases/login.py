@@ -19,21 +19,17 @@ class LoginUseCase:
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         password_service: PasswordProtocol,
-        settings : Settings,
         token_service: TokenProtocol,
-        cookies_service: CookiesService,
         user_validation_service: UserValidationService,
         token_repository: TokenRepositoryProtocol
     ):
         self.auth_user_repository = auth_user_repository
         self.password_service = password_service
-        self.settings = settings
         self.token_service = token_service
-        self.cookies_service = cookies_service
         self.user_validation_service = user_validation_service
         self.token_repository = token_repository
 
-    def ejecutar(self, email: str, password: str, ip:str, user_agent:str, response:Response)-> LoginResponse:
+    def ejecutar(self, email: str, password: str, ip:str, user_agent:str)-> LoginResponse:
         try:
             usuario_db = self.user_validation_service.obtener_usuario_existente(email)
                 
@@ -41,11 +37,6 @@ class LoginUseCase:
                 raise LoginError("Usuario o contraseña incorrectos")
             
             login_response = self._emitir_tokens_usuario(usuario_db)
-            self.cookies_service.set_auth_cookies(
-                response, 
-                login_response.tokens.access_token, 
-                login_response.tokens.refresh_token
-                )
             hashed_token = self.token_service.hash_token(login_response.tokens.refresh_token)
             self._insertar_sesion(
                 hashed_token=hashed_token,

@@ -90,19 +90,15 @@ class ContainerRegister:
 class ContainerLogin:
     def __init__(
         self,
-        settings: Settings,
         auth_user_repository: AuthUserRepositoryProtocol,
         token_service: TokenProtocol,
         password_service: PasswordProtocol,
-        cookies_service: CookiesService,
         user_validation_service: UserValidationService,
         token_repository: TokenRepositoryProtocol
     ):
-        self.settings = settings
         self.auth_user_repository = auth_user_repository
         self.token_service = token_service
         self.password_service = password_service
-        self.cookies_service = cookies_service
         self.user_validation_service = user_validation_service
         self.token_repository = token_repository
         
@@ -111,11 +107,9 @@ class ContainerLogin:
     def login_use_case(self) -> LoginUseCase:
 
         return LoginUseCase(
-            settings=self.settings,
             auth_user_repository=self.auth_user_repository,
             token_service=self.token_service,
             password_service=self.password_service,
-            cookies_service = self.cookies_service,
             user_validation_service = self.user_validation_service,
             token_repository = self.token_repository
         )
