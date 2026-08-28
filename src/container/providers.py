@@ -168,11 +168,9 @@ def get_logout_service(
 
 
 def get_refresh_token_service(
-    cookies_service: CookiesService = Depends(get_cookies_service),
     token_service: TokenProtocol = Depends(get_token_service)
 )-> RefreshTokenUseCase:
     return ContainerRefreshToken(
-        cookies_service=cookies_service,
         token_service=token_service
         ).refresh_token_use_case
 

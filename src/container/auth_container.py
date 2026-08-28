@@ -159,16 +159,12 @@ class ContainerLogout:
 class ContainerRefreshToken:
     def __init__(
         self,
-        cookies_service: CookiesService,
         token_service: TokenProtocol
     ):
-        self.cookies_service = cookies_service
         self.token_service = token_service
     @property
     def refresh_token_use_case(self) -> RefreshTokenUseCase:
-
         return RefreshTokenUseCase(
-            cookies_service=self.cookies_service,
             token_service = self.token_service
         )
 

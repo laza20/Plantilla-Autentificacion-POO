@@ -97,14 +97,17 @@ async def logearse(
 async def refresh_token(
     request: Request, 
     response: Response,
-    refresh_token_service: RefreshTokenUseCase = Depends(get_refresh_token_service)):
+    refresh_token_service: RefreshTokenUseCase = Depends(get_refresh_token_service),
+    cookies_service: CookiesService = Depends(get_cookies_service)):
 
     refresh_token = request.cookies.get("refresh_token")
 
     if not refresh_token:
         raise SinRefreshToken("No hay refresh token en la cookie")
 
-    refresh_token_service.ejecutar(refresh_token, response)
+    new_access_token = refresh_token_service.ejecutar(refresh_token)
+
+    cookies_service.set_access_cookie(response, new_access_token)
 
     return {"message": "Access token renovado"}
 
