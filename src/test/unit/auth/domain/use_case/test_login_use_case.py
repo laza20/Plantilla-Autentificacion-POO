@@ -16,8 +16,7 @@ def test_debe_logear_un_usuario_valido():
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
-        user_agent="Test User Agent",
-        response=context.response
+        user_agent="Test User Agent"
     )
     
     assert cookies.tokens.access_token == context.token_service.access_token_generado
@@ -36,8 +35,7 @@ def test_debe_dar_error_cuando_el_usuario_no_existe():
             email = "test@test.com",
             password = "Password123!", 
             ip="127.0.0.1",
-            user_agent="Test User Agent",
-            response=context.response
+            user_agent="Test User Agent"
             )
 
 
@@ -55,8 +53,7 @@ def test_debe_dar_error_cuando_la_contrasena_es_incorrecta():
             email="test@test.com",
             password="wrong_password",
             ip="127.0.0.1",
-            user_agent="Test User Agent",
-            response=context.response
+            user_agent="Test User Agent"
         )
 
 
@@ -73,30 +70,12 @@ def test_verifica_que_tokens_es_llamado_correctamente():
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
-        user_agent="Test User Agent",
-        response=context.response
+        user_agent="Test User Agent"
     )
     
     assert context.token_service.fue_llamado is True
 
 
-def test_verifica_que_cookies_service_es_llamado_correctamente():
-    """
-    Verifica que el servicio de cookies se llame correctamente al iniciar sesión.
-    """
-    context = LoginTestEnvironment()
-
-    crear_usuario_de_prueba(context.auth_user_repository)
-
-    context.use_case().ejecutar(
-        email="test@test.com",
-        password="password@123",
-        ip="127.0.0.1",
-        user_agent="Test User Agent",
-        response=context.response
-    )
-    
-    assert context.cookies_service.fue_llamado is True
 
 
 def test_verifica_que_el_usuario_publico_se_retorna_correctamente():
@@ -110,8 +89,7 @@ def test_verifica_que_el_usuario_publico_se_retorna_correctamente():
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
-        user_agent="Test User Agent",
-        response=context.response
+        user_agent="Test User Agent"
     )
 
     assert cookies.usuario.email == "test@test.com"
@@ -133,8 +111,7 @@ def test_debe_verificar_el_id_del_usuario():
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
-        user_agent="Test User Agent",
-        response=context.response
+        user_agent="Test User Agent"
     )
 
     assert context.token_service.user_id_recibido == 1
@@ -153,8 +130,7 @@ def test_debe_verificar_que_el_token_repository_fue_llamado_correctamente():
         email="test@test.com",
         password="password@123",
         ip="127.0.0.1",
-        user_agent="Test User Agent",
-        response=context.response
+        user_agent="Test User Agent"
     )
 
     assert context.token_repository.fue_llamado is True

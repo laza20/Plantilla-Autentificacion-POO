@@ -2,7 +2,6 @@ from src.auth.domain.exceptions.tokens import VerificacionInvalida
 import pytest
 from src.test.fixtures.fixture_verify_mail_case import VerifyEmailTestEnvironment
 from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
-from fastapi import Response
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioActivo
 from src.database.enums.estado_entidad import EstadoEntidad
 
@@ -25,8 +24,7 @@ def test_debe_verificar_el_mail_y_activar_el_usuario():
 
     usuario = context.auth_user_repository.insertar(usuario_existente)
     context.use_case().ejecutar(
-        token=f"access_token_{usuario.id_usuario}",
-        response=Response()
+        token=f"access_token_{usuario.id_usuario}"
     )
     usuario_activado = context.auth_user_repository.obtener_por_email("test@test.com")
 
@@ -47,35 +45,11 @@ def test_debe_verificar_que_los_tokens_sean_adecuados():
     )
 
     usuario = context.auth_user_repository.insertar(usuario_existente)
-    tokens = context.use_case().ejecutar(token= f"access_token_{usuario.id_usuario}", response= Response())
+    tokens = context.use_case().ejecutar(token= f"access_token_{usuario.id_usuario}")
 
     assert tokens.access_token == context.token_service.access_token_generado
     assert tokens.refresh_token == context.token_service.refresh_token_generado
 
-
-def test_debe_verificar_que_se_llama_al_servicio_de_cookies():
-    """
-    El test se debe encargar de verificar que en el flujo de la activacion de la cuenta por medio
-    del mail enviado, las cookies se setean correctamente, en este caso el stub, que solo realiza
-    modificaciones de los parametros.
-    """
-
-    context = VerifyEmailTestEnvironment()
-
-    usuario_existente = AuthUser(
-        email="test@test.com",
-        password="hashed_password@123"
-    )
-
-    usuario = context.auth_user_repository.insertar(usuario_existente)
-    context.use_case().ejecutar(
-        token=f"access_token_{usuario.id_usuario}",
-        response=Response()
-    )
-
-    assert context.cookies_service.fue_llamado is True
-    assert context.cookies_service.access_token == f"access_token_{usuario.id_usuario}"
-    assert context.cookies_service.refresh_token is not None
 
 
 
@@ -96,8 +70,7 @@ def test_debe_verificar_que_da_error_de_tipo_token_invalido_cuando_no_coincide_l
 
     with pytest.raises(VerificacionInvalida):
         context.use_case().ejecutar(        
-            token="access_token_",
-            response=Response()
+            token="access_token_"
             )
 
 def test_debe_dar_error_cuando_no_se_encuentra_el_usuario():
@@ -109,8 +82,7 @@ def test_debe_dar_error_cuando_no_se_encuentra_el_usuario():
 
     with pytest.raises(UsuarioNoEncontrado):
         context.use_case().ejecutar(        
-            token="access_token_1",
-            response=Response()
+            token="access_token_1"
             )
 
 def test_debe_dar_error_cuando_el_usuario_que_se_quiere_activar_ya_esta_activo():
@@ -129,8 +101,7 @@ def test_debe_dar_error_cuando_el_usuario_que_se_quiere_activar_ya_esta_activo()
     usuario = context.auth_user_repository.insertar(usuario_existente)
     with pytest.raises(UsuarioActivo):
         context.use_case().ejecutar(        
-            token=f"access_token_{usuario.id_usuario}",
-            response=Response()
+            token=f"access_token_{usuario.id_usuario}"
             )
 
 
@@ -157,6 +128,5 @@ def test_debe_dar_error_cuando_el_formato_del_token_es_invalido(token):
 
     with pytest.raises(VerificacionInvalida):
         context.use_case().ejecutar(
-            token=token,
-            response=Response(),
+            token=token
         )
