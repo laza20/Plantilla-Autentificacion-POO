@@ -19,3 +19,6 @@ class StubMailService:
         Función para simular la generación de un correo de verificación.
         """
         return url
+
+    def generar_correo_recuperacion(self, url: str, nombre_proyecto: str) -> str: 
+        return url
