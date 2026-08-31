@@ -1,6 +1,7 @@
 from src.test.fixtures.fixture_solicitud_recuperacion_contraseña import SolicitudRecuperacionContraseñaTestEnvironment
 import pytest
 from src.test.factories.factory_usuarios import crear_usuario_de_prueba
+from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
 
 @pytest.mark.asyncio
 async def test_debe_realizar_la_solicitud_de_recuperacion_de_manera_correcta():
@@ -88,3 +89,13 @@ async def test_debe_verificar_que_se_llamo_de_manera_correcta_al_repositorio_de_
     assert context.recuperar_contraseña_repository.fue_llamado == True
     assert context.recuperar_contraseña_repository.token_hash == "hashed_1a2s3w5e6g9s8d5c5d6s5c5s5d5s69s7"
     assert len(context.recuperar_contraseña_repository.tokens) != 0
+
+
+@pytest.mark.asyncio
+async def test_debe_verificar_que_se_produce_un_error_si_no_se_encuentra_el_usuario():
+    context = SolicitudRecuperacionContraseñaTestEnvironment()
+
+    with pytest.raises(UsuarioError):
+        await context.use_case().ejecutar(
+            "usuario.email@"
+        )
