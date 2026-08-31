@@ -64,3 +64,7 @@ class StubTokenService:
 
     def hash_token(self, token: str) -> str:
         return f"hashed_{token}"
+
+
+    def generar_token_plano(self)->str: 
+        return "1a2s3w5e6g9s8d5c5d6s5c5s5d5s69s7"
