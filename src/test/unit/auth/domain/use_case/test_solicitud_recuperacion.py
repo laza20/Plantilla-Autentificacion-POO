@@ -3,9 +3,9 @@ import pytest
 from src.test.factories.factory_usuarios import crear_usuario_de_prueba
 
 @pytest.mark.asyncio
-async def test_debe_registrar_un_usuario_valido_sin_imagen():
+async def test_debe_realizar_la_solicitud_de_recuperacion_de_manera_correcta():
     """
-    Verifica que un usuario sea registrado correctamente con datos válidos.
+    Realiza la peticion para reestablecer una contraseña de manera correcta.
     """
     context = SolicitudRecuperacionContraseñaTestEnvironment()
 
