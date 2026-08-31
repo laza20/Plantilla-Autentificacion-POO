@@ -69,3 +69,22 @@ async def test_debe_verificar_que_se_llamo_de_manera_correcta_a_unit_od_work_par
     )
 
     assert context.unit_of_work_service.fue_llamado == True
+
+@pytest.mark.asyncio
+async def test_debe_verificar_que_se_llamo_de_manera_correcta_al_repositorio_de_recuperacion_de_contraseña():
+    """
+    El test se encarga de verificar que el repositorio el cual corresponde a la insercion de una
+    recuperacion de contraseña fue utilizado correctamente
+    """
+
+    context = SolicitudRecuperacionContraseñaTestEnvironment()
+
+    usuario = crear_usuario_de_prueba(context.auth_user_repository)
+
+    await context.use_case().ejecutar(
+        usuario.email
+    )
+
+    assert context.recuperar_contraseña_repository.fue_llamado == True
+    assert context.recuperar_contraseña_repository.token_hash == "hashed_1a2s3w5e6g9s8d5c5d6s5c5s5d5s69s7"
+    assert len(context.recuperar_contraseña_repository.tokens) != 0
