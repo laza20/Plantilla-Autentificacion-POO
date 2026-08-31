@@ -8,6 +8,7 @@ class FakeRecuperarContraseñaRepository:
         self.fue_llamado: bool = False
         self.token_hash : str = ""
         self._next_recover_id= 1
+        self.forzar_fallo_insercion = False
 
     def invalidar_tokens_anteriores(self, id_usuario: int) -> bool:
         self.fue_llamado = True
@@ -31,6 +32,9 @@ class FakeRecuperarContraseñaRepository:
             id_usuario:int, 
             token_hash:str,
             fecha_expiracion:datetime )->bool:
+
+        if self.forzar_fallo_insercion:
+            return False
 
         recover_password = RecoverPassword(
             id_usuario=id_usuario,
