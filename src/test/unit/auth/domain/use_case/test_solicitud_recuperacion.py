@@ -95,7 +95,9 @@ async def test_debe_verificar_que_se_llamo_de_manera_correcta_al_repositorio_de_
 async def test_debe_verificar_que_se_produce_un_error_si_no_se_encuentra_el_usuario():
     context = SolicitudRecuperacionContraseñaTestEnvironment()
 
-    with pytest.raises(UsuarioError):
+    with pytest.raises(UsuarioNoEncontrado):
         await context.use_case().ejecutar(
             "usuario.email@"
         )
+
+
