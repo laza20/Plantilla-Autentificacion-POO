@@ -101,3 +101,12 @@ async def test_debe_verificar_que_se_produce_un_error_si_no_se_encuentra_el_usua
         )
 
 
+@pytest.mark.asyncio
+async def test_lanza_error_si_no_se_pudo_insertar():
+    context = SolicitudRecuperacionContraseñaTestEnvironment()
+
+    context.recuperar_contraseña_repository.forzar_fallo_insercion = True  
+    usuario = crear_usuario_de_prueba(context.auth_user_repository)
+
+    with pytest.raises(UsuarioError):
+        await context.use_case().ejecutar(usuario.email)
