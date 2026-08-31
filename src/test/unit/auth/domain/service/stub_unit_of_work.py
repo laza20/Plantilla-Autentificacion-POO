@@ -1,7 +1,9 @@
 class StubUnitOfWork:
-    def __init__(self): pass
+    def __init__(self): 
+        self.fue_llamado = False
 
     def __enter__(self):
+        self.fue_llamado = True
         return self
 
 

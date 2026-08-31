@@ -63,8 +63,11 @@ class StubTokenService:
             raise TokenInvalido()
 
     def hash_token(self, token: str) -> str:
+        self.fue_llamado = True
+        self.hash_token = f"hashed_{token}"
         return f"hashed_{token}"
 
 
     def generar_token_plano(self)->str: 
+        self.fue_llamado = True
         return "1a2s3w5e6g9s8d5c5d6s5c5s5d5s69s7"
