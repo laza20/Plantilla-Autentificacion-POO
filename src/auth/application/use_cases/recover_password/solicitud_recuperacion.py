@@ -30,7 +30,7 @@ class SolicitudRecuperacionUseCase:
         usuario_encontrado = self.auth_user_repository.obtener_por_email(email)
 
         if not usuario_encontrado:
-            raise UsuarioNoEncontrado()
+            raise UsuarioNoEncontrado("Usuario no encontrado en la base de datos")
 
         expira = datetime.now(timezone.utc) + timedelta(minutes=self.settings.VERIFY_MAIL_RECUPERACION)
 
