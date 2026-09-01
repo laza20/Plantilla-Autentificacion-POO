@@ -105,3 +105,17 @@ def test_debe_verificar_que_se_guarda_un_history_password_cuando_se_modifica_la_
 
     history_password_guardado = context.history_contraseña_repository.history_password.get(usuario_insertado.id_usuario)
     assert history_password_guardado is not None
+
+def test_debe_verificar_que_se_hashea_la_contraseña_antes_de_guardarse():
+    context = RecuperarContraseñaTestEnvironment()
+    sesion_insertada = crear_recover_password_de_prueba(context.recuperar_contraseña_repository)
+    usuario_insertado = crear_usuario_de_prueba(context.auth_user_repository, password="contraseña_inicial")
+
+    nueva_contraseña = "nueva_contraseña"
+    context.use_case().ejecutar(
+        id_usuario=usuario_insertado.id_usuario,
+        nueva_contraseña=nueva_contraseña
+    )
+
+    usuario_actualizado = context.auth_user_repository.obtener_por_id(id_usuario=usuario_insertado.id_usuario)
+    assert usuario_actualizado.password != nueva_contraseña
