@@ -63,3 +63,17 @@ def test_debe_verificar_que_se_produce_un_error_cuando_el_usuario_no_existe():
             id_usuario=9999,
             nueva_contraseña="nueva_contraseña"
         )
+
+
+def test_debe_saltar_una_excepcion_al_producirse_un_error_a_la_hora_de_crear_un_history_password():
+    context = RecuperarContraseñaTestEnvironment()
+    sesion_insertada = crear_recover_password_de_prueba(context.recuperar_contraseña_repository)
+    usuario_insertado = crear_usuario_de_prueba(context.auth_user_repository, password="contraseña_inicial")
+
+    context.history_contraseña_repository.insertar_history_repository = lambda id_usuario, password_hash_anterior, fecha_cambio: False
+
+    with pytest.raises(ErrorCreacion):
+        context.use_case().ejecutar(
+            id_usuario=usuario_insertado.id_usuario,
+            nueva_contraseña="nueva_contraseña"
+        )
