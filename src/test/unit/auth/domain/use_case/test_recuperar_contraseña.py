@@ -77,3 +77,20 @@ def test_debe_saltar_una_excepcion_al_producirse_un_error_a_la_hora_de_crear_un_
             id_usuario=usuario_insertado.id_usuario,
             nueva_contraseña="nueva_contraseña"
         )
+
+
+def test_debe_producirse_un_error_al_no_poder_modificarse_un_usuario():
+    context = RecuperarContraseñaTestEnvironment()
+    sesion_insertada = crear_recover_password_de_prueba(context.recuperar_contraseña_repository)
+    usuario_insertado = crear_usuario_de_prueba(context.auth_user_repository, password="contraseña_inicial")
+
+    context.auth_user_repository.modificar_contraseña = lambda id_usuario, contraseña_nueva, fecha_actual: False
+
+    with pytest.raises(UsuarioNoModificado):
+        context.use_case().ejecutar(
+            id_usuario=usuario_insertado.id_usuario,
+            nueva_contraseña="nueva_contraseña"
+        )
+
+
+
