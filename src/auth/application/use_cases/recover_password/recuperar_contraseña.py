@@ -38,7 +38,7 @@ class RecuperarContraseñaUseCase:
         fecha_actual = datetime.now(timezone.utc)
         usuario = self.auth_user_repository.obtener_por_id(id_usuario=id_usuario)
         if not usuario:
-            raise UsuarioNoEncontrado()
+            raise UsuarioNoEncontrado("Usuario no encontrado en la base de datos.")
 
         with self.unit_of_work_service:
             history_password = self.history_contraseña_repository.insertar_history_repository(

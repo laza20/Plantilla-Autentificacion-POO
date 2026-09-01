@@ -52,3 +52,14 @@ def test_debe_dar_error_por_que_no_se_pudo_desactivar_el_token():
             id_usuario=usuario_insertado.id_usuario,
             nueva_contraseña="nueva_contraseña"
         )
+
+
+def test_debe_verificar_que_se_produce_un_error_cuando_el_usuario_no_existe():
+    context = RecuperarContraseñaTestEnvironment()
+    sesion_insertada = crear_recover_password_de_prueba(context.recuperar_contraseña_repository)
+
+    with pytest.raises(UsuarioNoEncontrado):
+        context.use_case().ejecutar(
+            id_usuario=9999,
+            nueva_contraseña="nueva_contraseña"
+        )
