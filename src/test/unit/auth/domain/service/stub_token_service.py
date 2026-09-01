@@ -9,6 +9,7 @@ class StubTokenService:
         self.access_token_generado = None
         self.refresh_token_generado = None
         self.reset_token_generado = None
+        self.hashed_token = None
 
     def _actualizar_llamada(self, user_id: int):
         self.fue_llamado = True
@@ -65,7 +66,7 @@ class StubTokenService:
 
     def hash_token(self, token: str) -> str:
         self.fue_llamado = True
-        self.hash_token = f"hashed_{token}"
+        self.hashed_token = f"hashed_{token}"
         return f"hashed_{token}"
 
 
