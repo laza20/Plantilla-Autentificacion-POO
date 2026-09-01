@@ -3,6 +3,7 @@ from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, 
 from typing import Dict
 from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
+from datetime import datetime
 
 class FakeUserRepository:
     def __init__(self):
@@ -30,6 +31,14 @@ class FakeUserRepository:
         """
         return self._users.get(email)
 
+    def obtener_por_id(self, id_usuario: int) -> AuthUser | None:
+        """
+        Función para buscar un usuario por su correo electrónico o nombre de usuario.
+        """
+        for usuario in self._users.values():
+            if usuario.id_usuario == id_usuario:
+                return usuario
+
     def obtener_por_id_sin_activar(self, id_usuario: int) -> AuthUser | None:
         """
         Funcion para buscar un usuario sin activar, por medio de su id.
@@ -53,3 +62,10 @@ class FakeUserRepository:
         usuario.estado = EstadoEntidad.ACTIVO
         usuario.is_verified = True
         return usuario
+
+    def modificar_contraseña(self, id_usuario:int, contraseña_nueva:str, fecha_actual:datetime)->bool: 
+        usuario = self.obtener_por_id(id_usuario=id_usuario)
+        usuario.password = contraseña_nueva
+        usuario.updated_at = fecha_actual
+        return True
+
