@@ -49,3 +49,18 @@ def test_debe_verificar_que_al_pasarse_un_token_expirado_genera_un_error_de_tipo
         context.use_case().ejecutar(
             "1a2s3w5e6g9s8d5c5d6s5c5s5d5s69s7"
         )
+
+
+def test_debe_verificar_que_al_pasarse_un_token_usado_genera_un_error_de_tipo_TokenInvalido():
+    """
+    El test se encarga de verificar que en el caso de que se pase un token usado, el caso de uso
+    genera un error de tipo TokenInvalido.
+    """
+    context = VerificarTokenRecuperacionContraseñaTestEnvironment()
+    sesion_insertada = crear_recover_password_de_prueba(context.recuperar_contraseña_repository)
+    context.recuperar_contraseña_repository.invalidar_tokens_anteriores(id_usuario=1)
+
+    with pytest.raises(TokenNoVerificado):
+        context.use_case().ejecutar(
+            "1a2s3w5e6g9s8d5c5d6s5c5s5d5s69s7"
+        )
