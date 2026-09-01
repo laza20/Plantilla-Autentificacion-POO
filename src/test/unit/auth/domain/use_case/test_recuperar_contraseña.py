@@ -93,4 +93,15 @@ def test_debe_producirse_un_error_al_no_poder_modificarse_un_usuario():
         )
 
 
+def test_debe_verificar_que_se_guarda_un_history_password_cuando_se_modifica_la_contraseña():
+    context = RecuperarContraseñaTestEnvironment()
+    sesion_insertada = crear_recover_password_de_prueba(context.recuperar_contraseña_repository)
+    usuario_insertado = crear_usuario_de_prueba(context.auth_user_repository, password="contraseña_inicial")
 
+    context.use_case().ejecutar(
+        id_usuario=usuario_insertado.id_usuario,
+        nueva_contraseña="nueva_contraseña"
+    )
+
+    history_password_guardado = context.history_contraseña_repository.history_password.get(usuario_insertado.id_usuario)
+    assert history_password_guardado is not None
