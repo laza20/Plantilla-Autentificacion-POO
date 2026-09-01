@@ -2,7 +2,7 @@ from src.test.fixtures.fixture_verificar_token_recuperacion_contraseña import V
 from src.test.factories.factory_create_password_recover import crear_recover_password_de_prueba
 from src.auth.domain.exceptions.tokens import TokenNoVerificado
 import pytest
-
+from datetime import datetime, timezone
 
 
 def test_debe_verificar_que_token_service_fue_llamado_y_funciona_correctamente():
@@ -30,4 +30,22 @@ def test_debe_verificar_que_al_pasarse_un_token_invalido_genera_un_error_de_tipo
     with pytest.raises(TokenNoVerificado):
         context.use_case().ejecutar(
             "1a2s3w5e6g9s" #token invalido
+        )
+
+def test_debe_verificar_que_al_pasarse_un_token_expirado_genera_un_error_de_tipo_TokenInvalido():
+    """
+    El test se encarga de verificar que en el caso de que se pase un token expirado, el caso de uso
+    genera un error de tipo TokenInvalido.
+    """
+    context = VerificarTokenRecuperacionContraseñaTestEnvironment()
+    sesion_insertada = crear_recover_password_de_prueba(
+        context.recuperar_contraseña_repository,
+        fecha_expiracion=datetime(
+            2023, 1, 1,
+            tzinfo=timezone.utc
+        ))
+
+    with pytest.raises(TokenNoVerificado):
+        context.use_case().ejecutar(
+            "1a2s3w5e6g9s8d5c5d6s5c5s5d5s69s7"
         )
