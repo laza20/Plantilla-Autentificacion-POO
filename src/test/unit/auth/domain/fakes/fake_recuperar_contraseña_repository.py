@@ -39,7 +39,7 @@ class FakeRecuperarContraseñaRepository:
         recover_password = RecoverPassword(
             id_usuario=id_usuario,
             token_hash=token_hash,
-            fecha_expiracion=fecha_expiracion
+            expira_en=fecha_expiracion
         )
 
         recover_password.id_recover_password = self._next_recover_id
