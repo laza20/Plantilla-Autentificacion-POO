@@ -64,3 +64,18 @@ def test_debe_verificar_que_al_pasarse_un_token_usado_genera_un_error_de_tipo_To
         context.use_case().ejecutar(
             "1a2s3w5e6g9s8d5c5d6s5c5s5d5s69s7"
         )
+
+
+def test_debe_verificar_que_el_retorno_sea_un_token_de_tipo_reset():
+    """
+    El test se encarga de verificar que en el caso de que todo funcione correctamente, 
+    el retorno del caso de uso sea un token de tipo reset
+    """
+
+    context = VerificarTokenRecuperacionContraseñaTestEnvironment()
+    sesion_insertada = crear_recover_password_de_prueba(context.recuperar_contraseña_repository)
+    token_retorno = context.use_case().ejecutar(
+        "1a2s3w5e6g9s8d5c5d6s5c5s5d5s69s7"
+    )
+
+    assert token_retorno == f"reset_token_1" #1 por el id_usuario (seria f"reset_token_{id_usuario}")
