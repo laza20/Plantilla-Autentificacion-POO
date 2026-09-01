@@ -8,6 +8,7 @@ class StubTokenService:
         self.user_id_recibido = None
         self.access_token_generado = None
         self.refresh_token_generado = None
+        self.reset_token_generado = None
 
     def _actualizar_llamada(self, user_id: int):
         self.fue_llamado = True
@@ -71,3 +72,12 @@ class StubTokenService:
     def generar_token_plano(self)->str: 
         self.fue_llamado = True
         return "1a2s3w5e6g9s8d5c5d6s5c5s5d5s69s7"
+
+    def create_reset_token(self, user_id: str) -> str:
+        """
+        Función para simular la creación de un token de reset.
+        """
+        if not self.fue_llamado:
+            self._actualizar_llamada(user_id)
+        self.reset_token_generado = f"reset_token_{user_id}"
+        return self.reset_token_generado
