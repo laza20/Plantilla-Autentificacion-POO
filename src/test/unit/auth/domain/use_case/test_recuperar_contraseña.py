@@ -23,3 +23,18 @@ def test_debe_verificar_el_retorno_al_suceder_el_camino_optimo():
     )
 
     assert resultado["message"] == "La contraseña fue modificada correctamente."
+
+
+def test_se_encarga_de_verificar_que_la_contraseña_se_modifica():
+    context = RecuperarContraseñaTestEnvironment()
+    usuario_insertado = crear_usuario_de_prueba(context.auth_user_repository, password="contraseña_inicial")
+    contraseña_inicial = usuario_insertado.password
+
+    context.auth_user_repository.modificar_contraseña(
+        id_usuario=usuario_insertado.id_usuario,
+        contraseña_nueva="nueva_contraseña",
+        fecha_actual=datetime.now(timezone.utc)
+    )
+
+    usuario = context.auth_user_repository.obtener_por_email(email= usuario_insertado.email)
+    assert contraseña_inicial != usuario.password
