@@ -22,6 +22,6 @@ class FakeHistoryPasswordRepository:
         history_password.id_history_password = self._next_history_password_id
         copia_history_password = history_password.model_copy()
         self.history_password[id_usuario] = copia_history_password
-        self._next_recover_id += 1
+        self._next_history_password_id += 1
         self.fue_llamado = True
         return True
