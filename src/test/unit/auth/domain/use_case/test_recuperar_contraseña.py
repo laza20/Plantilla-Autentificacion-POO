@@ -38,3 +38,17 @@ def test_se_encarga_de_verificar_que_la_contraseña_se_modifica():
 
     usuario = context.auth_user_repository.obtener_por_email(email= usuario_insertado.email)
     assert contraseña_inicial != usuario.password
+
+
+def test_debe_dar_error_por_que_no_se_pudo_desactivar_el_token():
+    context = RecuperarContraseñaTestEnvironment()
+    sesion_insertada = crear_recover_password_de_prueba(context.recuperar_contraseña_repository)
+    usuario_insertado = crear_usuario_de_prueba(context.auth_user_repository, password="contraseña_inicial")
+
+    context.recuperar_contraseña_repository.desactivar_token_utilizado = lambda id_usuario: False
+
+    with pytest.raises(TokenNoDesactivado):
+        context.use_case().ejecutar(
+            id_usuario=usuario_insertado.id_usuario,
+            nueva_contraseña="nueva_contraseña"
+        )
