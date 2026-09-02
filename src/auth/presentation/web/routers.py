@@ -99,7 +99,7 @@ async def logearse(
     return login_response
 
 
-@router.post("/Refresh/Token")
+@router.post("/Refresh/Token", status_code=status.HTTP_200_OK)
 async def refresh_token(
     request: Request, 
     response: Response,
@@ -118,7 +118,7 @@ async def refresh_token(
     return {"message": "Access token renovado"}
 
 
-@router.get("/user/current")
+@router.get("/user/current", status_code=status.HTTP_200_OK)
 async def ver_usuario(
     current_user: dict = Depends(get_current_user),
     user_validation_service: UserValidationService = Depends(get_user_validation_service)):
@@ -128,7 +128,7 @@ async def ver_usuario(
     usuario = user_validation_service.get_user(current_user)
     return usuario
 
-@router.post("/Logout")
+@router.post("/Logout", status_code=status.HTTP_200_OK)
 async def logout(
     response: Response,
     request: Request,
@@ -144,7 +144,7 @@ async def logout(
     return {"message": "Sesión cerrada"}
 
 
-@router.get("/listar_sesiones")
+@router.get("/listar_sesiones", status_code=status.HTTP_200_OK)
 async def list_sesions(
     request: Request,
     user_validation_service: UserValidationService = Depends(get_user_validation_service),
@@ -159,7 +159,7 @@ async def list_sesions(
     return listar_sesiones_use_case.ejecutar(id_usuario=id_usuario, ip=ip)
 
 
-@router.delete("/eliminar_sesion/{id_sesion}")
+@router.delete("/eliminar_sesion/{id_sesion}", status_code=status.HTTP_200_OK)
 async def eliminar_sesion(
     id_sesion: int = Path(..., description="ID de la sesión a eliminar"),
     user_validation_service: UserValidationService = Depends(get_user_validation_service),
@@ -174,7 +174,7 @@ async def eliminar_sesion(
     return resultado
 
 
-@router.post("/solicitud/recuperacion")
+@router.post("/solicitud/recuperacion", status_code=status.HTTP_200_OK)
 async def solicitud_recuperacion(
     body: SolicitudRecuperacionRequest,
     solicitur_recuperacion_use_case: SolicitudRecuperacionUseCase = Depends(get_solicitud_recuperacion_contraseña_use_case)
@@ -202,7 +202,7 @@ async def verificar_token_recuperacion(
     return {"message": "Configuracion realizada correctamente."}
 
 
-@router.patch("/modificar/password", status_code=status.HTTP_200_OK)
+@router.patch("/modificar/password", status_code=status.HTTP_202_ACCEPTED)
 async def modificar_password(
     request: Request,
     body: ModificarPassword,
