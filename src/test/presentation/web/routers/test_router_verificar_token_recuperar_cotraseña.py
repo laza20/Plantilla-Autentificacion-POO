@@ -57,3 +57,14 @@ def test_debe_verificar_que_se_produce_una_excepcion_si_se_envia_el_reset_token_
 
     assert response.status_code == TokenNoVerificado.status_code
     assert data["detail"] == "Token no verificado"
+
+
+def test_debe_verificar_que_se_produce_una_excepcion_si_no_se_envia_el_reset_token(test_client):
+    response = test_client.get(
+        f"/{settings.NOMBRE_APP}/usuarios/recuperar/password/",
+    )
+
+    data = response.json()
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert data["detail"] == "Not Found"
