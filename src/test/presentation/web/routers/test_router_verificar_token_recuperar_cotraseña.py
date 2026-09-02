@@ -25,7 +25,7 @@ def test_debe_verificar_el_retorno_del_reset_token_correctamente(test_client):
     assert data["message"] == 'Configuracion realizada correctamente.'
 
 
-def test_debe_verificar_que_el_token_final_es_diferente_al_inicial(test_client):
+def test_debe_verificar_la_cookies_se_setean_dentro_del_caso_de_uso(test_client):
     token = "un_token_valido"
     token_retorno = "un_nuevo_token"
     app.dependency_overrides[get_verificar_token_recuperacion_contraseña_use_case] = crear_override(
@@ -40,3 +40,20 @@ def test_debe_verificar_que_el_token_final_es_diferente_al_inicial(test_client):
     cookies = response.cookies
 
     assert cookies["reset_token"] == token_retorno
+
+
+def test_debe_verificar_que_se_produce_una_excepcion_si_se_envia_el_reset_token_invalido(test_client):
+    app.dependency_overrides[get_verificar_token_recuperacion_contraseña_use_case] = crear_override(
+        stub_class=StubVerificarTokenRecuperarContraseñaUseCase, 
+        excepcion = TokenNoVerificado("Token no verificado")
+        )
+
+    token_invalido = "un_token_invalido"
+    response = test_client.get(
+        f"/{settings.NOMBRE_APP}/usuarios/recuperar/password/{token_invalido}",
+    )
+
+    data = response.json()
+
+    assert response.status_code == TokenNoVerificado.status_code
+    assert data["detail"] == "Token no verificado"
