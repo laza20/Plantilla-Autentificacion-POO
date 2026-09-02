@@ -5,7 +5,8 @@ from src.auth.infrastructure.persistence.postgres.schemas.schemas_recepcion impo
 from fastapi import status
 from src.container.providers import get_solicitud_recuperacion_contraseña_use_case
 from src.config.config import settings
-
+from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
+import pytest
 
 def test_solicitud_recuperacion_correctamente(test_client):
     resultado = {
@@ -23,3 +24,26 @@ def test_solicitud_recuperacion_correctamente(test_client):
     data = response.json()
     assert response.status_code == status.HTTP_200_OK
     assert data["message"] == resultado["message"]
+
+
+@pytest.mark.parametrize(
+    "exception",
+    [
+        UsuarioNoEncontrado("Usuario no encontrado en la base de datos"), 
+        UsuarioError("No se pudo registrar la solicitud de recuperación.")
+    ],
+    ids=lambda exception: type(exception).__name__
+)
+def test_debe_transmitir_excepciones(test_client, exception):
+    app.dependency_overrides[get_solicitud_recuperacion_contraseña_use_case] = crear_override(stub_class=StubSolicitudRecuperacionUseCase, excepcion=exception)
+
+    response = test_client.post(
+        f"/{settings.NOMBRE_APP}/usuarios/solicitud/recuperacion",
+        json={            
+            "email": "test@test.com"
+        }
+    )
+
+    data = response.json()
+    assert response.status_code == exception.status_code
+    assert data["detail"] == exception.message
