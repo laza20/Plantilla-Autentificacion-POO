@@ -50,8 +50,6 @@ def test_debe_transmitir_excepciones(test_client, exception):
 
 
 def test_debe_verificar_que_se_el_funcionamiento_en_caso_de_no_enviar_bien_el_email(test_client):
-    app.dependency_overrides[get_solicitud_recuperacion_contraseña_use_case] = crear_override(stub_class=StubSolicitudRecuperacionUseCase, resultado=status.HTTP_422_UNPROCESSABLE_CONTENT)
-
     response = test_client.post(
         f"/{settings.NOMBRE_APP}/usuarios/solicitud/recuperacion",
         json={            
@@ -61,8 +59,6 @@ def test_debe_verificar_que_se_el_funcionamiento_en_caso_de_no_enviar_bien_el_em
 
 
 def test_debe_dar_error_por_dato_incorrecto(test_client):
-    app.dependency_overrides[get_solicitud_recuperacion_contraseña_use_case] = crear_override(stub_class=StubSolicitudRecuperacionUseCase, resultado=status.HTTP_422_UNPROCESSABLE_CONTENT)
-
     response = test_client.post(
         f"/{settings.NOMBRE_APP}/usuarios/solicitud/recuperacion",
         json={            
