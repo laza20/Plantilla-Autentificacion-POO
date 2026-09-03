@@ -57,7 +57,6 @@ class SesionRepository:
         sesion = self.session.query(Sesiones).filter_by(id_sesion=id_sesion, id_usuario=id_usuario).first()
         if sesion:
             self.session.delete(sesion)
-            self.session.commit()
             return True
 
         return False

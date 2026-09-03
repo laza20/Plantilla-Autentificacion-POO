@@ -27,13 +27,16 @@ from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 class ContainerEliminarSesiones:
     def __init__(
         self,
-        sesion_repository: TokenRepositoryProtocol
+        sesion_repository: TokenRepositoryProtocol,
+        unit_of_work_service: UnitOfWorkProtocol
     ):
         self.sesion_repository = sesion_repository
+        self.unit_of_work_service = unit_of_work_service
     @property
     def eliminar_sesiones_use_case(self) -> EliminarSesionesUseCase:
         return EliminarSesionesUseCase(
-            sesion_repository=self.sesion_repository
+            sesion_repository=self.sesion_repository,
+            unit_of_work_service=self.unit_of_work_service
             )
 
 class ContainerListarSesiones:
@@ -167,8 +170,6 @@ class ContainerRefreshToken:
         return RefreshTokenUseCase(
             token_service = self.token_service
         )
-
-
 
 class ContainerSolicitudRecuperacion:
     def __init__(

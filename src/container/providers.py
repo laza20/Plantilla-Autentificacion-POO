@@ -183,9 +183,13 @@ def get_listar_sesiones_use_case(
     return ContainerListarSesiones(sesion_repository=sesion_repository).listar_sesiones_use_case
 
 def get_eliminar_sesiones_use_case(
-    sesion_repository: TokenRepositoryProtocol = Depends(get_sesion_repository)
+    sesion_repository: TokenRepositoryProtocol = Depends(get_sesion_repository),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work)
 ) -> EliminarSesionesUseCase:
-    return ContainerEliminarSesiones(sesion_repository=sesion_repository).eliminar_sesiones_use_case
+    return ContainerEliminarSesiones(
+        sesion_repository=sesion_repository,
+        unit_of_work_service=unit_of_work_service
+    ).eliminar_sesiones_use_case
 
 def get_solicitud_recuperacion_contraseña_use_case(
     recuperar_contraseña_repository: RecuperarContraseñaProtocol = Depends(get_recuperar_contraseña_repository),
