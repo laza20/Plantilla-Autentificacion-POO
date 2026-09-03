@@ -2,7 +2,8 @@ from src.test.unit.auth.domain.service import (
     stub_image_service,
     stub_mail_service,
     stub_password_service,
-    stub_token_service
+    stub_token_service,
+    stub_unit_of_work
 )
 from src.test.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
 from src.test.unit.auth.domain.fakes.fake_usuario_repository import FakeUsuarioRepository
@@ -24,6 +25,7 @@ class RegisterTestEnvironment:
         self.mail_policy = stub_mail_policy_service.StubMailPolicy()
         self.settings = TestSettings()
         self.usuario_repository = FakeUsuarioRepository()
+        self.unit_of_work_service = stub_unit_of_work.StubUnitOfWork()
 
     def use_case(self):
         return RegisterUseCase(
@@ -35,5 +37,6 @@ class RegisterTestEnvironment:
             password_policy=self.password_policy,
             mail_policy=self.mail_policy,
             settings=self.settings,
-            usuario_repository=self.usuario_repository
+            usuario_repository=self.usuario_repository,
+            unit_of_work_service=self.unit_of_work_service
         )
