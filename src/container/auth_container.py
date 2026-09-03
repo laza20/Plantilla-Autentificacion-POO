@@ -142,15 +142,18 @@ class ContainerLogout:
     def __init__(
         self,
         token_service: TokenProtocol,
-        sesion_repository: TokenRepositoryProtocol
+        sesion_repository: TokenRepositoryProtocol,
+        unit_of_work_service: UnitOfWorkProtocol
     ):
         self.token_service = token_service
         self.sesion_repository = sesion_repository
+        self.unit_of_work_service = unit_of_work_service
     @property
     def logout_use_case(self) -> LogoutUseCase:
         return LogoutUseCase(
             token_service=self.token_service,
-            sesion_repository=self.sesion_repository
+            sesion_repository=self.sesion_repository,
+            unit_of_work_service=self.unit_of_work_service
         )
     
 class ContainerRefreshToken:

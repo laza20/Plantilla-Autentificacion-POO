@@ -35,7 +35,6 @@ class SesionRepository:
         sesion = self.session.query(Sesiones).filter_by(hash_refresh_token=hash_token).first()
         if sesion:
             self.session.delete(sesion)
-            self.session.commit()
 
     def listar_sesiones(
         self,
