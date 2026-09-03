@@ -7,6 +7,7 @@ from src.config.config import settings
 from src.auth.domain.exceptions.tokens import TokenNoDesactivado
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoModificado, UsuarioNoEncontrado
 from src.auth.domain.exceptions.domain import ErrorCreacion
+import pytest
 
 
 def test_debe_verificar_que_el_retorno_sea_correcto_en_el_caso_positivo(test_client):
@@ -31,3 +32,33 @@ def test_debe_verificar_que_el_retorno_sea_correcto_en_el_caso_positivo(test_cli
 
     assert response.status_code == status.HTTP_202_ACCEPTED
     assert data["message"] == 'La contraseña fue modificada correctamente.'
+
+
+@pytest.mark.parametrize(
+    "excepcion",
+    [
+        TokenNoDesactivado("El token no pudo ser desactivado."),
+        UsuarioNoModificado("La contraseña no pudo ser modificada."),
+        UsuarioNoEncontrado("Usuario no encontrado en la base de datos."),
+        ErrorCreacion("Error al crear el registro en la base de datos.")
+    ]
+)
+def test_debe_verificar_que_se_produce_una_excepcion_si_algo_falla(test_client, excepcion):
+    app.dependency_overrides[get_recuperar_contraseña_use_case] = crear_override(
+        stub_class=StubRecuperarContraseñaUseCase,
+        excepcion=excepcion
+    )
+    app.dependency_overrides[get_token_service] = crear_override(
+        stub_class=StubRecuperarContraseñaUseCase,
+        resultado={"reset_token": "un_token_valido"}
+    )
+
+    test_client.cookies.set("reset_token", "un_token_valido")
+    response = test_client.patch(
+        f"/{settings.NOMBRE_APP}/usuarios/modificar/password",
+        json={            
+            "password": "Boca1234@"} #contraseña nueva
+    )
+
+    assert response.status_code == excepcion.status_code
+    assert response.json()["detail"] == excepcion.message
