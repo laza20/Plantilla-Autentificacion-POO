@@ -132,7 +132,8 @@ def get_login_use_case(
     token_service: TokenProtocol = Depends(get_token_service),
     password_service: PasswordProtocol = Depends(get_password_service),
     user_validation_service: UserValidationService = Depends(get_user_validation_service),
-    sesion_repository: TokenRepositoryProtocol = Depends(get_sesion_repository)
+    sesion_repository: TokenRepositoryProtocol = Depends(get_sesion_repository),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
 ) -> LoginUseCase:
 
     return ContainerLogin(
@@ -140,7 +141,8 @@ def get_login_use_case(
         token_service=token_service,
         password_service=password_service,
         user_validation_service=user_validation_service,
-        sesion_repository=sesion_repository
+        sesion_repository=sesion_repository,
+        unit_of_work_service = unit_of_work_service
     ).login_use_case
 
 

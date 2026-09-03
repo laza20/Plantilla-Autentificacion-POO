@@ -22,8 +22,6 @@ class SesionRepository:
             user_agent=user_agent
         )
         self.session.add(sesion)
-        self.session.commit()
-        self.session.refresh(sesion)
         return sesion
 
 

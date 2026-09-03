@@ -97,15 +97,15 @@ class ContainerLogin:
         token_service: TokenProtocol,
         password_service: PasswordProtocol,
         user_validation_service: UserValidationService,
-        sesion_repository: TokenRepositoryProtocol
+        sesion_repository: TokenRepositoryProtocol,
+        unit_of_work_service: UnitOfWorkProtocol
     ):
         self.auth_user_repository = auth_user_repository
         self.token_service = token_service
         self.password_service = password_service
         self.user_validation_service = user_validation_service
         self.sesion_repository = sesion_repository
-        
-
+        self.unit_of_work_service = unit_of_work_service
     @property
     def login_use_case(self) -> LoginUseCase:
 
@@ -114,7 +114,8 @@ class ContainerLogin:
             token_service=self.token_service,
             password_service=self.password_service,
             user_validation_service = self.user_validation_service,
-            sesion_repository = self.sesion_repository
+            sesion_repository = self.sesion_repository,
+            unit_of_work_service=self.unit_of_work_service
         )
 
 class ContainerVerifyMail:

@@ -6,6 +6,7 @@ from src.auth.domain.protocols.protocol_auth_user_repository import AuthUserRepo
 from src.auth.domain.protocols.protocol_password_service import PasswordProtocol
 from src.auth.domain.protocols.protocol_token_service import TokenProtocol
 from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
+from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.services.user_validation_service import UserValidationService
 
 
@@ -18,13 +19,15 @@ class LoginUseCase:
         password_service: PasswordProtocol,
         token_service: TokenProtocol,
         user_validation_service: UserValidationService,
-        sesion_repository: TokenRepositoryProtocol
+        sesion_repository: TokenRepositoryProtocol,
+        unit_of_work_service: UnitOfWorkProtocol
     ):
         self.auth_user_repository = auth_user_repository
         self.password_service = password_service
         self.token_service = token_service
         self.user_validation_service = user_validation_service
         self.sesion_repository = sesion_repository
+        self.unit_of_work_service = unit_of_work_service
 
     def ejecutar(self, email: str, password: str, ip:str, user_agent:str)-> LoginResponse:
         try:
@@ -35,12 +38,13 @@ class LoginUseCase:
             
             login_response = self._emitir_tokens_usuario(usuario_db)
             hashed_token = self.token_service.hash_token(login_response.tokens.refresh_token)
-            self._insertar_sesion(
-                hashed_token=hashed_token,
-                id_usuario=usuario_db.id_usuario,
-                ip=ip,
-                user_agent=user_agent
-            )
+            with self.unit_of_work_service:
+                self.sesion_repository.insertar_sesion(
+                    hash_token=hashed_token,
+                    id_usuario=usuario_db.id_usuario,
+                    ip=ip,
+                    user_agent=user_agent
+                )
             return login_response
         
         except (UsuarioError, DomainError):
@@ -63,12 +67,4 @@ class LoginUseCase:
         return UsuarioLogeado(
             email= usuario.email,
             imagen_url= usuario.imagen_url
-        )
-
-    def _insertar_sesion(self, hashed_token:str, id_usuario:int, ip:str, user_agent:str):
-        self.sesion_repository.insertar_sesion(
-            hash_token=hashed_token,
-            id_usuario=id_usuario,
-            ip=ip,
-            user_agent=user_agent
         )
