@@ -1,7 +1,7 @@
-from src.auth.domain.exceptions.domain import SinCargas
 from fastapi import UploadFile
 import logging
 from src.auth.domain.protocols.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.protocol_password_service import PasswordProtocol
 from src.auth.domain.protocols.protocol_mail_service import MailProtocol
 from src.auth.domain.protocols.protocol_image_service import ImageProtocol
@@ -12,7 +12,7 @@ from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser, UserRegisterDTO, AuthUserNoTable
 from src.auth.infrastructure.persistence.postgres.usuario_repository import Usuario
 from pydantic import ValidationError
-from src.auth.domain.exceptions.domain import LongitudExcedida
+from src.auth.domain.exceptions.domain import LongitudExcedida, SinCargas, ErrorCreacion
 from src.auth.infrastructure.security.security import Settings
 
 
@@ -29,7 +29,8 @@ class RegisterUseCase:
         password_policy : PasswordPolicyService,
         mail_policy : MailPolicyService,
         settings : Settings,
-        usuario_repository: UsuarioRepositoryProtocol
+        usuario_repository: UsuarioRepositoryProtocol,
+        unit_of_work_service: UnitOfWorkProtocol
     ):
         self.auth_user_repository = auth_user_repository
         self.password_service = password_service
@@ -40,6 +41,7 @@ class RegisterUseCase:
         self.mail_policy = mail_policy
         self.settings = settings
         self.usuario_repository = usuario_repository
+        self.unit_of_work_service = unit_of_work_service
 
     async def ejecutar(self, usuario:UserRegisterDTO, imagen:UploadFile | None) -> AuthUser:
         if usuario is None:
@@ -55,20 +57,29 @@ class RegisterUseCase:
         if imagen is not None:
             objeto_usuario = self.image_service.insertar_imagen(objeto_usuario, imagen, servicio="usuarios")
 
-        usuario_creado = self.auth_user_repository.insertar(objeto_usuario)
+        with self.unit_of_work_service:
+            usuario_auth= self.auth_user_repository.insertar(objeto_usuario)
+            usuario = self.usuario_repository.insertar(self._preparar_usuario_registro(usuario_auth))
+            self._mostrar_errores(usuario_auth, usuario)
+            
 
-        token_verificacion = self.token_service.create_access_token(str(usuario_creado.id_usuario))
+        token_verificacion = self.token_service.create_access_token(str(usuario_auth.id_usuario))
         cuerpo_correo = self._generar_correo_verificacion(token_verificacion)
 
         await self.mail_service.enviar_mail(
-            email_destino=usuario_creado.email,
+            email_destino=usuario_auth.email,
             cuerpo_html=cuerpo_correo,
             asunto = "Activa tu cuenta"
         )   
 
-        self.usuario_repository.insertar(self._preparar_usuario_registro(usuario_creado))
-        return usuario_creado
+        return usuario_auth
 
+
+    def _mostrar_errores(self, usuario_auth, usuario):
+        if not usuario_auth or not usuario:
+            logger.error("Error al crear el usuario en la base de datos.")
+            raise ErrorCreacion("Error al crear el usuario en la base de datos.")
+            
 
     def _normalizar_registro_a_cargar(self, usuario: UserRegisterDTO) -> AuthUser:
         """

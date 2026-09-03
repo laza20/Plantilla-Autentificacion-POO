@@ -10,6 +10,4 @@ class UserRepository:
         Función para insertar un registro en la base de datos y retornar el usuario actualizado.
         """
         self.session.add(usuario)
-        self.session.commit()
-        self.session.refresh(usuario)
         return usuario

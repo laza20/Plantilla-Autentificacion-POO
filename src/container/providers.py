@@ -109,7 +109,8 @@ def get_register_use_case(
     mail_service: MailProtocol = Depends(get_mail_service),
     image_service: ImageProtocol = Depends(get_image_service),
     mail_policy : MailPolicyService = Depends(get_mail_policy),
-    usuario_repository: UsuarioRepositoryProtocol = Depends(get_user_repository)
+    usuario_repository: UsuarioRepositoryProtocol = Depends(get_user_repository),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
 ) -> RegisterUseCase:
 
     return ContainerRegister(
@@ -121,7 +122,8 @@ def get_register_use_case(
         mail_service=mail_service,
         image_service=image_service,
         mail_policy=mail_policy,
-        usuario_repository=usuario_repository
+        usuario_repository=usuario_repository,
+        unit_of_work_service=unit_of_work_service
     ).register_use_case
 
 

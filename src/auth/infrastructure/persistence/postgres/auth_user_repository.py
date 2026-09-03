@@ -17,8 +17,7 @@ class AuthUserRepository:
             raise MailRepetido()
 
         self.session.add(usuario)
-        self.session.commit()
-        self.session.refresh(usuario)
+        self.session.flush()
         return usuario
 
     def obtener_por_id_sin_activar(self, id_usuario: int) -> AuthUser | None:

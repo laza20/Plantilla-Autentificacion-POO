@@ -60,7 +60,8 @@ class ContainerRegister:
         image_service: ImageProtocol,
         password_policy: PasswordPolicyService,
         mail_policy : MailPolicyService,
-        usuario_repository: UsuarioRepositoryProtocol
+        usuario_repository: UsuarioRepositoryProtocol,
+        unit_of_work_service: UnitOfWorkProtocol,
     ):
         self.settings = settings
         self.auth_user_repository = auth_user_repository
@@ -71,6 +72,7 @@ class ContainerRegister:
         self.password_policy = password_policy
         self.mail_policy = mail_policy
         self.usuario_repository = usuario_repository
+        self.unit_of_work_service = unit_of_work_service
     @property
     def register_use_case(self) -> RegisterUseCase:
 
@@ -83,7 +85,8 @@ class ContainerRegister:
             image_service=self.image_service,
             token_service=self.token_service,
             mail_policy=self.mail_policy,
-            usuario_repository=self.usuario_repository
+            usuario_repository=self.usuario_repository,
+            unit_of_work_service=self.unit_of_work_service
         )
 
         
