@@ -27,25 +27,25 @@ from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 class ContainerEliminarSesiones:
     def __init__(
         self,
-        token_repository: TokenRepositoryProtocol
+        sesion_repository: TokenRepositoryProtocol
     ):
-        self.token_repository = token_repository
+        self.sesion_repository = sesion_repository
     @property
     def eliminar_sesiones_use_case(self) -> EliminarSesionesUseCase:
         return EliminarSesionesUseCase(
-            token_repository=self.token_repository
+            sesion_repository=self.sesion_repository
             )
 
 class ContainerListarSesiones:
     def __init__(
         self,
-        token_repository: TokenRepositoryProtocol
+        sesion_repository: TokenRepositoryProtocol
     ):
-        self.token_repository = token_repository
+        self.sesion_repository = sesion_repository
     @property
     def listar_sesiones_use_case(self) -> ListarSesionesUseCase:
         return ListarSesionesUseCase(
-            token_repository=self.token_repository
+            sesion_repository=self.sesion_repository
             )
 
 
@@ -97,13 +97,13 @@ class ContainerLogin:
         token_service: TokenProtocol,
         password_service: PasswordProtocol,
         user_validation_service: UserValidationService,
-        token_repository: TokenRepositoryProtocol
+        sesion_repository: TokenRepositoryProtocol
     ):
         self.auth_user_repository = auth_user_repository
         self.token_service = token_service
         self.password_service = password_service
         self.user_validation_service = user_validation_service
-        self.token_repository = token_repository
+        self.sesion_repository = sesion_repository
         
 
     @property
@@ -114,7 +114,7 @@ class ContainerLogin:
             token_service=self.token_service,
             password_service=self.password_service,
             user_validation_service = self.user_validation_service,
-            token_repository = self.token_repository
+            sesion_repository = self.sesion_repository
         )
 
 class ContainerVerifyMail:
@@ -138,15 +138,15 @@ class ContainerLogout:
     def __init__(
         self,
         token_service: TokenProtocol,
-        token_repository: TokenRepositoryProtocol
+        sesion_repository: TokenRepositoryProtocol
     ):
         self.token_service = token_service
-        self.token_repository = token_repository
+        self.sesion_repository = sesion_repository
     @property
     def logout_use_case(self) -> LogoutUseCase:
         return LogoutUseCase(
             token_service=self.token_service,
-            token_repository=self.token_repository
+            sesion_repository=self.sesion_repository
         )
     
 class ContainerRefreshToken:

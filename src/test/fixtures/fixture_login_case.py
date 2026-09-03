@@ -4,7 +4,7 @@ from src.test.unit.auth.domain.service import (
 )
 from fastapi import Response, Request
 from src.test.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
-from src.test.unit.auth.domain.fakes.fake_token_repository import FakeSesionRepository
+from src.test.unit.auth.domain.fakes.fake_sesion_repository import FakeSesionRepository
 from src.auth.application.use_cases.login import LoginUseCase
 from src.test.config.config import TestSettings
 from src.auth.domain.services.user_validation_service import UserValidationService
@@ -30,7 +30,7 @@ class LoginTestEnvironment:
         self.user_validation_service = UserValidationService(            
             auth_user_repository=self.auth_user_repository,
             settings=TestSettings())
-        self.token_repository = FakeSesionRepository()
+        self.sesion_repository = FakeSesionRepository()
 
     def use_case(self):
         return LoginUseCase(
@@ -38,7 +38,7 @@ class LoginTestEnvironment:
             token_service=self.token_service,
             password_service=self.password_service,
             user_validation_service = self.user_validation_service,
-            token_repository = self.token_repository
+            sesion_repository = self.sesion_repository
         )
 
 

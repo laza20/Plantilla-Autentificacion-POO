@@ -1,14 +1,11 @@
 from src.auth.infrastructure.persistence.postgres.models_auth_users import LoginResponse, AuthUser, UsuarioLogeado
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError
 from src.auth.domain.exceptions.domain import DomainError
-from fastapi import Response, Request
 import logging
 from src.auth.domain.protocols.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.protocols.protocol_password_service import PasswordProtocol
 from src.auth.domain.protocols.protocol_token_service import TokenProtocol
 from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
-from src.auth.infrastructure.security.security import Settings
-from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.domain.services.user_validation_service import UserValidationService
 
 
@@ -21,13 +18,13 @@ class LoginUseCase:
         password_service: PasswordProtocol,
         token_service: TokenProtocol,
         user_validation_service: UserValidationService,
-        token_repository: TokenRepositoryProtocol
+        sesion_repository: TokenRepositoryProtocol
     ):
         self.auth_user_repository = auth_user_repository
         self.password_service = password_service
         self.token_service = token_service
         self.user_validation_service = user_validation_service
-        self.token_repository = token_repository
+        self.sesion_repository = sesion_repository
 
     def ejecutar(self, email: str, password: str, ip:str, user_agent:str)-> LoginResponse:
         try:
@@ -69,7 +66,7 @@ class LoginUseCase:
         )
 
     def _insertar_sesion(self, hashed_token:str, id_usuario:int, ip:str, user_agent:str):
-        self.token_repository.insertar_sesion(
+        self.sesion_repository.insertar_sesion(
             hash_token=hashed_token,
             id_usuario=id_usuario,
             ip=ip,

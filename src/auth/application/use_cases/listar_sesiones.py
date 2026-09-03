@@ -5,12 +5,12 @@ from src.auth.infrastructure.persistence.postgres.models_sesiones import ListaSe
 class ListarSesionesUseCase:
     def __init__(
             self,
-            token_repository: TokenRepositoryProtocol
+            sesion_repository: TokenRepositoryProtocol
             ):
-        self.token_repository = token_repository
+        self.sesion_repository = sesion_repository
 
     def ejecutar(self, id_usuario:int, ip:str) -> ListaSesiones:
-        sesiones = self.token_repository.listar_sesiones(id_usuario=id_usuario)
+        sesiones = self.sesion_repository.listar_sesiones(id_usuario=id_usuario)
         return self._transformar_sesiones(sesiones, ip)
 
     def _transformar_sesiones(self, sesiones: list[SesionesVisual], ip:str) -> ListaSesiones:

@@ -117,7 +117,7 @@ def test_debe_verificar_el_id_del_usuario():
     assert context.token_service.user_id_recibido == 1
 
 
-def test_debe_verificar_que_el_token_repository_fue_llamado_correctamente():
+def test_debe_verificar_que_el_sesion_repository_fue_llamado_correctamente():
     """
     Verifica que el repositorio de tokens se llame correctamente al iniciar sesión.
     """
@@ -133,4 +133,4 @@ def test_debe_verificar_que_el_token_repository_fue_llamado_correctamente():
         user_agent="Test User Agent"
     )
 
-    assert context.token_repository.fue_llamado is True
+    assert context.sesion_repository.fue_llamado is True

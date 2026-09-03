@@ -68,7 +68,7 @@ def get_user_validation_service(
 def get_cookies_service(settings: Settings = Depends(get_settings)) -> CookiesService:
     return CookiesService(settings=settings)
 
-def get_token_repository(session: Session = Depends(get_session)) -> TokenRepositoryProtocol:
+def get_sesion_repository(session: Session = Depends(get_session)) -> TokenRepositoryProtocol:
     return SesionRepository(session)
 
 def get_token_service(
@@ -132,7 +132,7 @@ def get_login_use_case(
     token_service: TokenProtocol = Depends(get_token_service),
     password_service: PasswordProtocol = Depends(get_password_service),
     user_validation_service: UserValidationService = Depends(get_user_validation_service),
-    token_repository: TokenRepositoryProtocol = Depends(get_token_repository)
+    sesion_repository: TokenRepositoryProtocol = Depends(get_sesion_repository)
 ) -> LoginUseCase:
 
     return ContainerLogin(
@@ -140,7 +140,7 @@ def get_login_use_case(
         token_service=token_service,
         password_service=password_service,
         user_validation_service=user_validation_service,
-        token_repository=token_repository
+        sesion_repository=sesion_repository
     ).login_use_case
 
 
@@ -155,11 +155,11 @@ def get_verify_mail_use_case(
 
 def get_logout_service(
     token_service: TokenProtocol = Depends(get_token_service),
-    token_repository: TokenRepositoryProtocol = Depends(get_token_repository)
+    sesion_repository: TokenRepositoryProtocol = Depends(get_sesion_repository)
 )-> LogoutUseCase:
     return ContainerLogout(
         token_service=token_service,
-        token_repository=token_repository
+        sesion_repository=sesion_repository
         ).logout_use_case
 
 
@@ -172,14 +172,14 @@ def get_refresh_token_service(
 
 
 def get_listar_sesiones_use_case(
-    token_repository: TokenRepositoryProtocol = Depends(get_token_repository)
+    sesion_repository: TokenRepositoryProtocol = Depends(get_sesion_repository)
 ) -> ListarSesionesUseCase:
-    return ContainerListarSesiones(token_repository=token_repository).listar_sesiones_use_case
+    return ContainerListarSesiones(sesion_repository=sesion_repository).listar_sesiones_use_case
 
 def get_eliminar_sesiones_use_case(
-    token_repository: TokenRepositoryProtocol = Depends(get_token_repository)
+    sesion_repository: TokenRepositoryProtocol = Depends(get_sesion_repository)
 ) -> EliminarSesionesUseCase:
-    return ContainerEliminarSesiones(token_repository=token_repository).eliminar_sesiones_use_case
+    return ContainerEliminarSesiones(sesion_repository=sesion_repository).eliminar_sesiones_use_case
 
 def get_solicitud_recuperacion_contraseña_use_case(
     recuperar_contraseña_repository: RecuperarContraseñaProtocol = Depends(get_recuperar_contraseña_repository),

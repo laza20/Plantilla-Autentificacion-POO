@@ -8,8 +8,8 @@ from src.test.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRe
 from src.test.unit.auth.domain.fakes.fake_usuario_repository import FakeUsuarioRepository
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.test.config.config import TestSettings
-from test.unit.auth.domain.service import stub_password_policy_service
-from test.unit.auth.domain.service import stub_mail_policy_service
+from src.test.unit.auth.domain.service import stub_password_policy_service
+from src.test.unit.auth.domain.service import stub_mail_policy_service
 
 
 class RegisterTestEnvironment:

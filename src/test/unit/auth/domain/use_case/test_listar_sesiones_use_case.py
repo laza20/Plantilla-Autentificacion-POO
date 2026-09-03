@@ -1,5 +1,5 @@
 from src.test.fixtures.fixture_listar_sesiones import ListarSesionesEnvironment
-from test.factories.factory_sesiones import crear_sesion_de_prueba
+from src.test.factories.factory_sesiones import crear_sesion_de_prueba
 
 
 def test_listar_sesiones_usuario_logeado_correctamente():
@@ -8,7 +8,7 @@ def test_listar_sesiones_usuario_logeado_correctamente():
     """
     contex_listar_sesion = ListarSesionesEnvironment()
 
-    crear_sesion_de_prueba(contex_listar_sesion.token_repository)
+    crear_sesion_de_prueba(contex_listar_sesion.sesion_repository)
 
     sesiones = contex_listar_sesion.use_case().ejecutar(id_usuario=1, ip="127.0.0.1")
     assert len(sesiones.sesiones) == 1
@@ -33,9 +33,9 @@ def test_debe_listar_varias_sesiones_y_marcar_la_actual():
     """
     contex_listar_sesion = ListarSesionesEnvironment()
 
-    crear_sesion_de_prueba(contex_listar_sesion.token_repository)
+    crear_sesion_de_prueba(contex_listar_sesion.sesion_repository)
     crear_sesion_de_prueba(
-        contex_listar_sesion.token_repository,  
+        contex_listar_sesion.sesion_repository,  
         hash_token="hash_token_2", 
         ip= "128.0.0.1", 
         user_agent="user_agent_2"
@@ -54,9 +54,9 @@ def test_debe_listar_varias_sesiones_sin_la_ip_actual():
     """
     contex_listar_sesion = ListarSesionesEnvironment()
 
-    crear_sesion_de_prueba(contex_listar_sesion.token_repository)
+    crear_sesion_de_prueba(contex_listar_sesion.sesion_repository)
     crear_sesion_de_prueba(
-        contex_listar_sesion.token_repository,  
+        contex_listar_sesion.sesion_repository,  
         hash_token="hash_token_2", 
         ip= "128.0.0.1", 
         user_agent="user_agent_2"
