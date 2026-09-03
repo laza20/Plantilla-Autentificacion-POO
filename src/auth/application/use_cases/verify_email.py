@@ -1,6 +1,7 @@
 from src.auth.infrastructure.persistence.postgres.models_auth_users import UserTokens
 import logging
 from src.auth.domain.protocols.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.exceptions.tokens import TokenInvalido, VerificacionInvalida
 from src.auth.domain.protocols.protocol_token_service import TokenProtocol
 
@@ -10,10 +11,12 @@ class VerifyMailUseCase:
     def __init__(
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
-        token_service: TokenProtocol
+        token_service: TokenProtocol,
+        unit_of_work_service: UnitOfWorkProtocol
     ):
         self.auth_user_repository = auth_user_repository
         self.token_service = token_service
+        self.unit_of_work_service = unit_of_work_service
 
     def ejecutar(self, token: str)-> UserTokens:
         """
@@ -24,7 +27,8 @@ class VerifyMailUseCase:
         try:
             user_id_db = self.token_service.get_user_id_from_access_token(token)
             usuario = self.auth_user_repository.obtener_por_id_sin_activar(user_id_db)
-            usuario = self.auth_user_repository.activar(usuario)
+            with self.unit_of_work_service:
+                usuario = self.auth_user_repository.activar(usuario)
 
         except TokenInvalido:
             raise VerificacionInvalida()

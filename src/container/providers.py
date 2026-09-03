@@ -146,11 +146,13 @@ def get_login_use_case(
 
 def get_verify_mail_use_case(
     auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
-    token_service: TokenProtocol = Depends(get_token_service)
+    token_service: TokenProtocol = Depends(get_token_service),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
 ) -> VerifyMailUseCase:
     return ContainerVerifyMail(
         auth_user_repository=auth_user_repository,
-        token_service=token_service
+        token_service=token_service,
+        unit_of_work_service = unit_of_work_service
     ).verify_mail_use_case
 
 def get_logout_service(

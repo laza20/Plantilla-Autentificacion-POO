@@ -122,15 +122,18 @@ class ContainerVerifyMail:
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         token_service: TokenProtocol,
+        unit_of_work_service: UnitOfWorkProtocol
     ):
         self.auth_user_repository = auth_user_repository
         self.token_service = token_service
+        self.unit_of_work_service = unit_of_work_service
     @property
     def verify_mail_use_case(self) -> VerifyMailUseCase:
 
         return VerifyMailUseCase(
             auth_user_repository=self.auth_user_repository,
-            token_service=self.token_service
+            token_service=self.token_service,
+            unit_of_work_service=self.unit_of_work_service
         )
     
 

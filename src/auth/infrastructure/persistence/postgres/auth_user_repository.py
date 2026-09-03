@@ -34,9 +34,6 @@ class AuthUserRepository:
         usuario.estado = EstadoEntidad.ACTIVO
         usuario.is_verified = True
 
-        self.session.commit()
-        self.session.refresh(usuario)
-
         return usuario
 
     def obtener_por_email(self, email: str) -> AuthUser | None:
