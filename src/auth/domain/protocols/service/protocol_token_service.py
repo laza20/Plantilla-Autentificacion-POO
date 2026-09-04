@@ -343,3 +343,8 @@ class TokenProtocol(Protocol):
     def create_reset_token(self, user_id: str) -> str:pass
 
     def get_current_reset_scope(self, token: str) -> str:pass
+
+
+    def create_verificacion_token(self, user_id: str) -> str:pass
+
+    def get_user_id_from_verificacion_token(self, token: str) -> str:pass

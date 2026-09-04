@@ -24,13 +24,9 @@ class VerifyMailUseCase:
         El token se decodifica para obtener el ID del usuario, luego se busca el usuario en la base de datos y se activa su cuenta.
         Si el token es inválido o el usuario no existe, se lanzan excepciones correspondientes
         """
-        try:
-            user_id_db = self.token_service.get_user_id_from_access_token(token)
-            usuario = self.auth_user_repository.obtener_por_id_sin_activar(user_id_db)
-            with self.unit_of_work_service:
-                usuario = self.auth_user_repository.activar(usuario)
+        user_id_db = self.token_service.get_user_id_from_verificacion_token(token)
+        usuario = self.auth_user_repository.obtener_por_id_sin_activar(user_id_db)
+        with self.unit_of_work_service:
+            usuario = self.auth_user_repository.activar(usuario)
 
-        except TokenInvalido:
-            raise VerificacionInvalida()
-        
         return self.token_service.create_user_tokens(usuario.id_usuario)

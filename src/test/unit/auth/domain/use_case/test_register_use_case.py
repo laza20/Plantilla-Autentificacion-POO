@@ -202,7 +202,7 @@ async def test_debe_generar_un_correo_con_el_token_de_activacion():
     )
 
     assert context.mail_service.fue_llamado is True
-    assert f"access_token_{usuario_creado.id_usuario}" in context.mail_service.cuerpo_html
+    assert f"verificacion_token_{usuario_creado.id_usuario}" in context.mail_service.cuerpo_html
 
 
 @pytest.mark.asyncio
@@ -224,7 +224,7 @@ async def test_debe_generar_un_token_de_activacion():
 
     assert context.token_service.fue_llamado is True
     assert context.token_service.user_id_recibido == str(usuario_creado.id_usuario)
-    assert context.token_service.access_token_generado == f"access_token_{usuario_creado.id_usuario}"
+    assert context.token_service.verificacion_token_generado == f"verificacion_token_{usuario_creado.id_usuario}"
 
 @pytest.mark.asyncio
 async def test_debe_dar_error_al_incumplir_politica_de_contraseña():

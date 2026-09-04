@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_DURATION: int
     RESET_PASSWORD_TOKEN_EXPIRE_MINUTES: int
     VERIFY_MAIL_RECUPERACION: int
+    EXPIRACION_MAIL_RECUPERACION : int
     
     #Mail settings
 

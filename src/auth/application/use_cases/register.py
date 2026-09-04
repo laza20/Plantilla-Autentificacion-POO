@@ -63,7 +63,7 @@ class RegisterUseCase:
             self._mostrar_errores(usuario_auth, usuario)
             
 
-        token_verificacion = self.token_service.create_access_token(str(usuario_auth.id_usuario))
+        token_verificacion = self.token_service.create_verificacion_token(str(usuario_auth.id_usuario))
         cuerpo_correo = self._generar_correo_verificacion(token_verificacion)
 
         await self.mail_service.enviar_mail(

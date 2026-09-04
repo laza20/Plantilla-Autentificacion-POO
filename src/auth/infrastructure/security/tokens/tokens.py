@@ -1,7 +1,7 @@
 from datetime import datetime, timezone, timedelta
 from jose import jwt
 from typing import Dict
-from src.auth.domain.exceptions.tokens import TokenInvalido, TokenResetInactivo
+from src.auth.domain.exceptions.tokens import TokenInvalido, TokenResetInactivo, TokenVerificacionInactivo
 from jose import JWTError
 from fastapi import Depends
 from src.config.config import get_settings, Settings
@@ -58,10 +58,10 @@ class TokenService:
         """
         try:
             return jwt.decode(token, self.settings.JWT_SECRET_KEY, algorithms=[self.settings.ALGORITHM])
-        except JWTError as e:
+        except:
             raise TokenInvalido(
                 "Token inválido o expirado"
-            ) from e
+            ) 
         
     def get_user_id_from_access_token(self, token:str)->int:
         try:
@@ -92,7 +92,7 @@ class TokenService:
             
             return user_id
 
-        except JWTError as e:
+        except:
             raise TokenInvalido("Refresh token inválido o expirado")
 
     def get_current_reset_scope(self, token:str)->str:
@@ -108,7 +108,7 @@ class TokenService:
             
             return user_id
 
-        except JWTError as e:
+        except:
             raise TokenInvalido("Reset token inválido o expirado")
 
     def hash_token(self, token: str) -> str:
@@ -134,7 +134,33 @@ class TokenService:
                 minutes=self.settings.RESET_PASSWORD_TOKEN_EXPIRE_MINUTES
             )
         )
-        
+
+    def create_verificacion_token(self, user_id: str) -> str:
+        return self._encode_token(
+            {
+                "sub": str(user_id),
+                "type": "verification"
+            },
+            timedelta(
+                minutes=self.settings.VERIFY_MAIL_RECUPERACION
+            )
+        )
+
+    def get_user_id_from_verificacion_token(self, token: str) -> str:
+        try:
+            payload = self.decode_token(token)
+
+            if payload.get("type") != "verification":
+                raise TokenInvalido()
+
+            user_id = payload.get("sub")
+            if not user_id:
+                raise TokenVerificacionInactivo()
+            
+            return user_id
+
+        except:
+            raise TokenInvalido("Verification token inválido o expirado")
 
     def _encode_token(self, payload: Dict[str, any], expires_delta: timedelta) -> str:
         """

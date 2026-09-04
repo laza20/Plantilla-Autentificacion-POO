@@ -1,4 +1,4 @@
-from src.auth.domain.exceptions.tokens import VerificacionInvalida
+from src.auth.domain.exceptions.tokens import VerificacionInvalida, TokenInvalido
 import pytest
 from src.test.fixtures.fixture_verify_mail_case import VerifyEmailTestEnvironment
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
@@ -24,7 +24,7 @@ def test_debe_verificar_el_mail_y_activar_el_usuario():
 
     usuario = context.auth_user_repository.insertar(usuario_existente)
     context.use_case().ejecutar(
-        token=f"access_token_{usuario.id_usuario}"
+        token=f"verificacion_token_{usuario.id_usuario}"
     )
     usuario_activado = context.auth_user_repository.obtener_por_email("test@test.com")
 
@@ -45,7 +45,7 @@ def test_debe_verificar_que_los_tokens_sean_adecuados():
     )
 
     usuario = context.auth_user_repository.insertar(usuario_existente)
-    tokens = context.use_case().ejecutar(token= f"access_token_{usuario.id_usuario}")
+    tokens = context.use_case().ejecutar(token= f"verificacion_token_{usuario.id_usuario}")
 
     assert tokens.access_token == context.token_service.access_token_generado
     assert tokens.refresh_token == context.token_service.refresh_token_generado
@@ -68,9 +68,9 @@ def test_debe_verificar_que_da_error_de_tipo_token_invalido_cuando_no_coincide_l
 
     usuario = context.auth_user_repository.insertar(usuario_existente)
 
-    with pytest.raises(VerificacionInvalida):
+    with pytest.raises(TokenInvalido):
         context.use_case().ejecutar(        
-            token="access_token_"
+            token="verificacion_token_"
             )
 
 def test_debe_dar_error_cuando_no_se_encuentra_el_usuario():
@@ -82,7 +82,7 @@ def test_debe_dar_error_cuando_no_se_encuentra_el_usuario():
 
     with pytest.raises(UsuarioNoEncontrado):
         context.use_case().ejecutar(        
-            token="access_token_1"
+            token="verificacion_token_1"
             )
 
 def test_debe_dar_error_cuando_el_usuario_que_se_quiere_activar_ya_esta_activo():
@@ -101,7 +101,7 @@ def test_debe_dar_error_cuando_el_usuario_que_se_quiere_activar_ya_esta_activo()
     usuario = context.auth_user_repository.insertar(usuario_existente)
     with pytest.raises(UsuarioActivo):
         context.use_case().ejecutar(        
-            token=f"access_token_{usuario.id_usuario}"
+            token=f"verificacion_token_{usuario.id_usuario}"
             )
 
 
@@ -110,13 +110,13 @@ def test_debe_dar_error_cuando_el_usuario_que_se_quiere_activar_ya_esta_activo()
     [
         "",
         "hola",
-        "access",
-        "access_token",
+        "verificacion",
+        "verificacion_token",
         "refresh_token_1",
         "token_hola_1",
         "hola_token_1",
-        "_access_token_1",
-        "access_token_",
+        "_verificacion_token_1",
+        "verificacion_token_",
     ],
 )
 def test_debe_dar_error_cuando_el_formato_del_token_es_invalido(token):
@@ -126,7 +126,7 @@ def test_debe_dar_error_cuando_el_formato_del_token_es_invalido(token):
     """
     context = VerifyEmailTestEnvironment()
 
-    with pytest.raises(VerificacionInvalida):
+    with pytest.raises(TokenInvalido):
         context.use_case().ejecutar(
             token=token
         )

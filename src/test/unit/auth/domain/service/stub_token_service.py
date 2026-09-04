@@ -9,6 +9,7 @@ class StubTokenService:
         self.access_token_generado = None
         self.refresh_token_generado = None
         self.reset_token_generado = None
+        self.verificacion_toke_generado = None
         self.hashed_token = None
 
     def _actualizar_llamada(self, user_id: int):
@@ -82,3 +83,21 @@ class StubTokenService:
             self._actualizar_llamada(user_id)
         self.reset_token_generado = f"reset_token_{user_id}"
         return self.reset_token_generado
+
+    def create_verificacion_token(self, user_id: str) -> str:
+        if not self.fue_llamado:
+            self._actualizar_llamada(user_id)
+        self.verificacion_token_generado = f"verificacion_token_{user_id}"
+        return self.verificacion_token_generado
+
+    def get_user_id_from_verificacion_token(self, token: str) -> str:
+        try:
+            tipo, token, user_id  = token.split("_")
+            
+            if tipo != "verificacion" or token != "token":
+                raise TokenInvalido()
+                
+            return int(user_id)
+
+        except:
+            raise TokenInvalido()
