@@ -1,6 +1,6 @@
 from src.test.unit.auth.domain.fakes.fake_sesion_repository import FakeSesionRepository
 from src.test.unit.auth.domain.service import stub_unit_of_work
-from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
+from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
 
 
 class EliminarSesionesEnvironment:

@@ -1,4 +1,4 @@
-from src.auth.domain.protocols.protocol_token_service import TokenProtocol
+from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.exceptions.tokens import TokenInvalido, VerificacionInvalida
 
 class RefreshTokenUseCase:

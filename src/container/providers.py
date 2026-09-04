@@ -9,24 +9,24 @@ from src.container.auth_container import (
     ContainerRefreshToken, ContainerListarSesiones, ContainerEliminarSesiones,
     ContainerSolicitudRecuperacion, ContainerVerificarTokenRecuperacion, ContainerRecuperarContraseña)
 from src.auth.presentation.web.cookies.cookies import CookiesService
-from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
-from src.auth.application.use_cases.listar_sesiones import ListarSesionesUseCase
+from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
+from src.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
-from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
-from src.auth.domain.protocols.protocol_token_service import TokenProtocol
-from src.auth.domain.protocols.protocol_user_repository import UsuarioRepositoryProtocol
+from src.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
 from src.auth.infrastructure.persistence.postgres.repository.usuario_repository import UserRepository
 from src.auth.infrastructure.persistence.postgres.repository.recover_password_repository import RecoverPasswordRepository
 from src.auth.infrastructure.persistence.postgres.repository.history_password_repository import HistoryPasswordRepository
 from src.auth.infrastructure.persistence.postgres.repository.unit_of_work import UnitOfWork
-from src.auth.domain.protocols.protocol_password_service import PasswordProtocol
-from src.auth.domain.protocols.protocol_recover_password_repository import RecuperarContraseñaProtocol
-from src.auth.domain.protocols.protocol_history_password_repository import HistoryRepositoryProtocol
-from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
-from src.auth.domain.protocols.protocol_mail_service import MailProtocol
-from src.auth.domain.protocols.protocol_image_service import ImageProtocol
+from src.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
+from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from src.auth.domain.protocols.repository.protocol_history_password_repository import HistoryRepositoryProtocol
+from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
+from src.auth.domain.protocols.service.protocol_mail_service import MailProtocol
+from src.auth.domain.protocols.service.protocol_image_service import ImageProtocol
 from src.auth.infrastructure.security.tokens.tokens import TokenService
 from src.auth.infrastructure.security.security import PasswordService
 from src.auth.infrastructure.mail.mail import MailService

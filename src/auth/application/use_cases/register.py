@@ -1,12 +1,12 @@
 from fastapi import UploadFile
 import logging
-from src.auth.domain.protocols.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
-from src.auth.domain.protocols.protocol_password_service import PasswordProtocol
-from src.auth.domain.protocols.protocol_mail_service import MailProtocol
-from src.auth.domain.protocols.protocol_image_service import ImageProtocol
-from src.auth.domain.protocols.protocol_token_service import TokenProtocol
-from src.auth.domain.protocols.protocol_user_repository import UsuarioRepositoryProtocol
+from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
+from src.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
+from src.auth.domain.protocols.service.protocol_mail_service import MailProtocol
+from src.auth.domain.protocols.service.protocol_image_service import ImageProtocol
+from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser, UserRegisterDTO, AuthUserNoTable

@@ -1,5 +1,5 @@
-from src.auth.domain.protocols.protocol_recover_password_repository import RecuperarContraseñaProtocol
-from src.auth.domain.protocols.protocol_token_service import TokenProtocol
+from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from datetime import datetime, timezone
 from src.auth.domain.exceptions.tokens import TokenNoVerificado
 

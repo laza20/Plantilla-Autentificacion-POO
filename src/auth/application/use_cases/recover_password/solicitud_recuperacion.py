@@ -1,9 +1,9 @@
-from src.auth.domain.protocols.protocol_recover_password_repository import RecuperarContraseñaProtocol
-from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
-from src.auth.domain.protocols.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from src.auth.domain.protocols.protocol_token_service import TokenProtocol
+from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
+from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
-from src.auth.domain.protocols.protocol_mail_service import MailProtocol
+from src.auth.domain.protocols.service.protocol_mail_service import MailProtocol
 from datetime import datetime, timezone, timedelta
 from src.auth.infrastructure.security.security import Settings
 

@@ -1,14 +1,14 @@
 from src.config.config import Settings
 from src.auth.presentation.web.cookies.cookies import CookiesService
-from src.auth.domain.protocols.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from src.auth.domain.protocols.protocol_user_repository import UsuarioRepositoryProtocol
-from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
-from src.auth.application.use_cases.listar_sesiones import ListarSesionesUseCase
-from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
-from src.auth.domain.protocols.protocol_token_service import TokenProtocol
-from src.auth.domain.protocols.protocol_password_service import PasswordProtocol
-from src.auth.domain.protocols.protocol_mail_service import MailProtocol
-from src.auth.domain.protocols.protocol_image_service import ImageProtocol
+from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
+from src.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from src.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
+from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
+from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
+from src.auth.domain.protocols.service.protocol_mail_service import MailProtocol
+from src.auth.domain.protocols.service.protocol_image_service import ImageProtocol
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.login import LoginUseCase
@@ -20,9 +20,9 @@ from src.auth.application.use_cases.recover_password.solicitud_recuperacion impo
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
-from src.auth.domain.protocols.protocol_recover_password_repository import RecuperarContraseñaProtocol
-from src.auth.domain.protocols.protocol_history_password_repository import HistoryRepositoryProtocol
-from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from src.auth.domain.protocols.repository.protocol_history_password_repository import HistoryRepositoryProtocol
+from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
 
 class ContainerEliminarSesiones:
     def __init__(

@@ -2,9 +2,9 @@ from src.auth.infrastructure.persistence.postgres.models.models_auth_users impor
 from fastapi import APIRouter, Depends, status, Response, Path, HTTPException, UploadFile, Request
 from src.auth.presentation.web.utils.request_metadata import RequestMetadata
 from src.auth.application.use_cases.register import RegisterUseCase
-from src.auth.application.use_cases.listar_sesiones import ListarSesionesUseCase
+from src.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
 from src.auth.application.use_cases.login import LoginUseCase
-from src.auth.application.use_cases.eliminar_sesiones import EliminarSesionesUseCase
+from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService

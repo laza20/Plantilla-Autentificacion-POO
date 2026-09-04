@@ -1,5 +1,5 @@
-from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
-from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from src.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
 from typing import Dict
 
 

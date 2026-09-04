@@ -2,11 +2,11 @@ from src.auth.infrastructure.persistence.postgres.models.models_auth_users impor
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError
 from src.auth.domain.exceptions.domain import DomainError
 import logging
-from src.auth.domain.protocols.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from src.auth.domain.protocols.protocol_password_service import PasswordProtocol
-from src.auth.domain.protocols.protocol_token_service import TokenProtocol
-from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
-from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
+from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.services.user_validation_service import UserValidationService
 
 
