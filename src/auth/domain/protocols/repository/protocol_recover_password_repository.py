@@ -9,7 +9,7 @@ class RecuperarContraseñaProtocol(Protocol):
             self,
             id_usuario:int, 
             token_hash:str,
-            fecha_expiracion:datetime )->bool:
+            expira_en:datetime )->bool:
         """
         Funcion la cual nos permite insertar dentro de la base de datos un registro de tipo recuperacion 
         de contraseña.
@@ -18,7 +18,7 @@ class RecuperarContraseñaProtocol(Protocol):
         - id_usuario: permite asignarle a un registro un usuario determinado.
         - token_hash: campo el cual permite la verificacion del token, campo central para el funcionamiento 
         del sistema de recuperacion de controseña.
-        - fecha_expiracion: tiempo limite por el cual se puede utilizar el token.
+        - expira_en: tiempo limite por el cual se puede utilizar el token.
         """
         pass
 

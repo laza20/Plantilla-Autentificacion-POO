@@ -31,7 +31,7 @@ class FakeRecuperarContraseñaRepository:
             self,
             id_usuario:int, 
             token_hash:str,
-            fecha_expiracion:datetime )->bool:
+            expira_en:datetime )->bool:
 
         if self.forzar_fallo_insercion:
             return False
@@ -39,7 +39,7 @@ class FakeRecuperarContraseñaRepository:
         recover_password = RecoverPassword(
             id_usuario=id_usuario,
             token_hash=token_hash,
-            expira_en=fecha_expiracion
+            expira_en=expira_en
         )
 
         recover_password.id_recover_password = self._next_recover_id

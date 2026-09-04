@@ -27,12 +27,12 @@ class RecoverPasswordRepository:
             self,
             id_usuario:int, 
             token_hash:str,
-            fecha_expiracion:datetime )->bool:
+            expira_en:datetime )->bool:
 
         recover_password = RecoverPassword(
             id_usuario=id_usuario,
             token_hash=token_hash,
-            fecha_expiracion=fecha_expiracion
+            expira_en=expira_en
         )
         self.session.add(recover_password)
         return True
@@ -53,8 +53,15 @@ class RecoverPasswordRepository:
         if recover_password is None:
             return False
 
-        if recover_password.expira_en >= tiempo_actual:
+        print("EXPIRA:", recover_password.expira_en)
+        print("ACTUAL:", tiempo_actual)
+        print("COMPARACIÓN:", recover_password.expira_en < tiempo_actual)
+
+        if recover_password.expira_en < tiempo_actual:
+            print("TOKEN EXPIRADO")
             return False
+
+        print("TOKEN VIGENTE")
 
         return recover_password
 

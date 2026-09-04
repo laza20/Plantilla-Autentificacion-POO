@@ -40,7 +40,7 @@ def test_debe_verificar_que_al_pasarse_un_token_expirado_genera_un_error_de_tipo
     context = VerificarTokenRecuperacionContraseñaTestEnvironment()
     sesion_insertada = crear_recover_password_de_prueba(
         context.recuperar_contraseña_repository,
-        fecha_expiracion=datetime(
+        expira_en=datetime(
             2023, 1, 1,
             tzinfo=timezone.utc
         ))

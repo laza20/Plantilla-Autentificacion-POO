@@ -21,7 +21,7 @@ class VerificarTokenUseCase:
         token_hasheado = self.token_service.hash_token(token)
 
         token_verificado = self.recuperar_contraseña_repository.verificar_token(
-            fecha_actual, token_hasheado
+            tiempo_actual=fecha_actual, token_hash=token_hasheado
             )
 
         if not token_verificado:

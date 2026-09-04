@@ -40,11 +40,11 @@ class SolicitudRecuperacionUseCase:
         with self.unit_of_work_service:
 
             self.recuperar_contraseña_repository.invalidar_tokens_anteriores(usuario_encontrado.id_usuario)
-
+            
             usuario_recuperacion = self.recuperar_contraseña_repository.insertar_recuperacion_contraseña(
-                usuario_encontrado.id_usuario, 
-                token_hash,
-                expira
+                id_usuario=usuario_encontrado.id_usuario, 
+                token_hash=token_hash,
+                expira_en=expira
             )
 
             if not usuario_recuperacion:
