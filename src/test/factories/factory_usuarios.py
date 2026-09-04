@@ -1,4 +1,4 @@
-from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
+from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
 
 def crear_usuario_de_prueba(
     auth_user_repository,

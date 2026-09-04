@@ -3,7 +3,7 @@ from src.auth.domain.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.protocol_password_service import PasswordProtocol
 from src.auth.domain.protocols.protocol_history_password_repository import HistoryRepositoryProtocol
 from src.auth.domain.protocols.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from src.auth.infrastructure.persistence.postgres.models_recover_password import RecoverPassword
+from src.auth.infrastructure.persistence.postgres.models.models_recover_password import RecoverPassword
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from datetime import datetime, timezone
 from src.auth.domain.exceptions.tokens import TokenNoDesactivado

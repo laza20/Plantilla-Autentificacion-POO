@@ -1,7 +1,7 @@
 import pytest
 from src.test.presentation.web.overrides.override_crear import crear_override
 from src.test.presentation.web.stub.stub_login import StubLoginUseCase
-from src.auth.infrastructure.persistence.postgres.models_auth_users import LoginResponse, UsuarioLogeado, UserTokens
+from src.auth.infrastructure.persistence.postgres.models.models_auth_users import LoginResponse, UsuarioLogeado, UserTokens
 from src.container.providers import get_login_use_case
 from fastapi import status
 from src.config.config import settings

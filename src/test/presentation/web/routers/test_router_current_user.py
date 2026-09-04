@@ -1,7 +1,7 @@
 import pytest
 from src.test.presentation.web.overrides.override_crear import crear_override
 from src.test.presentation.web.stub.stub_current_user import StubCurrentUserUseCase
-from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
+from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
 from src.container.providers import get_user_validation_service
 from src.auth.presentation.web.guards import get_current_user
 from fastapi import status

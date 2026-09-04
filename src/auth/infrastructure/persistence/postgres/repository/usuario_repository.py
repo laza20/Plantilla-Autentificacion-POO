@@ -1,5 +1,5 @@
 from sqlmodel import Session
-from src.auth.infrastructure.persistence.postgres.models_usuario import Usuario
+from src.auth.infrastructure.persistence.postgres.models.models_usuario import Usuario
 
 class UserRepository:
     def __init__(self, session: Session):

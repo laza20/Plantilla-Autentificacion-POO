@@ -1,5 +1,5 @@
 from typing import Protocol, runtime_checkable
-from src.auth.infrastructure.persistence.postgres.models_sesiones import SesionesVisual as Sesiones
+from src.auth.infrastructure.persistence.postgres.models.models_sesiones import SesionesVisual as Sesiones
 
 
 @runtime_checkable

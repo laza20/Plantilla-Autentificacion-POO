@@ -1,5 +1,5 @@
 from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
-from src.auth.infrastructure.persistence.postgres.models_sesiones import ListaSesiones, SesionesVisual
+from src.auth.infrastructure.persistence.postgres.models.models_sesiones import ListaSesiones, SesionesVisual
 
 
 class ListarSesionesUseCase:

@@ -9,8 +9,8 @@ from src.auth.domain.protocols.protocol_token_service import TokenProtocol
 from src.auth.domain.protocols.protocol_user_repository import UsuarioRepositoryProtocol
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.domain.services.mail_policy import MailPolicyService
-from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser, UserRegisterDTO, AuthUserNoTable
-from src.auth.infrastructure.persistence.postgres.usuario_repository import Usuario
+from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser, UserRegisterDTO, AuthUserNoTable
+from src.auth.infrastructure.persistence.postgres.repository.usuario_repository import Usuario
 from pydantic import ValidationError
 from src.auth.domain.exceptions.domain import LongitudExcedida, SinCargas, ErrorCreacion
 from src.auth.infrastructure.security.security import Settings

@@ -1,5 +1,5 @@
 from sqlmodel import Session, select, update
-from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
+from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
 from src.auth.domain.exceptions.domain import MailRepetido
 from datetime import datetime

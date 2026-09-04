@@ -1,7 +1,7 @@
 import pytest
-from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
+from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
 from src.auth.domain.exceptions.domain import MailRepetido, SinCargas, LongitudExcedida
-from src.auth.infrastructure.persistence.postgres.models_auth_users import UserRegisterDTO
+from src.auth.infrastructure.persistence.postgres.models.models_auth_users import UserRegisterDTO
 from src.test.fixtures.fixture_register_case import RegisterTestEnvironment
 from src.auth.domain.exceptions.domain import ContraseñaNoSegura, MailNoValido
 from io import BytesIO

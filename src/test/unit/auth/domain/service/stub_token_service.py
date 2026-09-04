@@ -1,4 +1,4 @@
-from src.auth.infrastructure.persistence.postgres.models_auth_users import UserTokens
+from src.auth.infrastructure.persistence.postgres.models.models_auth_users import UserTokens
 from src.auth.domain.exceptions.tokens import TokenInvalido
 
 

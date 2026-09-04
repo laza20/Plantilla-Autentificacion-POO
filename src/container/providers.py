@@ -1,7 +1,7 @@
 from fastapi import Depends
 from sqlmodel import Session
-from src.auth.infrastructure.persistence.postgres.auth_user_repository import AuthUserRepository
-from src.auth.infrastructure.persistence.postgres.sesion_repository import SesionRepository
+from src.auth.infrastructure.persistence.postgres.repository.auth_user_repository import AuthUserRepository
+from src.auth.infrastructure.persistence.postgres.repository.sesion_repository import SesionRepository
 from src.config.config import Settings, get_settings
 from src.container.auth_container import (
     ContainerRegister, ContainerLogin, 
@@ -17,10 +17,10 @@ from src.auth.application.use_cases.recover_password.solicitud_recuperacion impo
 from src.auth.domain.protocols.protocol_sesion_repository import TokenRepositoryProtocol
 from src.auth.domain.protocols.protocol_token_service import TokenProtocol
 from src.auth.domain.protocols.protocol_user_repository import UsuarioRepositoryProtocol
-from src.auth.infrastructure.persistence.postgres.usuario_repository import UserRepository
-from src.auth.infrastructure.persistence.postgres.recover_password_repository import RecoverPasswordRepository
-from src.auth.infrastructure.persistence.postgres.history_password_repository import HistoryPasswordRepository
-from src.auth.infrastructure.persistence.postgres.unit_of_work import UnitOfWork
+from src.auth.infrastructure.persistence.postgres.repository.usuario_repository import UserRepository
+from src.auth.infrastructure.persistence.postgres.repository.recover_password_repository import RecoverPasswordRepository
+from src.auth.infrastructure.persistence.postgres.repository.history_password_repository import HistoryPasswordRepository
+from src.auth.infrastructure.persistence.postgres.repository.unit_of_work import UnitOfWork
 from src.auth.domain.protocols.protocol_password_service import PasswordProtocol
 from src.auth.domain.protocols.protocol_recover_password_repository import RecuperarContraseñaProtocol
 from src.auth.domain.protocols.protocol_history_password_repository import HistoryRepositoryProtocol

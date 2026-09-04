@@ -1,4 +1,4 @@
-from src.auth.infrastructure.persistence.postgres.models_history_password import HistoryPassword
+from src.auth.infrastructure.persistence.postgres.models.models_history_password import HistoryPassword
 from datetime import datetime
 
 class FakeHistoryPasswordRepository:

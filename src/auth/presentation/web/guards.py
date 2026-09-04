@@ -2,9 +2,9 @@ from fastapi import HTTPException, Request, Depends
 from jose import JWTError
 from src.auth.infrastructure.security.tokens.tokens import TokenService, get_token_service
 from src.config.config import get_settings, Settings
-from src.auth.infrastructure.persistence.postgres.auth_user_repository import AuthUserRepository
+from src.auth.infrastructure.persistence.postgres.repository.auth_user_repository import AuthUserRepository
 from src.container.providers import get_auth_user_repository
-from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
+from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
 from src.auth.domain.exceptions.usuarios_exceptions import (
     NoAutenticado, SinAccessToken, UsuarioNoEncontrado
 )

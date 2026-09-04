@@ -1,4 +1,4 @@
-from src.auth.infrastructure.persistence.postgres.models_recover_password import RecoverPassword
+from src.auth.infrastructure.persistence.postgres.models.models_recover_password import RecoverPassword
 from sqlalchemy.orm import Session
 from sqlmodel import update, select
 from datetime import datetime

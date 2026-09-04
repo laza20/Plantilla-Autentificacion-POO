@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy import Column, text
 
 if TYPE_CHECKING:
-    from src.auth.infrastructure.persistence.postgres.models_auth_users import AuthUser
+    from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
 
 class HistoryPassword(SQLModel, table=True):
     __tablename__ = "history_password"
