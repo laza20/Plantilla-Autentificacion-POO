@@ -33,11 +33,7 @@ class AuthDependencies:
             raise NoAutenticado("Usuario no autenticado")
 
         try:
-            payload = self.token_service.decode_token(token)
-            if payload.get("type") != "access":
-                raise SinAccessToken("Se proporcionó un Refresh Token")
-
-            user_id = payload.get("sub")
+            user_id = self.token_service.get_user_id_from_access_token(token)
             if not user_id:
                 raise TokenInvalido("Token inválido: falta el sub")
 
@@ -46,6 +42,9 @@ class AuthDependencies:
 
         try:
             usuario = self.auth_user_repository.obtener_por_id(user_id)
+            if not usuario:
+                raise UsuarioNoEncontrado("Usuario no encontrado")
+
             return usuario
         except UsuarioNoEncontrado:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")

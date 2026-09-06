@@ -118,7 +118,7 @@ async def refresh_token(
     return {"message": "Access token renovado"}
 
 
-@router.get("/user/current", status_code=status.HTTP_200_OK)
+@router.get("/user/current", status_code=status.HTTP_200_OK, response_model=UsuarioCreado)
 async def ver_usuario(
     current_user: dict = Depends(get_current_user),
     user_validation_service: UserValidationService = Depends(get_user_validation_service)):

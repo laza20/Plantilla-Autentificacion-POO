@@ -2,6 +2,7 @@ from datetime import datetime, timezone, timedelta
 from jose import jwt
 from typing import Dict
 from src.auth.domain.exceptions.tokens import TokenInvalido, TokenResetInactivo, TokenVerificacionInactivo
+from src.auth.domain.exceptions.usuarios_exceptions import SinAccessToken
 from jose import JWTError
 from fastapi import Depends
 from src.config.config import get_settings, Settings
@@ -64,20 +65,17 @@ class TokenService:
             ) 
         
     def get_user_id_from_access_token(self, token:str)->int:
-        try:
-            payload = self.decode_token(token)
-            
-            if payload.get("type") != "access":
-                raise TokenInvalido()
-                        
-            user_id = payload.get("sub")
-            if not user_id:
-                raise TokenInvalido()
-            
-            return int(user_id)
 
-        except JWTError:
+        payload = self.decode_token(token)
+        
+        if payload.get("type") != "access":
+            raise SinAccessToken("Se proporcionó un Refresh Token")
+                    
+        user_id = payload.get("sub")
+        if not user_id:
             raise TokenInvalido()
+        
+        return int(user_id)
         
     def get_user_id_from_refresh_token(self, token:str)->str:
         try:
