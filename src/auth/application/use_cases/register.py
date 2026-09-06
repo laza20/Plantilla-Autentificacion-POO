@@ -60,7 +60,7 @@ class RegisterUseCase:
         with self.unit_of_work_service:
             usuario_auth= self.auth_user_repository.insertar(objeto_usuario)
             usuario_insertado = self.usuario_repository.insertar(self._preparar_usuario_registro(usuario_auth))
-            self._mostrar_errores(usuario_auth, usuario)
+            self._mostrar_errores(usuario_auth, usuario_insertado)
             
 
         token_verificacion = self.token_service.create_verificacion_token(str(usuario_auth.id_usuario))
