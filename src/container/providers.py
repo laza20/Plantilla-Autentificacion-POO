@@ -25,6 +25,7 @@ from src.auth.domain.protocols.service.protocol_password_service import Password
 from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
 from src.auth.domain.protocols.repository.protocol_history_password_repository import HistoryRepositoryProtocol
 from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
+from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.protocols.service.protocol_mail_service import MailProtocol
 from src.auth.domain.protocols.service.protocol_image_service import ImageProtocol
 from src.auth.infrastructure.security.tokens.tokens import TokenService
@@ -53,11 +54,11 @@ def get_unit_of_work(session: Session = Depends(get_session)) -> UnitOfWorkProto
 def get_user_repository(session: Session = Depends(get_session)) -> UsuarioRepositoryProtocol:
     return UserRepository(session)
 
-def get_auth_user_repository(session: Session = Depends(get_session)) -> AuthUserRepository:
+def get_auth_user_repository(session: Session = Depends(get_session)) -> AuthUserRepositoryProtocol:
     return AuthUserRepository(session)
 
 def get_user_validation_service(
-    auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
     settings: Settings = Depends(get_settings)
 ) -> UserValidationService:
     return UserValidationService(
@@ -102,7 +103,7 @@ def get_mail_policy(settings: Settings = Depends(get_settings)) -> MailPolicySer
 
 def get_register_use_case(
     settings: Settings = Depends(get_settings),
-    auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
     token_service: TokenProtocol = Depends(get_token_service),
     password_service: PasswordProtocol = Depends(get_password_service),
     password_policy: PasswordPolicyService = Depends(get_password_policy),
@@ -128,7 +129,7 @@ def get_register_use_case(
 
 
 def get_login_use_case(
-    auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
     token_service: TokenProtocol = Depends(get_token_service),
     password_service: PasswordProtocol = Depends(get_password_service),
     user_validation_service: UserValidationService = Depends(get_user_validation_service),
@@ -147,7 +148,7 @@ def get_login_use_case(
 
 
 def get_verify_mail_use_case(
-    auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
     token_service: TokenProtocol = Depends(get_token_service),
     unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
 ) -> VerifyMailUseCase:
@@ -194,7 +195,7 @@ def get_eliminar_sesiones_use_case(
 def get_solicitud_recuperacion_contraseña_use_case(
     recuperar_contraseña_repository: RecuperarContraseñaProtocol = Depends(get_recuperar_contraseña_repository),
     unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
-    auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
     mail_service: MailProtocol = Depends(get_mail_service),
     token_service: TokenProtocol = Depends(get_token_service),
     settings: Settings = Depends(get_settings)
@@ -225,7 +226,7 @@ def get_recuperar_contraseña_use_case(
         password_service: PasswordProtocol = Depends(get_password_service),
         history_contraseña_repository: HistoryRepositoryProtocol = Depends(get_history_password_repository),
         password_policy : PasswordPolicyService = Depends(get_password_policy),
-        auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository),
+        auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
 ) -> RecuperarContraseñaUseCase:
     return ContainerRecuperarContraseña(
             recuperar_contraseña_repository = recuperar_contraseña_repository,
