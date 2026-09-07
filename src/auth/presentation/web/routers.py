@@ -2,6 +2,7 @@ from src.auth.infrastructure.persistence.postgres.models.models_auth_users impor
 from fastapi import APIRouter, Depends, status, Response, Path, HTTPException, UploadFile, Request
 from src.auth.presentation.web.utils.request_metadata import RequestMetadata
 from src.auth.application.use_cases.register import RegisterUseCase
+from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
 from src.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
 from src.auth.application.use_cases.login import LoginUseCase
 from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
@@ -19,7 +20,8 @@ from src.container.providers import (
     get_logout_service, get_refresh_token_service, get_listar_sesiones_use_case,
     get_eliminar_sesiones_use_case, get_solicitud_recuperacion_contraseña_use_case,
     get_verificar_token_recuperacion_contraseña_use_case, get_cookies_service,
-    get_recuperar_contraseña_use_case, get_token_service, get_current_user)
+    get_recuperar_contraseña_use_case, get_token_service, get_current_user,
+    get_reenviar_mail_use_case)
 from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.application.dtos import parse_usuario_form
 from src.config.config import settings
@@ -219,4 +221,15 @@ async def modificar_password(
         nueva_contraseña = body.password
         )
 
+    return resultado
+
+
+@router.post("/reenviar/mail", status_code = status.HTTP_202_ACCEPTED)
+async def reenviar_mail(
+    body: SolicitudRecuperacionRequest,
+    reenviar_mail_use_case: ReenviarMailUseCase = Depends(
+        get_reenviar_mail_use_case
+    )
+):
+    resultado = await reenviar_mail_use_case.ejecutar(body.email)
     return resultado

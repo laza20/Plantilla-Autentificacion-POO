@@ -18,6 +18,7 @@ from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
+from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
 from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
@@ -244,4 +245,29 @@ class ContainerRecuperarContraseña:
             history_contraseña_repository = self.history_contraseña_repository,
             password_policy = self.password_policy,
             auth_user_repository = self.auth_user_repository
+        )
+
+
+class ContainerReenviarMailUseCase:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        mail_service: MailProtocol,
+        token_service: TokenProtocol,
+        mail_policy : MailPolicyService,
+        settings: Settings
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.mail_service = mail_service
+        self.token_service = token_service
+        self.mail_policy = mail_policy
+        self.settings = settings
+    @property
+    def reenviar_mail_use_case(self) -> ReenviarMailUseCase:
+        return ReenviarMailUseCase(
+            auth_user_repository = self.auth_user_repository,
+            mail_service = self.mail_service,
+            token_service = self.token_service,
+            mail_policy = self.mail_policy,
+            settings = self.settings
         )
