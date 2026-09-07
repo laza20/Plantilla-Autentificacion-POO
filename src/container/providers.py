@@ -1,5 +1,6 @@
 from fastapi import Depends
 from sqlmodel import Session
+from fastapi import Request
 from src.auth.infrastructure.persistence.postgres.repository.auth_user_repository import AuthUserRepository
 from src.auth.infrastructure.persistence.postgres.repository.sesion_repository import SesionRepository
 from src.config.config import Settings, get_settings
@@ -35,6 +36,7 @@ from src.auth.infrastructure.images.cloudinary import ImageService
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.login import LoginUseCase
+from src.auth.presentation.web.guards import AuthDependencies
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.database.client import get_session
 from src.auth.domain.services.user_validation_service import UserValidationService
@@ -236,3 +238,43 @@ def get_recuperar_contraseña_use_case(
             password_policy = password_policy,
             auth_user_repository = auth_user_repository
     ).recuperar_contraseña_use_case
+
+
+
+
+
+def get_auth_dependencies(
+    settings: Settings = Depends(get_settings),
+    token_service: TokenService = Depends(get_token_service),
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository)
+) -> AuthDependencies:
+    """Factory para inyectar AuthDependencies en endpoints."""
+    return AuthDependencies(
+        settings=settings,
+        token_service=token_service,
+        auth_user_repository=auth_user_repository
+    )
+
+
+async def get_current_user(
+    request: Request,
+    auth_deps: AuthDependencies = Depends(get_auth_dependencies)
+):
+    """Dependencia que retorna el usuario actual."""
+    return await auth_deps.get_current_user(request)
+
+
+async def get_admin_user(
+    request: Request,
+    auth_deps: AuthDependencies = Depends(get_auth_dependencies)
+):
+    """Dependencia que retorna el usuario actual si es admin."""
+    return await auth_deps.get_admin_user(request)
+
+
+async def get_premium_user(
+    request: Request,
+    auth_deps: AuthDependencies = Depends(get_auth_dependencies)
+):
+    """Dependencia que retorna el usuario actual si es premium."""
+    return await auth_deps.get_premium_user(request)

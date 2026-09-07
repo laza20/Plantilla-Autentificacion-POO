@@ -1,13 +1,9 @@
-from fastapi import HTTPException, Request, Depends
-from jose import JWTError
-from src.auth.infrastructure.security.tokens.tokens import TokenService, get_token_service
-from src.config.config import get_settings, Settings
-from src.auth.infrastructure.persistence.postgres.repository.auth_user_repository import AuthUserRepository
-from src.container.providers import get_auth_user_repository
+from fastapi import Request
+from src.config.config import Settings
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
-from src.auth.domain.exceptions.usuarios_exceptions import (
-    NoAutenticado, SinAccessToken, UsuarioNoEncontrado
-)
+from src.auth.domain.exceptions.usuarios_exceptions import (NoAutenticado, UsuarioNoEncontrado)
+from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.exceptions.tokens import TokenInvalido
 
 
@@ -15,8 +11,8 @@ class AuthDependencies:
     def __init__(
         self,
         settings: Settings,
-        token_service: TokenService,
-        auth_user_repository: AuthUserRepository
+        token_service: TokenProtocol,
+        auth_user_repository: AuthUserRepositoryProtocol
     ):
         self.settings = settings
         self.token_service = token_service
@@ -32,86 +28,46 @@ class AuthDependencies:
         if not token:
             raise NoAutenticado("Usuario no autenticado")
 
-        try:
-            user_id = self.token_service.get_user_id_from_access_token(token)
-            if not user_id:
-                raise TokenInvalido("Token inválido: falta el sub")
+        user_id = self.token_service.get_user_id_from_access_token(token)
+        if not user_id:
+            raise TokenInvalido("Token inválido: falta el sub")
 
-        except JWTError:
-            raise TokenInvalido("Token inválido o expirado")
+        usuario = self.auth_user_repository.obtener_por_id(user_id)
+        if not usuario:
+            raise UsuarioNoEncontrado("Usuario no encontrado")
 
-        try:
-            usuario = self.auth_user_repository.obtener_por_id(user_id)
-            if not usuario:
-                raise UsuarioNoEncontrado("Usuario no encontrado")
-
-            return usuario
-        except UsuarioNoEncontrado:
-            raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        return usuario
 
     async def get_admin_user(
         self, 
         request: Request
     ) -> AuthUser:
-        """Obtiene el usuario actual y valida que sea admin."""
-        user = await self.get_current_user(request)
+        """
+        Obtiene el usuario actual y valida que sea admin.
+        TODO: 'role' no existe todavía en AuthUser — pendiente de agregar
+        cuando se implemente el sistema de roles.
+        """
+        raise NotImplementedError("get_admin_user: falta el campo 'role' en AuthUser")
+        #user = await self.get_current_user(request)
+        #if user.role != "admin":  # AttributeError hasta que exista el campo
+        #    raise HTTPException(status_code=403, detail="Se requieren permisos de administrador")
+        #return user
         
-        if user.role != "admin":
-            raise HTTPException(
-                status_code=403, 
-                detail="Se requieren permisos de administrador"
-            )
-        
-        return user
+
 
     async def get_premium_user(
         self, 
         request: Request
     ) -> AuthUser:
-        """Obtiene el usuario actual y valida que sea premium."""
-        user = await self.get_current_user(request)
-        
-        if not user.is_premium:
-            raise HTTPException(
-                status_code=403, 
-                detail="Se requiere suscripción premium"
-            )
-        
-        return user
+        """
+        Obtiene el usuario actual y valida que sea premium.
+        TODO: 'role' no existe todavía en AuthUser — pendiente de agregar
+        cuando se implemente el sistema de roles.
+        """
+        raise NotImplementedError("get_premium_user: falta el campo 'role' en AuthUser")
+        #user = await self.get_current_user(request)
+        #if user.role != "premium":  # AttributeError hasta que exista el campo
+        #    raise HTTPException(status_code=403, detail="Se requieren permisos de premium")
+        #return user
 
 
-def get_auth_dependencies(
-    settings: Settings = Depends(get_settings),
-    token_service: TokenService = Depends(get_token_service),
-    auth_user_repository: AuthUserRepository = Depends(get_auth_user_repository)
-) -> AuthDependencies:
-    """Factory para inyectar AuthDependencies en endpoints."""
-    return AuthDependencies(
-        settings=settings,
-        token_service=token_service,
-        auth_user_repository=auth_user_repository
-    )
-
-
-async def get_current_user(
-    request: Request,
-    auth_deps: AuthDependencies = Depends(get_auth_dependencies)
-) -> AuthUser:
-    """Dependencia que retorna el usuario actual."""
-    return await auth_deps.get_current_user(request)
-
-
-async def get_admin_user(
-    request: Request,
-    auth_deps: AuthDependencies = Depends(get_auth_dependencies)
-) -> AuthUser:
-    """Dependencia que retorna el usuario actual si es admin."""
-    return await auth_deps.get_admin_user(request)
-
-
-async def get_premium_user(
-    request: Request,
-    auth_deps: AuthDependencies = Depends(get_auth_dependencies)
-) -> AuthUser:
-    """Dependencia que retorna el usuario actual si es premium."""
-    return await auth_deps.get_premium_user(request)

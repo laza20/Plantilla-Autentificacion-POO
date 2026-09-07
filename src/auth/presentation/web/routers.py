@@ -19,12 +19,11 @@ from src.container.providers import (
     get_logout_service, get_refresh_token_service, get_listar_sesiones_use_case,
     get_eliminar_sesiones_use_case, get_solicitud_recuperacion_contraseña_use_case,
     get_verificar_token_recuperacion_contraseña_use_case, get_cookies_service,
-    get_recuperar_contraseña_use_case, get_token_service)
+    get_recuperar_contraseña_use_case, get_token_service, get_current_user)
 from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.application.dtos import parse_usuario_form
 from src.config.config import settings
 from fastapi.security import OAuth2PasswordRequestForm
-from src.auth.presentation.web.guards import get_current_user
 from src.auth.domain.exceptions.tokens import VerificacionInvalida, VerificacionExpirada
 from src.auth.infrastructure.security.tokens.tokens import TokenService
 from src.auth.infrastructure.persistence.postgres.schemas.schemas_recepcion import (
