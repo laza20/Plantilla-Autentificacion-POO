@@ -77,3 +77,17 @@ class AuthUserRepository:
 
         resultado = self.session.exec(statement)
         return resultado.rowcount > 0
+
+
+    def obtener_por_email_sin_activar(self, email: str) -> AuthUser | None:
+        """
+        Función para buscar un usuario por su correo electrónico o nombre de usuario
+        La misma filtra al usuario que no esta activo, sirve para funciones tales como
+        obtener un usuario por mail, el cual es necesario para pedir nuevamente el mail
+        de verificacion.
+        """
+        statement = select(AuthUser).where(
+            AuthUser.email == email, 
+            AuthUser.estado == EstadoEntidad.PENDIENTE
+        )
+        return self.session.exec(statement).first()

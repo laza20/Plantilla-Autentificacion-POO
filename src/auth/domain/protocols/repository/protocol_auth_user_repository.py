@@ -354,3 +354,6 @@ class AuthUserRepositoryProtocol(Protocol):
           insertarla en el campo updated_at, campo que representa la ultima modificacion del usuario.
           """
           pass
+
+    def obtener_por_email_sin_activar(self, email: str) -> AuthUser | None:
+        pass
