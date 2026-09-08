@@ -357,3 +357,6 @@ class AuthUserRepositoryProtocol(Protocol):
 
     def obtener_por_email_sin_activar(self, email: str) -> AuthUser | None:
         pass
+
+
+    def modificar_usuario(self, usuario:AuthUser)-> AuthUser | None: pass
