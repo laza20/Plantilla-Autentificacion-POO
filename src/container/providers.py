@@ -9,8 +9,9 @@ from src.container.auth_container import (
     ContainerVerifyMail, ContainerLogout,
     ContainerRefreshToken, ContainerListarSesiones, ContainerEliminarSesiones,
     ContainerSolicitudRecuperacion, ContainerVerificarTokenRecuperacion, ContainerRecuperarContraseña,
-    ContainerReenviarMailUseCase)
+    ContainerReenviarMailUseCase, ContainerModificarUsuario)
 from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
+from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
 from src.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
@@ -256,6 +257,29 @@ def get_reenviar_mail_use_case(
             mail_policy = mail_policy,
             settings = settings
     ).reenviar_mail_use_case
+
+def get_modificar_usuario_use_case(
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+    mail_service: MailProtocol = Depends(get_mail_service),
+    image_service: ImageProtocol = Depends(get_image_service),
+    token_service: TokenProtocol = Depends(get_token_service),
+    mail_policy : MailPolicyService = Depends(get_mail_policy),
+    settings: Settings = Depends(get_settings),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
+) -> ModificarUsuarioUseCase:
+
+    return ContainerModificarUsuario(
+        auth_user_repository=auth_user_repository,
+        mail_service=mail_service,
+        image_service=image_service,
+        token_service=token_service,
+        mail_policy=mail_policy,
+        settings=settings,
+        unit_of_work_service=unit_of_work_service
+    ).modificar_usuario_use_case
+
+
+
 
 
 def get_auth_dependencies(
