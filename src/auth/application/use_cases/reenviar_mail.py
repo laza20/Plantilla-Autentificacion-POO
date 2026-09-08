@@ -1,5 +1,4 @@
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.service.protocol_mail_service import MailProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.services.mail_policy import MailPolicyService
@@ -25,7 +24,7 @@ class ReenviarMailUseCase:
         self.mail_policy.validar(mail_usuario)
         user = self.auth_user_repository.obtener_por_email_sin_activar(mail_usuario)
         if not user:
-            raise UsuarioNoEncontrado(f"No se pudo encontrar al usuario con mail {mail_usuario}")
+            raise UsuarioNoEncontrado(f"No se pudo procesar la solicitud para el mail {mail_usuario}")
 
         token_verificacion = self.token_service.create_verificacion_token(str(user.id_usuario))
         cuerpo_correo = self._generar_correo_verificacion(token_verificacion)
