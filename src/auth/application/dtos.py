@@ -1,5 +1,5 @@
 from fastapi import Form, File, UploadFile
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import UserRegisterDTO
+from src.auth.infrastructure.persistence.postgres.models.models_auth_users import UserRegisterDTO, UserModifyDTO
 
 def parse_usuario_form(
     email: str = Form(...),
@@ -10,6 +10,18 @@ def parse_usuario_form(
     usuario = UserRegisterDTO(
         email=email,
         password=password
+    )
+
+    return usuario, imagen
+
+
+def parse_modificar_usuario_form(
+    email: str = Form(...),
+    imagen: UploadFile | None = File(None)
+) -> tuple[UserModifyDTO, UploadFile | None]:
+
+    usuario = UserModifyDTO(
+        email=email
     )
 
     return usuario, imagen
