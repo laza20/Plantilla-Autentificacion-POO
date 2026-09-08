@@ -1,19 +1,38 @@
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import LoginResponse, UserRegisterDTO, UsuarioCreado
-from fastapi import APIRouter, Depends, status, Response, Path, HTTPException, UploadFile, Request
+#MODELS
+from src.auth.infrastructure.persistence.postgres.models.models_auth_users import (
+    LoginResponse, UserRegisterDTO, UsuarioCreado, UserModifyDTO)
+from src.auth.application.dtos import (parse_usuario_form, parse_modificar_usuario_form)
+
+#SCHEMAS
+from src.auth.infrastructure.persistence.postgres.schemas.schemas_recepcion import (
+    SolicitudRecuperacionRequest, ModificarPassword)
+
+#FASTAPI
+from fastapi import (
+    APIRouter, Depends, status, Response, Path, HTTPException, UploadFile, Request)
+from fastapi.security import OAuth2PasswordRequestForm
+
+#SERVICIOS
 from src.auth.presentation.web.utils.request_metadata import RequestMetadata
+from src.auth.presentation.web.cookies.cookies import CookiesService
+from src.auth.domain.services.user_validation_service import UserValidationService
+from src.auth.infrastructure.security.tokens.tokens import TokenService
+
+#USE CASES
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
 from src.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
 from src.auth.application.use_cases.login import LoginUseCase
 from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
-from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
-from src.auth.domain.services.user_validation_service import UserValidationService
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
+from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
+
+#PROVIDERS
 from src.container.providers import (
     get_register_use_case, get_login_use_case, 
     get_verify_mail_use_case, get_user_validation_service, 
@@ -21,15 +40,14 @@ from src.container.providers import (
     get_eliminar_sesiones_use_case, get_solicitud_recuperacion_contraseña_use_case,
     get_verificar_token_recuperacion_contraseña_use_case, get_cookies_service,
     get_recuperar_contraseña_use_case, get_token_service, get_current_user,
-    get_reenviar_mail_use_case)
+    get_reenviar_mail_use_case, get_modificar_usuario_use_case)
+
+#EXCEPTIONS
 from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
-from src.auth.application.dtos import parse_usuario_form
-from src.config.config import settings
-from fastapi.security import OAuth2PasswordRequestForm
 from src.auth.domain.exceptions.tokens import VerificacionInvalida, VerificacionExpirada
-from src.auth.infrastructure.security.tokens.tokens import TokenService
-from src.auth.infrastructure.persistence.postgres.schemas.schemas_recepcion import (
-    SolicitudRecuperacionRequest, ModificarPassword)
+
+#SETTINGS
+from src.config.config import settings
 
 router = APIRouter(prefix=f"/{settings.NOMBRE_APP}/usuarios",
                    tags=["USUARIOS"],
@@ -233,3 +251,21 @@ async def reenviar_mail(
 ):
     resultado = await reenviar_mail_use_case.ejecutar(body.email)
     return resultado
+
+
+@router.put("/modificar/usuario", response_model=UsuarioCreado, status_code=status.HTTP_202_ACCEPTED)
+async def modificar_usuario(
+    #los datos que reciba en UserModifyDto pueden agregarse en su modelo. 
+    #Lo mismo con el parce_usueario_form (si se agregan datos en uno, tambien se debe hacer en el otro)
+    datos: tuple[UserModifyDTO, UploadFile | None] = Depends(parse_modificar_usuario_form),
+    current_user: dict = Depends(get_current_user),
+    user_validation_service: UserValidationService = Depends(get_user_validation_service),
+    modificar_usuario_use_case: ModificarUsuarioUseCase = Depends(
+        get_modificar_usuario_use_case
+    )
+):
+    id_usuario = user_validation_service.get_user(current_user).id_usuario
+    usuario, imagen = datos
+    resultado = await modificar_usuario_use_case.ejecutar(id_usuario=id_usuario, usuario=usuario, imagen=imagen)
+    return resultado
+    
