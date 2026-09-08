@@ -11,6 +11,7 @@ from src.auth.domain.protocols.service.protocol_mail_service import MailProtocol
 from src.auth.domain.protocols.service.protocol_image_service import ImageProtocol
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.application.use_cases.register import RegisterUseCase
+from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
 from src.auth.application.use_cases.login import LoginUseCase
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
@@ -270,4 +271,38 @@ class ContainerReenviarMailUseCase:
             token_service = self.token_service,
             mail_policy = self.mail_policy,
             settings = self.settings
+        )
+
+
+
+
+class ContainerModificarUsuario:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        mail_service: MailProtocol,
+        image_service: ImageProtocol,
+        token_service: TokenProtocol,
+        mail_policy : MailPolicyService,
+        settings: Settings,
+        unit_of_work_service: UnitOfWorkProtocol,
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.mail_service = mail_service
+        self.image_service = image_service
+        self.token_service = token_service
+        self.mail_policy = mail_policy
+        self.settings = settings
+        self.unit_of_work_service = unit_of_work_service
+    @property
+    def modificar_usuario_use_case(self) -> ModificarUsuarioUseCase:
+
+        return ModificarUsuarioUseCase(
+            auth_user_repository=self.auth_user_repository,
+            mail_service=self.mail_service,
+            image_service=self.image_service,
+            token_service=self.token_service,
+            mail_policy=self.mail_policy,
+            settings=self.settings,
+            unit_of_work_service=self.unit_of_work_service
         )
