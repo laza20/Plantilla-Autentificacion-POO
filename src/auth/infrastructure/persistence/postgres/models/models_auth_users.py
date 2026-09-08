@@ -109,6 +109,16 @@ class UserRegisterDTO(SQLModel):
     email: str = Field(...)
     password: str = Field(nullable=False)
 
+class UserModifyDTO(SQLModel):
+    email: str = Field(...)
+
+class AuthUserEmailValidation(SQLModel):
+    email: str = Field(
+        max_length=255,
+        nullable=False
+    )
+
+
 class UserTokens(SQLModel):
     access_token: str
     refresh_token: str
