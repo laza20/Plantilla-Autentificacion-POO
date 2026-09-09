@@ -110,7 +110,7 @@ class UserRegisterDTO(SQLModel):
     password: str = Field(nullable=False)
 
 class UserModifyDTO(SQLModel):
-    email: str = Field(...)
+    email: Optional[str] = Field(default=False)
 
 class AuthUserEmailValidation(SQLModel):
     email: str = Field(
