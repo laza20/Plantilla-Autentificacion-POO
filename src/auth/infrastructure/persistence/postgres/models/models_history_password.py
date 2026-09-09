@@ -11,7 +11,7 @@ class HistoryPassword(SQLModel, table=True):
 
     id_history_password: Optional[int] = Field(default=None, primary_key=True)
     
-    password_hash_anterior: str = Field(unique=True, index=True, nullable=False, max_length=255)
+    password_hash_anterior: str = Field(index=True, nullable=False, max_length=255)
     fecha_cambio: Optional[datetime] = Field(default=None, sa_column=Column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP")))
     id_usuario: int = Field(foreign_key="auth_users.id_usuario",nullable=False)
 
@@ -23,7 +23,7 @@ class HistoryPassword(SQLModel, table=True):
 
 class HisoryPasswordNoTable(SQLModel):
     id_history_password: Optional[int] = Field(default=None, primary_key=True)
-    password_hash_anterior: str = Field(unique=True, index=True, nullable=False, max_length=255)
+    password_hash_anterior: str = Field(index=True, nullable=False, max_length=255)
     fecha_cambio: Optional[datetime] = Field(default=None, sa_column=Column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP")))
     id_usuario: int = Field(foreign_key="auth_users.id_usuario",nullable=False)
 

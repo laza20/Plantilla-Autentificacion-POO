@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException, status, Query
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
 from fastapi import UploadFile
-from src.auth.domain.exceptions.domain import LimiteTamañoSuperado, ExtensionNoPermitida, ErrorCloudinary
+from src.auth.domain.exceptions.domain import LimiteTamañoSuperado, ExtensionNoPermitida, ErrorCloudinary, DomainError
 from src.auth.infrastructure.images.cloudinary_config import cloudinary_uploader
 from src.config.config import Settings, get_settings
 from fastapi import Depends
@@ -49,8 +49,7 @@ class ImageService:
         - Recibe el servicio al que pertenece la imagen y el archivo a subir.
         """
         if servicio.lower() not in SERVICIOS_VALIDOS:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
+            raise DomainError(
                 detail=f"Servicio no válido. Opciones permitidas: {', '.join(SERVICIOS_VALIDOS)}"
             )
 
