@@ -91,3 +91,16 @@ class AuthUserRepository:
             AuthUser.estado == EstadoEntidad.PENDIENTE
         )
         return self.session.exec(statement).first()
+
+
+    def modificar_usuario(self, usuario:dict)-> bool | None: 
+        statement = (
+            update(AuthUser)
+            .where(
+                AuthUser.id_usuario == usuario["id_usuario"]
+            )
+            .values(**usuario)
+        )
+
+        resultado = self.session.exec(statement)
+        return resultado.rowcount > 0
