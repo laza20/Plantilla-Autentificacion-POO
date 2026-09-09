@@ -53,15 +53,8 @@ class RecoverPasswordRepository:
         if recover_password is None:
             return False
 
-        print("EXPIRA:", recover_password.expira_en)
-        print("ACTUAL:", tiempo_actual)
-        print("COMPARACIÓN:", recover_password.expira_en < tiempo_actual)
-
         if recover_password.expira_en < tiempo_actual:
-            print("TOKEN EXPIRADO")
             return False
-
-        print("TOKEN VIGENTE")
 
         return recover_password
 
