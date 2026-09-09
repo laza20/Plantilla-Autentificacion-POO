@@ -16,7 +16,7 @@ def parse_usuario_form(
 
 
 def parse_modificar_usuario_form(
-    email: str | None = Form(...),
+    email: str | None = Form(None),
     imagen: UploadFile | None = File(None)
 ) -> tuple[UserModifyDTO, UploadFile | None]:
 
