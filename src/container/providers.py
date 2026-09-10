@@ -9,8 +9,9 @@ from src.container.auth_container import (
     ContainerVerifyMail, ContainerLogout,
     ContainerRefreshToken, ContainerListarSesiones, ContainerEliminarSesiones,
     ContainerSolicitudRecuperacion, ContainerVerificarTokenRecuperacion, ContainerRecuperarContraseña,
-    ContainerReenviarMailUseCase, ContainerModificarUsuario)
+    ContainerReenviarMailUseCase, ContainerModificarUsuario, ContainerEliminarUsuario)
 from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
+from src.auth.application.use_cases.eliminar_usuario import EliminarUsuarioUseCase
 from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
 from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
@@ -279,6 +280,18 @@ def get_modificar_usuario_use_case(
     ).modificar_usuario_use_case
 
 
+def get_eliminar_usuario_use_case(
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+    mail_service: MailProtocol = Depends(get_mail_service),
+    token_service: TokenProtocol = Depends(get_token_service),
+    settings: Settings = Depends(get_settings)
+) -> EliminarUsuarioUseCase:
+    return ContainerEliminarUsuario(
+        auth_user_repository=auth_user_repository,
+        mail_service=mail_service,
+        token_service=token_service,
+        settings=settings
+    ).eliminar_usuario_use_case
 
 
 
