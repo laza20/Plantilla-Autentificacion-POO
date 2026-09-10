@@ -58,6 +58,16 @@ class MailService:
         message = self._formar_mensaje(email_destino, cuerpo_html, asunto)
         await self.fast_mail.send_message(message)
 
+    def generar_correo_eliminacion(self, url:str, nombre_proyecto: str) -> str:
+        template = self.env.get_template("eliminar_cuenta.html")
+        
+        cuerpo_html = template.render(
+            url_eliminacion=url,
+            nombre_app=nombre_proyecto
+        )
+        
+        return cuerpo_html
+
 
     def _formar_mensaje(self, email_destino: str, cuerpo_html: str, asunto:str) -> MessageSchema:
         return MessageSchema(

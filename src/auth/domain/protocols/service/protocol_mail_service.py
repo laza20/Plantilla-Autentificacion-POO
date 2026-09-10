@@ -219,3 +219,6 @@ class MailProtocol(Protocol):
         ...
 
     def generar_correo_recuperacion(self, url: str, nombre_proyecto: str) -> str: pass
+
+
+    def generar_correo_eliminacion(self, url:str, nombre_proyecto: str) -> str: pass
