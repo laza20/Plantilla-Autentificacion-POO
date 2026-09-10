@@ -64,3 +64,10 @@ class ErrorCreacion(DomainError):
     status_code = status.HTTP_409_CONFLICT
     def __init__(self, message: str = "No se pudo crear de manera correcta el registro."):
         super().__init__(message)
+
+
+
+class ErrorEliminacion(DomainError):
+    status_code = status.HTTP_409_CONFLICT
+    def __init__(self, message: str = "No se pudo eliminar de manera correcta el registro."):
+        super().__init__(message)
