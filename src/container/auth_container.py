@@ -14,6 +14,7 @@ from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
 from src.auth.application.use_cases.login import LoginUseCase
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
+from src.auth.application.use_cases.eliminar_usuario import EliminarUsuarioUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
@@ -305,4 +306,27 @@ class ContainerModificarUsuario:
             mail_policy=self.mail_policy,
             settings=self.settings,
             unit_of_work_service=self.unit_of_work_service
+        )
+
+
+class ContainerEliminarUsuario:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        mail_service: MailProtocol,
+        token_service: TokenProtocol,
+        settings: Settings
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.mail_service = mail_service
+        self.token_service = token_service
+        self.settings = settings
+    @property
+    def eliminar_usuario_use_case(self) -> EliminarUsuarioUseCase:
+
+        return EliminarUsuarioUseCase(
+            auth_user_repository=self.auth_user_repository,
+            mail_service=self.mail_service,
+            token_service=self.token_service,
+            settings=self.settings
         )
