@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     #App settings
     NOMBRE_APP: str
     BASE_URL: str
+    ELIMINACION_CUENTA:int
     
     #Cloudinary settings
     CLOUDINARY_CLOUD_NAME: str
