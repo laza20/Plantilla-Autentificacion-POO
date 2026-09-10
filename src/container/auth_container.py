@@ -15,6 +15,7 @@ from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUse
 from src.auth.application.use_cases.login import LoginUseCase
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
+from src.auth.application.use_cases.eliminar_usuario.eliminar_usuario import EliminarUsuarioUseCase
 from src.auth.domain.services.user_validation_service import UserValidationService
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
@@ -309,7 +310,7 @@ class ContainerModificarUsuario:
         )
 
 
-class ContainerEliminarUsuario:
+class ContainerSolicitudEliminacionUsuario:
     def __init__(
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
@@ -322,11 +323,34 @@ class ContainerEliminarUsuario:
         self.token_service = token_service
         self.settings = settings
     @property
-    def eliminar_usuario_use_case(self) -> SolicitudEliminacionUsuarioUseCase:
+    def solicitud_eliminacion_usuario_use_case(self) -> SolicitudEliminacionUsuarioUseCase:
 
         return SolicitudEliminacionUsuarioUseCase(
             auth_user_repository=self.auth_user_repository,
             mail_service=self.mail_service,
             token_service=self.token_service,
             settings=self.settings
+        )
+
+
+class ContainerEliminarUsuario:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        token_service: TokenProtocol,
+        unit_of_work_service: UnitOfWorkProtocol,
+        sesion_repository: TokenRepositoryProtocol
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.token_service = token_service
+        self.unit_of_work_service = unit_of_work_service
+        self.sesion_repository = sesion_repository
+    @property
+    def eliminar_usuario_use_case(self) -> EliminarUsuarioUseCase:
+
+        return EliminarUsuarioUseCase(
+            auth_user_repository=self.auth_user_repository,
+            token_service=self.token_service,
+            unit_of_work_service = self.unit_of_work_service, 
+            sesion_repository=self.sesion_repository
         )
