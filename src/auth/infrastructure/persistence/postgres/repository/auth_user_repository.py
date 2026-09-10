@@ -104,3 +104,15 @@ class AuthUserRepository:
 
         resultado = self.session.exec(statement)
         return resultado.rowcount > 0
+
+    def eliminar_usuario(self, usuario:AuthUser)-> bool | None:
+        statement = (
+            update(AuthUser)
+            .where(
+                AuthUser.id_usuario == usuario["id_usuario"]
+            )
+            .values(**usuario)
+        )
+
+        resultado = self.session.exec(statement)
+        return resultado.rowcount > 0

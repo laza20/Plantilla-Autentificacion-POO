@@ -360,3 +360,9 @@ class AuthUserRepositoryProtocol(Protocol):
 
 
     def modificar_usuario(self, usuario:AuthUser)-> AuthUser | None: pass
+
+    def eliminar_usuario(self, usuario:AuthUser)-> bool | None:
+        """
+        Metodo el cual se encarga de eliminar a un usuario por medio de un soft delete
+        """
+        pass
