@@ -5,7 +5,7 @@ from src.auth.infrastructure.security.security import Settings
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
 
 
-class EliminarUsuarioUseCase:
+class SolicitudEliminacionUsuarioUseCase:
     def __init__(
         self,
         auth_user_repository: AuthUserRepositoryProtocol,

@@ -21,7 +21,7 @@ from src.auth.infrastructure.security.tokens.tokens import TokenService
 #USE CASES
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
-from src.auth.application.use_cases.eliminar_usuario import EliminarUsuarioUseCase
+from src.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
 from src.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
 from src.auth.application.use_cases.login import LoginUseCase
 from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
@@ -275,7 +275,7 @@ async def modificar_usuario(
 async def eliminar_usuario(
     current_user: dict = Depends(get_current_user),
     user_validation_service: UserValidationService = Depends(get_user_validation_service),
-    eliminar_usuario_use_case: EliminarUsuarioUseCase = Depends(
+    eliminar_usuario_use_case: SolicitudEliminacionUsuarioUseCase = Depends(
         get_eliminar_usuario_use_case
     )
 ):
