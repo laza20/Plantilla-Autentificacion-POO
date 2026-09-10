@@ -28,3 +28,6 @@ class TokenRepositoryProtocol(Protocol):
         self,
         hash_token: str
     ) -> None:...
+
+
+    def eliminar_todas_las_sesiones_de_un_usuario(self, id_usuario:int)->bool | None: ...

@@ -1,5 +1,6 @@
 from src.auth.infrastructure.persistence.postgres.models.models_sesiones import Sesiones
 from sqlalchemy.orm import Session
+from sqlmodel import delete
 
 
 class SesionRepository:
@@ -60,3 +61,14 @@ class SesionRepository:
             return True
 
         return False
+
+
+    def eliminar_todas_las_sesiones_de_un_usuario(self, id_usuario:int)->bool: 
+        statement = (
+            delete(Sesiones)
+            .where(Sesiones.id_usuario == id_usuario)
+        )
+
+        resultado = self.session.exec(statement)
+
+        return resultado.rowcount > 0
