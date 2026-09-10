@@ -171,6 +171,22 @@ class TokenService:
         except:
             raise TokenInvalido("Verification token inválido o expirado")
 
+    def get_user_id_from_eliminacion_token(self, token: str) -> str:
+        try:
+            payload = self.decode_token(token)
+
+            if payload.get("type") != "eliminacion":
+                raise TokenInvalido()
+
+            user_id = payload.get("sub")
+            if not user_id:
+                raise TokenVerificacionInactivo()
+            
+            return user_id
+
+        except:
+            raise TokenInvalido("Verification token inválido o expirado")
+
     def _encode_token(self, payload: Dict[str, any], expires_delta: timedelta) -> str:
         """
         Funcion encargada de codificar un token JWT utilizando la clave secreta y el algoritmo especificados en la configuración.

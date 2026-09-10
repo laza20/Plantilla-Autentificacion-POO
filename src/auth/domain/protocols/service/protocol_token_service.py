@@ -348,3 +348,7 @@ class TokenProtocol(Protocol):
     def create_verificacion_token(self, user_id: str) -> str:pass
 
     def get_user_id_from_verificacion_token(self, token: str) -> str:pass
+
+    def get_user_id_from_eliminacion_token(self, token: str) -> str:...
+
+    def create_eliminacion_token(self, user_id: str) -> str:...
