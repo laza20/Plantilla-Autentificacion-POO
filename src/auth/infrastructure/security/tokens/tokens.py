@@ -144,6 +144,17 @@ class TokenService:
             )
         )
 
+    def create_eliminacion_token(self, user_id: str) -> str:
+        return self._encode_token(
+            {
+                "sub": str(user_id),
+                "type": "eliminacion"
+            },
+            timedelta(
+                minutes=self.settings.ELIMINACION_CUENTA
+            )
+        )
+
     def get_user_id_from_verificacion_token(self, token: str) -> str:
         try:
             payload = self.decode_token(token)
