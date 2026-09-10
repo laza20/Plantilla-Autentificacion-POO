@@ -21,6 +21,7 @@ from src.auth.infrastructure.security.tokens.tokens import TokenService
 #USE CASES
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
+from src.auth.application.use_cases.eliminar_usuario import EliminarUsuarioUseCase
 from src.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
 from src.auth.application.use_cases.login import LoginUseCase
 from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
@@ -40,7 +41,7 @@ from src.container.providers import (
     get_eliminar_sesiones_use_case, get_solicitud_recuperacion_contraseña_use_case,
     get_verificar_token_recuperacion_contraseña_use_case, get_cookies_service,
     get_recuperar_contraseña_use_case, get_token_service, get_current_user,
-    get_reenviar_mail_use_case, get_modificar_usuario_use_case)
+    get_reenviar_mail_use_case, get_modificar_usuario_use_case, get_eliminar_usuario_use_case)
 
 #EXCEPTIONS
 from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
@@ -269,3 +270,15 @@ async def modificar_usuario(
     resultado = await modificar_usuario_use_case.ejecutar(id_usuario=id_usuario, usuario=usuario, imagen=imagen)
     return resultado
     
+
+@router.delete("/eliminar/usuario", status_code=status.HTTP_202_ACCEPTED)
+async def eliminar_usuario(
+    current_user: dict = Depends(get_current_user),
+    user_validation_service: UserValidationService = Depends(get_user_validation_service),
+    eliminar_usuario_use_case: EliminarUsuarioUseCase = Depends(
+        get_eliminar_usuario_use_case
+    )
+):
+    id_usuario = user_validation_service.get_user(current_user).id_usuario
+    resultado = await eliminar_usuario_use_case.ejecutar(id_usuario=id_usuario)
+    return resultado
