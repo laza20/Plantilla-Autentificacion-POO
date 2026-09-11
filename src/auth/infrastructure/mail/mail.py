@@ -68,6 +68,17 @@ class MailService:
         
         return cuerpo_html
 
+    def generar_correo_reactivacion(self, url:str, nombre_proyecto:str):
+        template = self.env.get_template("reactivar_cuenta.html")
+        
+        cuerpo_html = template.render(
+            url_reactivacion =url,
+            nombre_app=nombre_proyecto
+        )
+        
+        return cuerpo_html
+
+
 
     def _formar_mensaje(self, email_destino: str, cuerpo_html: str, asunto:str) -> MessageSchema:
         return MessageSchema(

@@ -245,3 +245,6 @@ class MailProtocol(Protocol):
             Cuerpo HTML renderizado, listo para enviar por mail.
         """
         ...
+
+
+    def generar_correo_reactivacion(self, url:str, nombre_proyecto:str):...
