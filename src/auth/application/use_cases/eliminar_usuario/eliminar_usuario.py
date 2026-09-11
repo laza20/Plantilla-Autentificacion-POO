@@ -34,6 +34,7 @@ class EliminarUsuarioUseCase:
         usuario_db_copia = usuario_db.model_copy()
         usuario_db_copia.updated_at = date.today()
         usuario_db_copia.estado = EstadoEntidad.ELIMINADO
+        usuario_db_copia.eliminado_en = date.today()
 
         with self.unit_of_work_service:
             resultado_eliminacion = self.auth_user_repository.eliminar_usuario(usuario_db_copia.model_dump())
