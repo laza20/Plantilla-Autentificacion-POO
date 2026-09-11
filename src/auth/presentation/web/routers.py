@@ -5,7 +5,7 @@ from src.auth.application.dtos import (parse_usuario_form, parse_modificar_usuar
 
 #SCHEMAS
 from src.auth.infrastructure.persistence.postgres.schemas.schemas_recepcion import (
-    SolicitudRecuperacionRequest, ModificarPassword)
+    SolicitudRecuperacionRequest, ModificarPassword, SolicitudReactivacionRequest)
 
 #FASTAPI
 from fastapi import (
@@ -30,6 +30,7 @@ from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
+from src.auth.application.use_cases.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
@@ -43,7 +44,7 @@ from src.container.providers import (
     get_verificar_token_recuperacion_contraseña_use_case, get_cookies_service,
     get_recuperar_contraseña_use_case, get_token_service, get_current_user,
     get_reenviar_mail_use_case, get_modificar_usuario_use_case, get_solicitud_eliminacion_usuario_use_case,
-    get_eliminar_usuario_use_case)
+    get_eliminar_usuario_use_case, get_solicitud_reactivacion_cuenta_use_case)
 
 #EXCEPTIONS
 from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
@@ -295,4 +296,13 @@ async def confirmar_eliminacion(
 ):
     resultado = eliminar_usuario_use_case.ejecutar(token)
     cookies_service.delete_auth_cookies(response=response)
+    return resultado
+
+
+@router.get("/solicitud/reactivacion/cuenta", status_code=status.HTTP_202_ACCEPTED)
+async def solicitud_reactivacion(
+    body: SolicitudReactivacionRequest,
+    solicitur_reactivacion_use_case: EnviarMailReactivacionUseCase = Depends(get_solicitud_reactivacion_cuenta_use_case)
+):
+    resultado = await solicitur_reactivacion_use_case.ejecutar(body.email)
     return resultado
