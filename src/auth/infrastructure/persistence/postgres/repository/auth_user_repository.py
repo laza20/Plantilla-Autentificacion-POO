@@ -116,3 +116,12 @@ class AuthUserRepository:
 
         resultado = self.session.exec(statement)
         return resultado.rowcount > 0
+
+
+    def obtener_usuario_eliminado_por_mail(self, mail_usuario:str)->AuthUser | None: 
+        statement = select(AuthUser).where(
+            AuthUser.email == mail_usuario, 
+            AuthUser.estado == EstadoEntidad.ELIMINADO
+        )
+        return self.session.exec(statement).first()
+    
