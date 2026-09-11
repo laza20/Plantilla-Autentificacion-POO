@@ -45,6 +45,12 @@ class TokenVerificacionInactivo(TokenException):
         super().__init__(message)
 
 
+class TokenReactivacionInactivo(TokenException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    def __init__(self, message: str = "Tu sesión de reactivacion expiró, volvé a solicitar el link."):
+        super().__init__(message)
+
+
 class TokenEliminacionInactivo(TokenException):
     status_code = status.HTTP_401_UNAUTHORIZED
     def __init__(self, message: str = "Tu token de eliminacion expiró."):

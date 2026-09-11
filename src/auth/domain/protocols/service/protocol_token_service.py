@@ -435,3 +435,6 @@ class TokenProtocol(Protocol):
         Returns:
             JWT firmado.
         """
+
+    def get_user_id_from_reactivacion_token(self, token: str) -> str:...
+    def create_reactivacion_token(self, user_id: str) -> str:...

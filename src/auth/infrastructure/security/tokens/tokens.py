@@ -1,7 +1,9 @@
 from datetime import datetime, timezone, timedelta
 from jose import jwt
 from typing import Dict
-from src.auth.domain.exceptions.tokens import TokenInvalido, TokenResetInactivo, TokenVerificacionInactivo, TokenEliminacionInactivo
+from src.auth.domain.exceptions.tokens import (
+    TokenInvalido, TokenResetInactivo, TokenVerificacionInactivo, TokenEliminacionInactivo,
+    TokenReactivacionInactivo)
 from src.auth.domain.exceptions.usuarios_exceptions import SinAccessToken
 from jose import JWTError
 from fastapi import Depends
@@ -155,6 +157,17 @@ class TokenService:
             )
         )
 
+    def create_reactivacion_token(self, user_id: str) -> str:
+        return self._encode_token(
+            {
+                "sub": str(user_id),
+                "type": "reactivacion"
+            },
+            timedelta(
+                minutes=self.settings.REACTIVACION_CUENTA
+            )
+        )
+
     def get_user_id_from_verificacion_token(self, token: str) -> str:
         try:
             payload = self.decode_token(token)
@@ -165,6 +178,23 @@ class TokenService:
             user_id = payload.get("sub")
             if not user_id:
                 raise TokenVerificacionInactivo()
+            
+            return user_id
+
+        except:
+            raise TokenInvalido("Verification token inválido o expirado")
+
+
+    def get_user_id_from_reactivacion_token(self, token: str) -> str:
+        try:
+            payload = self.decode_token(token)
+
+            if payload.get("type") != "reactivacion":
+                raise TokenInvalido()
+
+            user_id = payload.get("sub")
+            if not user_id:
+                raise TokenReactivacionInactivo()
             
             return user_id
 
