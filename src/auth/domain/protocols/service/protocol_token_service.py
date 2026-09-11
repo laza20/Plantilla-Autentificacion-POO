@@ -338,17 +338,100 @@ class TokenProtocol(Protocol):
         ...
 
 
-    def generar_token_plano(self)->str: pass
+    def generar_token_plano(self) -> str:
+        """Genera un token opaco criptográficamente seguro (no JWT).
 
-    def create_reset_token(self, user_id: str) -> str:pass
+        Usado para flujos que requieren un valor plano para enviar por mail
+        y guardar hasheado en BD (ej. recuperación de contraseña), a diferencia
+        de los tokens JWT autocontenidos de este mismo servicio.
 
-    def get_current_reset_scope(self, token: str) -> str:pass
+        Returns:
+            Token URL-safe de 32 bytes de entropía.
+        """
 
+    def create_reset_token(self, user_id: str) -> str:
+        """Crea un JWT de scope 'reset' para el flujo de recuperación de contraseña.
 
-    def create_verificacion_token(self, user_id: str) -> str:pass
+        El token lleva el user_id en 'sub' y expira según
+        RESET_PASSWORD_TOKEN_EXPIRE_MINUTES. Se emite tras verificar el token
+        plano de recuperación (endpoint 2) y habilita únicamente el cambio
+        de contraseña (endpoint 3).
 
-    def get_user_id_from_verificacion_token(self, token: str) -> str:pass
+        Args:
+            user_id: ID del usuario para el que se emite el token.
 
-    def get_user_id_from_eliminacion_token(self, token: str) -> str:...
+        Returns:
+            JWT firmado.
+        """
 
-    def create_eliminacion_token(self, user_id: str) -> str:...
+    def get_current_reset_scope(self, token: str) -> str:
+        """Decodifica y valida un JWT de scope 'reset', devolviendo el user_id.
+
+        Args:
+            token: JWT emitido por create_reset_token.
+
+        Returns:
+            user_id extraído del claim 'sub'.
+
+        Raises:
+            TokenInvalido: si el token es inválido, expiró, o el claim 'type'
+                no es 'reset'.
+            TokenResetInactivo: si el payload no contiene 'sub'.
+        """
+
+    def create_verificacion_token(self, user_id: str) -> str:
+        """Crea un JWT de scope 'verification' para activar la cuenta del usuario.
+
+        El token lleva el user_id en 'sub' y expira según
+        VERIFY_MAIL_RECUPERACION. Se envía por mail al registrarse (o al
+        reenviar el mail de activación).
+
+        Args:
+            user_id: ID del usuario a verificar.
+
+        Returns:
+            JWT firmado.
+        """
+
+    def get_user_id_from_verificacion_token(self, token: str) -> str:
+        """Decodifica y valida un JWT de scope 'verification', devolviendo el user_id.
+
+        Args:
+            token: JWT emitido por create_verificacion_token.
+
+        Returns:
+            user_id extraído del claim 'sub'.
+
+        Raises:
+            TokenInvalido: si el token es inválido, expiró, o el claim 'type'
+                no es 'verification'.
+            TokenVerificacionInactivo: si el payload no contiene 'sub'.
+        """
+
+    def get_user_id_from_eliminacion_token(self, token: str) -> str:
+        """Decodifica y valida un JWT de scope 'eliminacion', devolviendo el user_id.
+
+        Args:
+            token: JWT emitido por create_eliminacion_token.
+
+        Returns:
+            user_id extraído del claim 'sub'.
+
+        Raises:
+            TokenInvalido: si el token es inválido, expiró, o el claim 'type'
+                no es 'eliminacion'.
+            TokenEliminacionInactivo: si el payload no contiene 'sub'.
+        """
+
+    def create_eliminacion_token(self, user_id: str) -> str:
+        """Crea un JWT de scope 'eliminacion' para confirmar la baja de la cuenta.
+
+        El token lleva el user_id en 'sub' y expira según
+        ELIMINACION_CUENTA.
+
+        Args:
+            user_id: ID del usuario a eliminar.
+
+        Returns:
+            JWT firmado.
+        """
