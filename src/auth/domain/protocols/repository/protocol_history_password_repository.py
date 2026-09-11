@@ -12,6 +12,5 @@ class HistoryRepositoryProtocol(Protocol):
       Permite insertar dentro de la tabla de history password repository, esta tabla permite llevar una correlacion de
       las contraseñas de los usuarios.
       """
-
-      pass
+      ...
   

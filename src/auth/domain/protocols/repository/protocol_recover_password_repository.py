@@ -20,7 +20,7 @@ class RecuperarContraseñaProtocol(Protocol):
         del sistema de recuperacion de controseña.
         - expira_en: tiempo limite por el cual se puede utilizar el token.
         """
-        pass
+        ...
 
 
 
@@ -35,19 +35,21 @@ class RecuperarContraseñaProtocol(Protocol):
         - token_hash: el token para comparar y verificar que el dato llegado es el que se encuentra en la base de
         datos.
         """
-        pass
+        ...
 
 
-    def invalidar_tokens_anteriores(self, id_usuario:int)->None:pass
-    """
-    los tokens no utilizado tienen por defecto el campo usado:false, por ende, si se pide un nuevo token
-    de recuperacion, los token no utilizados cambian su estado a true
-    """
+    def invalidar_tokens_anteriores(self, id_usuario:int)->None:
+        """
+        los tokens no utilizado tienen por defecto el campo usado:false, por ende, si se pide un nuevo token
+        de recuperacion, los token no utilizados cambian su estado a true
+        """
+        ...
 
-    def desactivar_token_utilizado(self, id_usuario: int)->bool:pass
-    """
-    El metodo se encarga de llamar al metodo de invalidar tokens.
-    El metodo realiza una llamada a invalidar_tokens_anteriores, para cumplir este caso,
-    la funcion que cumple este metodo es dar contexto a la secuencia de funcionamiento y 
-    permitir comprender mejor el flujo de contexto.
-    """
+    def desactivar_token_utilizado(self, id_usuario: int)->bool:
+        """
+        El metodo se encarga de llamar al metodo de invalidar tokens.
+        El metodo realiza una llamada a invalidar_tokens_anteriores, para cumplir este caso,
+        la funcion que cumple este metodo es dar contexto a la secuencia de funcionamiento y 
+        permitir comprender mejor el flujo de contexto.
+        """
+        ...

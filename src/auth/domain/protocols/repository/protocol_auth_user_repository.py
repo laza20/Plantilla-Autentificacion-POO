@@ -345,24 +345,64 @@ class AuthUserRepositoryProtocol(Protocol):
 
     def modificar_contraseña(
             self, 
-            id_usuario:int, 
-            contraseña_nueva:str,
-            fecha_actual:datetime)->bool: 
-          """
-          El metodo se encarga de modificar la contraseña de un usuario, en la misma se recibe el id del usuario
-          para ser utilizado como condicion, la contraseña ya hasheado para se insertada y la fecha actual para 
-          insertarla en el campo updated_at, campo que representa la ultima modificacion del usuario.
-          """
-          pass
+            id_usuario: int, 
+            contraseña_nueva: str,
+            fecha_actual: datetime) -> bool:
+        """Actualiza el hash de contraseña de un usuario ya verificado.
+
+        Usado en el paso final de recuperación de contraseña, tras
+        validar el token de reset.
+
+        Args:
+            id_usuario: ID del usuario cuya contraseña se modifica.
+            contraseña_nueva: Hash de la nueva contraseña (ya hasheada).
+            fecha_actual: Timestamp a escribir en updated_at.
+
+        Returns:
+            True si se actualizó un registro, False si no se encontró
+            un usuario verificado con ese id_usuario.
+        """
+        ...
 
     def obtener_por_email_sin_activar(self, email: str) -> AuthUser | None:
-        pass
+        """Busca un usuario pendiente de activación por email.
 
+        Usado, por ejemplo, para reenviar el mail de verificación:
+        solo devuelve resultado si el usuario existe y todavía no
+        completó la activación de cuenta.
 
-    def modificar_usuario(self, usuario:AuthUser)-> AuthUser | None: pass
+        Args:
+            email: Email a buscar.
 
-    def eliminar_usuario(self, usuario:AuthUser)-> bool | None:
+        Returns:
+            El usuario si existe y está en estado pendiente, None en caso contrario.
         """
-        Metodo el cual se encarga de eliminar a un usuario por medio de un soft delete
+        ...
+
+
+    def modificar_usuario(self, usuario: AuthUser) -> AuthUser | None:
+        """Actualiza los datos de un usuario existente.
+
+        Args:
+            usuario: Usuario con los campos a actualizar. Debe incluir
+                id_usuario para identificar el registro.
+
+        Returns:
+            El usuario actualizado, o None si no se encontró el registro.
         """
-        pass
+        ...
+
+    def eliminar_usuario(self, usuario: AuthUser) -> bool | None:
+        """Elimina (soft delete) a un usuario.
+
+        No borra el registro físicamente: marca al usuario como eliminado
+        (ej. vía estado o flag), preservando el dato para auditoría.
+
+        Args:
+            usuario: Usuario a eliminar. Debe incluir id_usuario para
+                identificar el registro.
+
+        Returns:
+            True si se eliminó el registro, False/None si no se encontró.
+        """
+        ...

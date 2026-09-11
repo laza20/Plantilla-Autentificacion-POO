@@ -218,7 +218,30 @@ class MailProtocol(Protocol):
         """
         ...
 
-    def generar_correo_recuperacion(self, url: str, nombre_proyecto: str) -> str: pass
+    def generar_correo_recuperacion(self, url: str, nombre_proyecto: str) -> str:
+        """Genera el cuerpo HTML del mail de recuperación de contraseña.
 
+        Args:
+            url: Link de recuperación (con el token plano) que el usuario
+                debe abrir para continuar el flujo.
+            nombre_proyecto: Nombre de la app/cliente, para personalizar
+                el template ante el uso multi-cliente de la plantilla.
 
-    def generar_correo_eliminacion(self, url:str, nombre_proyecto: str) -> str: pass
+        Returns:
+            Cuerpo HTML renderizado, listo para enviar por mail.
+        """
+        ...
+
+    def generar_correo_eliminacion(self, url: str, nombre_proyecto: str) -> str:
+        """Genera el cuerpo HTML del mail de confirmación de eliminación de cuenta.
+
+        Args:
+            url: Link de confirmación (con el token plano) que el usuario
+                debe abrir para confirmar la baja.
+            nombre_proyecto: Nombre de la app/cliente, para personalizar
+                el template ante el uso multi-cliente de la plantilla.
+
+        Returns:
+            Cuerpo HTML renderizado, listo para enviar por mail.
+        """
+        ...
