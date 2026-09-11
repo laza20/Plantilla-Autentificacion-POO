@@ -45,6 +45,11 @@ class TokenVerificacionInactivo(TokenException):
         super().__init__(message)
 
 
+class TokenEliminacionInactivo(TokenException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    def __init__(self, message: str = "Tu token de eliminacion expiró."):
+        super().__init__(message)
+
 class VerificacionInvalida(TokenException):
     status_code = status.HTTP_401_UNAUTHORIZED
     def __init__(self, message: str = "El usuario NO ah sido identificado con exito."):
