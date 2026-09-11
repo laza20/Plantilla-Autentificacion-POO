@@ -22,6 +22,7 @@ from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
+from src.auth.application.use_cases.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
 from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
@@ -353,4 +354,29 @@ class ContainerEliminarUsuario:
             token_service=self.token_service,
             unit_of_work_service = self.unit_of_work_service, 
             sesion_repository=self.sesion_repository
+        )
+
+
+class ContainerSolicitudReactivacionCuentaUseCase:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        mail_service: MailProtocol,
+        token_service: TokenProtocol,
+        mail_policy : MailPolicyService,
+        settings: Settings
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.mail_service = mail_service
+        self.token_service = token_service
+        self.mail_policy = mail_policy
+        self.settings = settings
+    @property
+    def solicitud_reactivacion_cuenta_use_case(self) -> EnviarMailReactivacionUseCase:
+        return EnviarMailReactivacionUseCase(
+            auth_user_repository = self.auth_user_repository,
+            mail_service = self.mail_service,
+            token_service = self.token_service,
+            mail_policy = self.mail_policy,
+            settings = self.settings
         )
