@@ -90,6 +90,7 @@ class AuthUserNoTable(SQLModel):
         )
     )
     is_verified: bool = Field(default=False)
+    eliminado_en:  Optional[date] = Field(default=None, sa_column=Column(Date, nullable=True))
 
 
 class UsuarioCreado(SQLModel):
