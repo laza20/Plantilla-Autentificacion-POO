@@ -50,6 +50,7 @@ class AuthUser(SQLModel, table=True):
         )
     )
     is_verified: bool = Field(default=False)
+    eliminado_en:  Optional[date] = Field(default=None, sa_column=Column(Date, nullable=True))
 
     usuario: Optional["Usuario"] = Relationship(
         back_populates="auth_user"
