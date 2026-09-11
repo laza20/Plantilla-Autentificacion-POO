@@ -1,7 +1,7 @@
 from datetime import datetime, timezone, timedelta
 from jose import jwt
 from typing import Dict
-from src.auth.domain.exceptions.tokens import TokenInvalido, TokenResetInactivo, TokenVerificacionInactivo
+from src.auth.domain.exceptions.tokens import TokenInvalido, TokenResetInactivo, TokenVerificacionInactivo, TokenEliminacionInactivo
 from src.auth.domain.exceptions.usuarios_exceptions import SinAccessToken
 from jose import JWTError
 from fastapi import Depends
@@ -180,7 +180,7 @@ class TokenService:
 
             user_id = payload.get("sub")
             if not user_id:
-                raise TokenVerificacionInactivo()
+                raise TokenEliminacionInactivo()
             
             return user_id
 
