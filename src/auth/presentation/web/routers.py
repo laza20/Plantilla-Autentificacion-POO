@@ -30,7 +30,7 @@ from src.auth.application.use_cases.verify_email import VerifyMailUseCase
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
-from src.auth.application.use_cases.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
+from src.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
@@ -306,3 +306,9 @@ async def solicitud_reactivacion(
 ):
     resultado = await solicitur_reactivacion_use_case.ejecutar(body.email)
     return resultado
+
+
+@router.patch("/reactivar/cuenta/{token}", status_code=status.HTTP_202_ACCEPTED)
+async def reactivar_usuario(
+    token: str = Path(...)
+):...

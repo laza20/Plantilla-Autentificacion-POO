@@ -22,7 +22,7 @@ from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
-from src.auth.application.use_cases.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
+from src.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
 from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol

@@ -11,7 +11,7 @@ from src.container.auth_container import (
     ContainerSolicitudRecuperacion, ContainerVerificarTokenRecuperacion, ContainerRecuperarContraseña,
     ContainerReenviarMailUseCase, ContainerModificarUsuario, ContainerSolicitudEliminacionUsuario,
     ContainerEliminarUsuario, ContainerSolicitudReactivacionCuentaUseCase)
-from src.auth.application.use_cases.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
+from src.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
 from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
 from src.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
 from src.auth.application.use_cases.eliminar_usuario.eliminar_usuario import EliminarUsuarioUseCase
