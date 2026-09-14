@@ -69,3 +69,5 @@ class FakeUserRepository:
         usuario.updated_at = fecha_actual
         return True
 
+    def obtener_por_email_sin_activar(self, email:str)-> (AuthUser | None):
+        return self._users.get(email)
