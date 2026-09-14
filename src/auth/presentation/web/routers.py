@@ -31,6 +31,7 @@ from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
 from src.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
+from src.auth.application.use_cases.reactivacion_cuenta.reactivar_cuenta import ReactivarUsuarioUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
@@ -44,7 +45,7 @@ from src.container.providers import (
     get_verificar_token_recuperacion_contraseña_use_case, get_cookies_service,
     get_recuperar_contraseña_use_case, get_token_service, get_current_user,
     get_reenviar_mail_use_case, get_modificar_usuario_use_case, get_solicitud_eliminacion_usuario_use_case,
-    get_eliminar_usuario_use_case, get_solicitud_reactivacion_cuenta_use_case)
+    get_eliminar_usuario_use_case, get_solicitud_reactivacion_cuenta_use_case, get_reactivar_cuenta_use_case)
 
 #EXCEPTIONS
 from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
@@ -308,7 +309,10 @@ async def solicitud_reactivacion(
     return resultado
 
 
-@router.patch("/reactivar/cuenta/{token}", status_code=status.HTTP_202_ACCEPTED)
+@router.get("/reactivar/cuenta/{token}", status_code=status.HTTP_202_ACCEPTED)
 async def reactivar_usuario(
-    token: str = Path(...)
-):...
+    token: str = Path(...),
+    reactivar_usuario_use_case: ReactivarUsuarioUseCase = Depends(get_reactivar_cuenta_use_case)
+):
+    resultado = reactivar_usuario_use_case.ejecutar(token=token)
+    return resultado
