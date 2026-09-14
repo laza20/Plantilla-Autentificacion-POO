@@ -9,7 +9,7 @@ class StubTokenService:
         self.access_token_generado = None
         self.refresh_token_generado = None
         self.reset_token_generado = None
-        self.verificacion_toke_generado = None
+        self.verificacion_token_generado = None
         self.hashed_token = None
 
     def _actualizar_llamada(self, user_id: int):
