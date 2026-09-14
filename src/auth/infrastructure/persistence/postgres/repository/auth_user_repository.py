@@ -2,7 +2,7 @@ from sqlmodel import Session, select, update
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
 from src.auth.domain.exceptions.domain import MailRepetido
-from datetime import datetime
+from datetime import datetime, date
 
 class AuthUserRepository:
     def __init__(self, session: Session):
@@ -124,4 +124,25 @@ class AuthUserRepository:
             AuthUser.estado == EstadoEntidad.ELIMINADO
         )
         return self.session.exec(statement).first()
+
+
+    def obtener_usuario_eliminado_por_id(self, id_usuario:int)->AuthUser | None:
+        statement = select(AuthUser).where(
+            AuthUser.id_usuario == id_usuario, 
+            AuthUser.estado == EstadoEntidad.ELIMINADO
+        )
+        return self.session.exec(statement).first()
+
+    def activar_usuario_eliminado(self, id_usuario:int)-> bool | None:
+        statement = (
+            update(AuthUser)
+            .where(
+                AuthUser.id_usuario == id_usuario,
+                AuthUser.estado == EstadoEntidad.ELIMINADO
+            )
+            .values(eliminado_en=None, estado=EstadoEntidad.ACTIVO)
+        )
+
+        resultado = self.session.exec(statement)
+        return resultado.rowcount > 0
     

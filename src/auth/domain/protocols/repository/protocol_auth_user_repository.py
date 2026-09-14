@@ -1,6 +1,6 @@
 from typing import Protocol, runtime_checkable
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
-from datetime import datetime
+from datetime import datetime, date
 
 @runtime_checkable
 class AuthUserRepositoryProtocol(Protocol):
@@ -408,3 +408,5 @@ class AuthUserRepositoryProtocol(Protocol):
         ...
 
     def obtener_usuario_eliminado_por_mail(self, mail_usuario:str)->AuthUser | None: ...
+    def obtener_usuario_eliminado_por_id(self, id_usuario:int)->AuthUser | None: ...
+    def activar_usuario_eliminado(self, id_usuario:int)-> bool | None: ...
