@@ -25,7 +25,6 @@ class ReactivarUsuarioUseCase:
     def ejecutar(self, token:str) -> AuthUser:
 
         id_usuario = self.token_service.get_user_id_from_reactivacion_token(token)
-        print(id_usuario)
         usuario_db = self.auth_user_repository.obtener_usuario_eliminado_por_id(id_usuario)
         if not usuario_db:
             raise UsuarioNoEncontrado("No se ah podido encontrar al usuario que desea reactivar.")
