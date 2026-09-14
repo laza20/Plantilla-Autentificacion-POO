@@ -10,8 +10,9 @@ from src.container.auth_container import (
     ContainerRefreshToken, ContainerListarSesiones, ContainerEliminarSesiones,
     ContainerSolicitudRecuperacion, ContainerVerificarTokenRecuperacion, ContainerRecuperarContraseña,
     ContainerReenviarMailUseCase, ContainerModificarUsuario, ContainerSolicitudEliminacionUsuario,
-    ContainerEliminarUsuario, ContainerSolicitudReactivacionCuentaUseCase)
+    ContainerEliminarUsuario, ContainerSolicitudReactivacionCuentaUseCase, ContainerReactivarUsuarioUseCase)
 from src.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
+from src.auth.application.use_cases.reactivacion_cuenta.reactivar_cuenta import ReactivarUsuarioUseCase
 from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
 from src.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
 from src.auth.application.use_cases.eliminar_usuario.eliminar_usuario import EliminarUsuarioUseCase
@@ -326,6 +327,18 @@ def get_solicitud_reactivacion_cuenta_use_case(
             settings = settings
     ).solicitud_reactivacion_cuenta_use_case
 
+def get_reactivar_cuenta_use_case(
+        auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+        token_service: TokenProtocol = Depends(get_token_service),
+        settings: Settings = Depends(get_settings),
+        unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work)
+) -> ReactivarUsuarioUseCase:
+    return ContainerReactivarUsuarioUseCase(
+            auth_user_repository = auth_user_repository,
+            token_service = token_service,
+            settings = settings,
+            unit_of_work_service = unit_of_work_service
+    ).reactivar_usuario_use_case
 
 def get_auth_dependencies(
     settings: Settings = Depends(get_settings),

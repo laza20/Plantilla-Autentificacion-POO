@@ -1,5 +1,4 @@
 from src.config.config import Settings
-from src.auth.presentation.web.cookies.cookies import CookiesService
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
 from src.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
@@ -23,6 +22,7 @@ from src.auth.application.use_cases.recover_password.solicitud_recuperacion impo
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
 from src.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
+from src.auth.application.use_cases.reactivacion_cuenta.reactivar_cuenta import ReactivarUsuarioUseCase
 from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
@@ -379,4 +379,26 @@ class ContainerSolicitudReactivacionCuentaUseCase:
             token_service = self.token_service,
             mail_policy = self.mail_policy,
             settings = self.settings
+        )
+
+
+class ContainerReactivarUsuarioUseCase:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        token_service: TokenProtocol,
+        settings: Settings,
+        unit_of_work_service: UnitOfWorkProtocol
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.token_service = token_service
+        self.settings = settings
+        self.unit_of_work_service= unit_of_work_service
+    @property
+    def reactivar_usuario_use_case(self) -> ReactivarUsuarioUseCase:
+        return ReactivarUsuarioUseCase(
+            auth_user_repository = self.auth_user_repository,
+            token_service = self.token_service,
+            settings = self.settings,
+            unit_of_work_service = self.unit_of_work_service
         )
