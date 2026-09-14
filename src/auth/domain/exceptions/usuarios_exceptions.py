@@ -14,6 +14,16 @@ class UsuarioNoModificado(UsuarioError):
     def __init__(self, message: str = "No se pudo modificar la contraseña"):
         super().__init__(message)
 
+class UsuarioNoEliminado(UsuarioError): 
+    status_code = status.HTTP_409_CONFLICT
+    def __init__(self, message: str = "El usuario que desea reactivar no esta eliminado."):
+        super().__init__(message)
+
+class PeriodoReactivacionFinalizado(UsuarioError): 
+    status_code = status.HTTP_409_CONFLICT
+    def __init__(self, message: str = "La cuenta que desea reactivar ya cumplio su posible tiempo de reactivacion."):
+        super().__init__(message)
+
 
 class UsuarioNoEncontrado(UsuarioError):
     status_code = 409
