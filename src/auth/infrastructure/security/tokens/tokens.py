@@ -196,7 +196,7 @@ class TokenService:
             if not user_id:
                 raise TokenReactivacionInactivo()
             
-            return user_id
+            return int(user_id)
 
         except:
             raise TokenInvalido("Verification token inválido o expirado")
