@@ -21,3 +21,10 @@ async def test_debe_verificar_que_se_llama_a_token_service():
 
     resultado = await context.use_case().ejecutar("test@test.com")
     assert context.token_service.verificacion_token_generado == f"verificacion_token_1"
+
+@pytest.mark.asyncio
+async def test_debe_dar_error_cuando_el_usuario_no_existe():
+    context = ReenviarMailTestEnvironment()
+    
+    with pytest.raises(UsuarioNoEncontrado):
+        await context.use_case().ejecutar("te@test.com")
