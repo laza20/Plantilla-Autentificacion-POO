@@ -8,6 +8,7 @@ from fastapi import UploadFile
 from src.auth.domain.exceptions.domain import LongitudExcedida
 from src.database.enums.estado_entidad import EstadoEntidad
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoModificado
+from src.auth.domain.exceptions.domain import MailNoValido
 from src.test.fixtures.fixture_modificar_usuario import ModificarUsuarioTestEnvironment
 from src.test.factories.factory_usuarios import crear_usuario_de_prueba
 from pydantic import ValidationError
@@ -89,4 +90,39 @@ async def test_debe_dar_error_si_no_se_encuentra_al_usuario_con_x_id():
     with pytest.raises(UsuarioNoEncontrado):
         await context.use_case().ejecutar(
                 id_usuario=6, usuario=modificacion, imagen=None
+                )
+
+
+
+@pytest.mark.asyncio
+async def test_debe_dar_error_si_el_mail_a_modificar_no_cumple_las_politicas():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    modificacion = UserModifyDTO(
+        email = "test.com"
+    )
+
+    context.mail_policy.es_valido = False
+
+
+    with pytest.raises(MailNoValido):
+        await context.use_case().ejecutar(
+                id_usuario=usuario_creado.id_usuario, usuario=modificacion, imagen=None
+                )
+
+
+@pytest.mark.asyncio
+async def test_debe_dar_error_si_el_mail_a_modificar_no_cumple_las_politicas():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    modificacion = UserModifyDTO(
+        email = "a" * 300 + "@.com"
+    )
+
+
+    with pytest.raises(LongitudExcedida):
+        await context.use_case().ejecutar(
+                id_usuario=usuario_creado.id_usuario, usuario=modificacion, imagen=None
                 )
