@@ -37,10 +37,13 @@ class ModificarUsuarioUseCase:
 
     async def ejecutar(self, id_usuario:str, usuario:UserModifyDTO, imagen:UploadFile | None) -> AuthUser:
         mail_modificado = False
-        copia_usuario = usuario.model_dump()
-        objeto_usuario_modificacion = self._normalizar_registro_a_cargar(copia_usuario)
 
         usuario_db = self.auth_user_repository.obtener_por_id(id_usuario=id_usuario)
+        if usuario:
+            copia_usuario = usuario.model_dump()
+            objeto_usuario_modificacion = self._normalizar_registro_a_cargar(copia_usuario)
+        else:
+            objeto_usuario_modificacion = usuario_db.model_copy()
         
         if usuario_db is None:
             raise UsuarioNoEncontrado("El usuario no fue encontrado")
