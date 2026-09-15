@@ -39,3 +39,22 @@ async def test_debe_modificar_un_mail_correctamente():
         )
 
     assert usuario_creado.email != usuario_modificado.email
+
+
+
+@pytest.mark.asyncio
+async def test_debe_modificar_una_imagen():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    imagen = UploadFile(
+        filename="foto.jpg",
+        file=BytesIO(b"contenido")
+    )
+
+    usuario_modificado = await context.use_case().ejecutar(
+        id_usuario=usuario_creado.id_usuario, usuario=None, imagen=imagen
+        )
+
+    assert usuario_modificado.imagen_url == context.image_service.imagen_guardada
+    assert imagen == context.image_service.imagen_recibida
