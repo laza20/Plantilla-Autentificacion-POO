@@ -71,3 +71,12 @@ class FakeUserRepository:
 
     def obtener_por_email_sin_activar(self, email:str)-> (AuthUser | None):
         return self._users.get(email)
+
+    def modificar_usuario(self, usuario: AuthUser) -> (AuthUser | None):
+        usuario_db = self.obtener_por_id(usuario["id_usuario"])
+
+        if not usuario_db:
+            return None
+        
+        self._users[usuario_db.email] = usuario
+        return usuario
