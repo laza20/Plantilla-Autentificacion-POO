@@ -58,3 +58,35 @@ async def test_debe_modificar_una_imagen():
 
     assert usuario_modificado.imagen_url == context.image_service.imagen_guardada
     assert imagen == context.image_service.imagen_recibida
+
+
+@pytest.mark.asyncio
+async def test_debe_dar_error_si_no_se_envia_el_id():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    modificacion = UserModifyDTO(
+        email = "test@test_nuevo.com"
+    )
+
+
+    with pytest.raises(UsuarioNoEncontrado):
+        await context.use_case().ejecutar(
+                id_usuario=None, usuario=modificacion, imagen=None
+                )
+
+
+@pytest.mark.asyncio
+async def test_debe_dar_error_si_no_se_encuentra_al_usuario_con_x_id():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    modificacion = UserModifyDTO(
+        email = "test@test_nuevo.com"
+    )
+
+
+    with pytest.raises(UsuarioNoEncontrado):
+        await context.use_case().ejecutar(
+                id_usuario=6, usuario=modificacion, imagen=None
+                )
