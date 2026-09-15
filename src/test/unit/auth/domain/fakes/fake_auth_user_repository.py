@@ -9,6 +9,7 @@ class FakeUserRepository:
     def __init__(self):
         self._next_id = 1
         self._users: Dict[str, AuthUser] = {}
+        self.accion_realizada = True
 
     def insertar(self, usuario:AuthUser)-> AuthUser:
         """
@@ -73,6 +74,10 @@ class FakeUserRepository:
         return self._users.get(email)
 
     def modificar_usuario(self, usuario: AuthUser) -> (AuthUser | None):
+        if self.accion_realizada == False:
+            return False
+
+        
         usuario_db = self.obtener_por_id(usuario["id_usuario"])
 
         if not usuario_db:
