@@ -33,7 +33,7 @@ class ReactivarUsuarioUseCase:
             raise UsuarioNoEliminado()
 
         dia_actual = date.today()
-        if usuario_db.eliminado_en + timedelta(minutes=self.settings.REACTIVACION_CUENTA) > dia_actual:
+        if usuario_db.eliminado_en + timedelta(days=self.settings.REACTIVACION_CUENTA) < dia_actual:
             raise PeriodoReactivacionFinalizado()
 
         with self.unit_of_work_service:
