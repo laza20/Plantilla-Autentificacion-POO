@@ -1,5 +1,5 @@
 from src.auth.domain.exceptions.domain import MailRepetido
-from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioActivo
+from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioActivo, UsuarioNoEliminado
 from typing import Dict
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
@@ -85,3 +85,18 @@ class FakeUserRepository:
         
         self._users[usuario_db.email] = usuario
         return usuario
+
+    def eliminar_usuario(self, usuario: AuthUser) -> bool | None:
+        usuario.estado = EstadoEntidad.ELIMINADO
+        self._users[usuario.email]= usuario
+        return usuario
+
+    def obtener_usuario_eliminado_por_mail(self, mail_usuario: str) -> (AuthUser | None):
+        for usuario in self._users.values():
+            if usuario.email == mail_usuario:
+                if not usuario.estado is EstadoEntidad.ELIMINADO:
+                    raise UsuarioNoEliminado()
+
+                return usuario
+
+        raise UsuarioNoEncontrado(f"No se encontro al usuario con el id {mail_usuario}")
