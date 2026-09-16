@@ -43,3 +43,12 @@ async def test_debe_dar_error_por_token_invalido(token):
         context.use_case().ejecutar(
             token=token
         )
+
+
+@pytest.mark.asyncio
+async def test_debe_dar_error_por_usuario_no_encontrado():
+    context = ReactivarCuentaTestEnvironment()
+    with pytest.raises(UsuarioNoEncontrado):
+        context.use_case().ejecutar(
+            token=f"reactivacion_token_55555"
+        )
