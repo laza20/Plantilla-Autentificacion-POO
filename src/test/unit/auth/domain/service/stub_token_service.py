@@ -10,6 +10,7 @@ class StubTokenService:
         self.refresh_token_generado = None
         self.reset_token_generado = None
         self.verificacion_token_generado = None
+        self.reactivacion_token_generado = None
         self.hashed_token = None
 
     def _actualizar_llamada(self, user_id: int):
@@ -101,3 +102,9 @@ class StubTokenService:
 
         except:
             raise TokenInvalido()
+
+    def create_reactivacion_token(self, user_id: str) -> str:
+        if not self.fue_llamado:
+            self._actualizar_llamada(user_id)
+        self.reactivacion_token_generado = f"reactivacion_token_{user_id}"
+        return self.reactivacion_token_generado
