@@ -10,6 +10,7 @@ class FakeUserRepository:
         self._next_id = 1
         self._users: Dict[str, AuthUser] = {}
         self.accion_realizada = True
+        self.tiempo_eliminado = None
 
     def insertar(self, usuario:AuthUser)-> AuthUser:
         """
@@ -87,10 +88,13 @@ class FakeUserRepository:
         return usuario
 
     def eliminar_usuario(self, usuario: AuthUser) -> bool | None:
+        if not self.tiempo_eliminado:
+            usuario.eliminado_en = date.today()
+        else:
+            usuario.eliminado_en = self.tiempo_eliminado
+
         usuario.estado = EstadoEntidad.ELIMINADO
-        usuario.eliminado_en = date.today()
         self._users[usuario.email]= usuario
-        self._users[usuario.eliminado_en] = date.today()
         return usuario
 
     def obtener_usuario_eliminado_por_mail(self, mail_usuario: str) -> (AuthUser | None):
