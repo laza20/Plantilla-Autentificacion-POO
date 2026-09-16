@@ -45,3 +45,12 @@ async def test_verifica_que_se_llamo_al_token_service():
     await context.use_case().ejecutar(usuario_creado.email)
     assert context.token_service.fue_llamado != False
     assert context.token_service.reactivacion_token_generado == f"reactivacion_token_{usuario_creado.id_usuario}"
+
+
+@pytest.mark.asyncio
+async def test_debe_verificar_que_se_produce_una_excepcion_cuando_no_se_encuentra_un_usuario():
+    context = SolicitudReactivacionCuentaTestEnvironment()
+    crear_usuario_de_prueba(context.auth_user_repository)
+
+    with pytest.raises(UsuarioNoEncontrado):
+        await context.use_case().ejecutar("mail@noexiste.com")
