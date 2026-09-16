@@ -26,8 +26,8 @@ class EnviarMailReactivacionUseCase:
         if not user:
             raise UsuarioNoEncontrado(f"No se pudo procesar la solicitud para el mail {mail_usuario}")
 
-        token_verificacion = self.token_service.create_reactivacion_token(str(user.id_usuario))
-        cuerpo_correo = self._generar_correo_verificacion(token_verificacion)
+        token_reactivacion = self.token_service.create_reactivacion_token(str(user.id_usuario))
+        cuerpo_correo = self._generar_correo_reactivacion(token_reactivacion)
 
         await self.mail_service.enviar_mail(
             email_destino=mail_usuario,
@@ -38,7 +38,7 @@ class EnviarMailReactivacionUseCase:
         return {"message": "Correo enviado correctamente"}
 
         
-    def _generar_correo_verificacion(self, token: str) -> str:
+    def _generar_correo_reactivacion(self, token: str) -> str:
         url = (
             f"{self.settings.BASE_URL}/"
             f"{self.settings.NOMBRE_APP}/usuarios/reactivar/cuenta/{token}"
