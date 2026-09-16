@@ -22,3 +22,6 @@ class StubMailService:
 
     def generar_correo_recuperacion(self, url: str, nombre_proyecto: str) -> str: 
         return url
+
+    def generar_correo_reactivacion(self, url: str, nombre_proyecto: str):
+        return url
