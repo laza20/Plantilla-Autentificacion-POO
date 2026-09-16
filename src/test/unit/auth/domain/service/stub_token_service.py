@@ -108,3 +108,15 @@ class StubTokenService:
             self._actualizar_llamada(user_id)
         self.reactivacion_token_generado = f"reactivacion_token_{user_id}"
         return self.reactivacion_token_generado
+
+    def get_user_id_from_reactivacion_token(self, token: str) -> str:
+        try:
+            tipo, token, user_id  = token.split("_")
+            
+            if tipo != "reactivacion" or token != "token":
+                raise TokenInvalido()
+                
+            return int(user_id)
+
+        except:
+            raise TokenInvalido()

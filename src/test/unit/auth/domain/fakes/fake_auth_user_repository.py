@@ -3,7 +3,7 @@ from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, 
 from typing import Dict
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
-from datetime import datetime
+from datetime import datetime, date
 
 class FakeUserRepository:
     def __init__(self):
@@ -88,7 +88,9 @@ class FakeUserRepository:
 
     def eliminar_usuario(self, usuario: AuthUser) -> bool | None:
         usuario.estado = EstadoEntidad.ELIMINADO
+        usuario.eliminado_en = date.today()
         self._users[usuario.email]= usuario
+        self._users[usuario.eliminado_en] = date.today()
         return usuario
 
     def obtener_usuario_eliminado_por_mail(self, mail_usuario: str) -> (AuthUser | None):
@@ -99,4 +101,22 @@ class FakeUserRepository:
 
                 return usuario
 
-        raise UsuarioNoEncontrado(f"No se encontro al usuario con el id {mail_usuario}")
+        raise UsuarioNoEncontrado(f"No se encontro al usuario con el mail {mail_usuario}")
+
+
+    def obtener_usuario_eliminado_por_id(self, id_usuario: int) -> (AuthUser | None):
+        for usuario in self._users.values():
+            if usuario.id_usuario == id_usuario:
+                if not usuario.estado is EstadoEntidad.ELIMINADO:
+                    raise UsuarioNoEliminado()
+
+                return usuario
+
+        raise UsuarioNoEncontrado(f"No se encontro al usuario con el id {id_usuario}")
+
+
+    def activar_usuario_eliminado(self, id_usuario: int) -> (bool | None):
+        for usuario in self._users.values():
+            if usuario.id_usuario == id_usuario:
+                usuario.estado = EstadoEntidad.ACTIVO
+                return usuario
