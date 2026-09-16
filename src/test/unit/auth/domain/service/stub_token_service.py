@@ -110,6 +110,7 @@ class StubTokenService:
         return self.reactivacion_token_generado
 
     def get_user_id_from_reactivacion_token(self, token: str) -> str:
+        self.fue_llamado = True
         try:
             tipo, token, user_id  = token.split("_")
             

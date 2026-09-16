@@ -52,3 +52,13 @@ async def test_debe_dar_error_por_usuario_no_encontrado():
         context.use_case().ejecutar(
             token=f"reactivacion_token_55555"
         )
+
+
+@pytest.mark.asyncio
+async def test_debe_verificar_que_se_llamo_al_token_service():
+    context = ReactivarCuentaTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+    context.auth_user_repository.eliminar_usuario(usuario_creado)
+
+    resultado = context.use_case().ejecutar(token=f"reactivacion_token_{usuario_creado.id_usuario}")
+    assert context.token_service.fue_llamado == True
