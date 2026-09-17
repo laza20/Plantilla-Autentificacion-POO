@@ -128,3 +128,17 @@ class StubTokenService:
             self._actualizar_llamada(user_id)
         self.eliminacion_token_generado = f"eliminacion_token_{user_id}"
         return self.eliminacion_token_generado
+
+
+    def get_user_id_from_eliminacion_token(self, token: str) -> str:
+        self.fue_llamado = True
+        try:
+            tipo, token, user_id  = token.split("_")
+            
+            if tipo != "eliminacion" or token != "token":
+                raise TokenInvalido()
+                
+            return int(user_id)
+
+        except:
+            raise TokenInvalido()

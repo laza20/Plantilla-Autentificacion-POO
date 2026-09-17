@@ -27,6 +27,7 @@ class FakeSesionRepository:
         )
         copia_sesion = sesion.model_copy()
         copia_sesion.id_sesion = self._next_sesion_id
+        copia_sesion.id_usuario = id_usuario
         self._sesiones[hash_token] = copia_sesion
         self._next_sesion_id += 1
         self.fue_llamado = True
@@ -70,3 +71,9 @@ class FakeSesionRepository:
             
         self.token_eliminado = None
         return False
+
+    def eliminar_todas_las_sesiones_de_un_usuario(self, id_usuario: int) -> (bool | None):
+        for sesion in self._sesiones.values():
+            if sesion.id_usuario == id_usuario:
+                sesion = None
+            

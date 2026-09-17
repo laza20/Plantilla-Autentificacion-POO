@@ -89,6 +89,9 @@ class FakeUserRepository:
         return usuario
 
     def eliminar_usuario(self, usuario: AuthUser) -> bool | None:
+        if not isinstance(usuario, type):
+            usuario = AuthUser(**usuario)
+
         if not self.tiempo_eliminado:
             usuario.eliminado_en = date.today()
         else:
