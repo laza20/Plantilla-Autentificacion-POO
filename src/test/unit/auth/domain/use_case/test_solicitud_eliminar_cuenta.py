@@ -15,3 +15,12 @@ async def test_verifica_que_se_solicita_una_eliminacion_de_cuenta_correctamente(
     resultado = await context.use_case().ejecutar(usuario_creado.id_usuario)
     assert resultado["message"] == "Correo de eliminacion enviado a su mail."
 
+@pytest.mark.asyncio
+async def test_debe_verificar_que_se_produce_un_error_al_no_encontrar_al_usuario():
+    context = SolicitudEliminacionUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository) #id usuario 1
+
+    with pytest.raises(UsuarioNoEncontrado):
+        await context.use_case().ejecutar(id_usuario=66)
+
+
