@@ -24,3 +24,20 @@ async def test_debe_verificar_que_se_produce_un_error_al_no_encontrar_al_usuario
         await context.use_case().ejecutar(id_usuario=66)
 
 
+@pytest.mark.asyncio
+async def test_debe_verificar_que_se_llama_a_token_service():
+    context = SolicitudEliminacionUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    await context.use_case().ejecutar(usuario_creado.id_usuario)
+    assert context.token_service.fue_llamado == True
+    assert context.token_service.eliminacion_token_generado == f"eliminacion_token_{usuario_creado.id_usuario}"
+
+
+@pytest.mark.asyncio
+async def test_debe_verificar_que_se_llama_a_mail_service():
+    context = SolicitudEliminacionUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    await context.use_case().ejecutar(usuario_creado.id_usuario)
+    assert context.mail_service.fue_llamado == True
