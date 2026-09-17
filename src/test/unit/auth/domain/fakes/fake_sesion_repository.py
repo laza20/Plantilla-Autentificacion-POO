@@ -9,6 +9,7 @@ class FakeSesionRepository:
         self.hash_refresh_token: str = ""
         self.token_eliminado: str = ""
         self._next_sesion_id = 1
+        self.sesiones_eliminadas = 0
 
     def insertar_sesion(
         self,
@@ -76,4 +77,7 @@ class FakeSesionRepository:
         for sesion in self._sesiones.values():
             if sesion.id_usuario == id_usuario:
                 sesion = None
-            
+                self.sesiones_eliminadas += 1
+
+        self.fue_llamado = True
+
