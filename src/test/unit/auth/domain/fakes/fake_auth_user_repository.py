@@ -11,6 +11,7 @@ class FakeUserRepository:
         self._users: Dict[str, AuthUser] = {}
         self.accion_realizada = True
         self.tiempo_eliminado = None
+        self.activado = True
 
     def insertar(self, usuario:AuthUser)-> AuthUser:
         """
@@ -120,6 +121,9 @@ class FakeUserRepository:
 
 
     def activar_usuario_eliminado(self, id_usuario: int) -> (bool | None):
+        if self.accion_realizada != True:
+            return False
+
         for usuario in self._users.values():
             if usuario.id_usuario == id_usuario:
                 usuario.estado = EstadoEntidad.ACTIVO

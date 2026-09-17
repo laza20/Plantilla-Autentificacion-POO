@@ -76,3 +76,16 @@ async def test_debe_verificar_al_ser_un_tiempo_posterior_al_posible_da_un_error_
         context.use_case().ejecutar(
             token=f"reactivacion_token_{usuario_creado.id_usuario}"
         )
+
+
+@pytest.mark.asyncio
+async def test_debe_verificar_que_se_produce_un_error_de_creacion():
+    context = ReactivarCuentaTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+    context.auth_user_repository.accion_realizada = False
+    context.auth_user_repository.eliminar_usuario(usuario_creado)
+
+    with pytest.raises(ErrorCreacion):
+        context.use_case().ejecutar(
+            token=f"reactivacion_token_{usuario_creado.id_usuario}"
+        )
