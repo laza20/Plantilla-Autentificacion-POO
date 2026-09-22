@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guía de Uso — Plantilla de Autenticación</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --bg-elevated: #ffffff;
+    --text: #1c1917;
+    --text-muted: #57534e;
+    --border: #e7e5e4;
+    --accent: #0f766e;
+    --accent-soft: #ccfbf1;
+    --code-bg: #1c1917;
+    --code-text: #e7e5e4;
+    --warn-bg: #fffbeb;
+    --warn-border: #f59e0b;
+    --warn-text: #78350f;
+    --step-num-bg: #0f766e;
+    --step-num-text: #ffffff;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1c1917;
+      --bg-elevated: #292524;
+      --text: #f5f5f4;
+      --text-muted: #a8a29e;
+      --border: #44403c;
+      --accent: #2dd4bf;
+      --accent-soft: #134e4a;
+      --code-bg: #0c0a09;
+      --code-text: #d6d3d1;
+      --warn-bg: #292018;
+      --warn-border: #d97706;
+      --warn-text: #fcd34d;
+      --step-num-bg: #2dd4bf;
+      --step-num-text: #0c0a09;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1c1917;
+    --bg-elevated: #292524;
+    --text: #f5f5f4;
+    --text-muted: #a8a29e;
+    --border: #44403c;
+    --accent: #2dd4bf;
+    --accent-soft: #134e4a;
+    --code-bg: #0c0a09;
+    --code-text: #d6d3d1;
+    --warn-bg: #292018;
+    --warn-border: #d97706;
+    --warn-text: #fcd34d;
+    --step-num-bg: #2dd4bf;
+    --step-num-text: #0c0a09;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+  }
+  .wrap {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 5rem;
+  }
+  header.hero {
+    margin-bottom: 2.5rem;
+  }
+  .eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    margin-bottom: 0.9rem;
+  }
+  h1 {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 1.02rem;
+    max-width: 60ch;
+  }
+  section {
+    margin-bottom: 2.75rem;
+  }
+  .step-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    background: var(--step-num-bg);
+    color: var(--step-num-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .step-heading h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  .card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.4rem;
+    margin-bottom: 1rem;
+  }
+  .card h3 {
+    margin: 0 0 0.6rem;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 0.9rem 1.1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    margin: 0.6rem 0;
+  }
+  code {
+    font-family: var(--font-mono);
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+  pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+  p { margin: 0.6rem 0; }
+  .note {
+    background: var(--warn-bg);
+    border-left: 3px solid var(--warn-border);
+    color: var(--warn-text);
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    font-size: 0.92rem;
+    margin-top: 0.8rem;
+  }
+  .note strong { display: inline-block; margin-bottom: 0.2rem; }
+  .diagram-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    overflow-x: auto;
+  }
+  .diagram-card pre.mermaid {
+    margin: 0;
+    background: transparent;
+  }
+  ul { padding-left: 1.3rem; }
+  li { margin-bottom: 0.4rem; }
+  footer {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="eyebrow">Guía de uso</span>
+    <h1>Plantilla de Autenticación — Puesta en marcha</h1>
+    <p class="subtitle">Pasos para clonar, vincular, configurar y levantar la plantilla reutilizable de autenticación (Clean Architecture / SOLID) en un proyecto nuevo. Pensada para seguirse de punta a punta, sin conocimiento previo del repositorio.</p>
+  </header>
+
+  <section>
+    <div class="diagram-card">
+      <pre class="mermaid">
+flowchart TD
+    A["Paso 1
+Clonar el repositorio"] --> B["Paso 2
+Vincular repo remoto nuevo"]
+    B --> C["Paso 3
+Entorno virtual + dependencias + .env"]
+    C --> D["Paso 4
+Tests + migraciones + servidor local"]
+    D --> E["Paso 5
+Extender tablas / actualizaciones"]
+      </pre>
+    </div>
+  </section>
+
+  <section>
+    <div class="step-heading">
+      <span class="step-num">1</span>
+      <h2>Clonar el repositorio</h2>
+    </div>
+
+    <div class="card">
+      <h3>Opción A — Sin historial de commits anterior</h3>
+      <p>Usá esta opción si querés que el nuevo proyecto arranque con un historial de git propio, sin los commits de la plantilla.</p>
+      <pre><code>PS C:\Projects&gt; git clone https://github.com/tu-usuario/Plantilla-Autentificacion-POO.git MiNuevoProyecto
+PS C:\Projects&gt; cd MiNuevoProyecto
+PS C:\Projects\MiNuevoProyecto&gt; Remove-Item -Recurse -Force .git
+PS C:\Projects\MiNuevoProyecto&gt; git init
+PS C:\Projects\MiNuevoProyecto&gt; git add .
+PS C:\Projects\MiNuevoProyecto&gt; git commit -m "feat: initial commit from authentication boilerplate"</code></pre>
+    </div>
+
+    <div class="card">
+      <h3>Opción B — Conservando el historial anterior</h3>
+      <p>Si te sirve mantener el historial de commits de la plantilla como referencia:</p>
+      <pre><code>PS C:\Projects&gt; git clone https://github.com/tu-usuario/Plantilla-Autentificacion-POO.git MiNuevoProyecto
+PS C:\Projects&gt; cd MiNuevoProyecto</code></pre>
+      <p>No se necesitan más pasos de este punto para este caso.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="step-heading">
+      <span class="step-num">2</span>
+      <h2>Vinculación con el nuevo repositorio remoto (GitHub)</h2>
+    </div>
+
+    <div class="card">
+      <h3>2.1 — Diagnóstico inicial de remotes</h3>
+      <pre><code>PS C:\Projects\MiNuevoProyecto&gt; git remote -v</code></pre>
+      <p>Permite ver a qué repositorio está vinculado el proyecto actualmente.</p>
+    </div>
+
+    <div class="card">
+      <h3>2.2 y 2.3 — El error "remote origin already exists" y su solución</h3>
+      <p>Cuando cloná el repo, el alias <code>origin</code> ya apunta a la plantilla original. Según el caso, usá:</p>
+      <ul>
+        <li><strong>git remote add</strong> — cuando el alias NO existe (por ejemplo, tras un <code>git init</code> desde cero).<br><code>git remote add origin &lt;URL-NUEVO-REPO&gt;</code></li>
+        <li><strong>git remote set-url</strong> — cuando <code>origin</code> ya existe y querés reapuntarlo.<br><code>git remote set-url origin &lt;URL-NUEVO-REPO&gt;</code></li>
+      </ul>
+      <p>Comando de re-vinculación directa (caso más común, cuando <code>origin</code> ya existe):</p>
+      <pre><code>PS C:\Projects\MiNuevoProyecto&gt; git remote set-url origin https://github.com/tu-usuario/MiNuevoProyecto.git</code></pre>
+    </div>
+
+    <div class="card">
+      <h3>2.4 — Publicación en el repositorio remoto</h3>
+      <pre><code># 1. Renombrar la rama local a main
+PS C:\Projects\MiNuevoProyecto&gt; git branch -M main
+
+# 2. Publicar el código y fijar upstream
+PS C:\Projects\MiNuevoProyecto&gt; git push -u origin main
+
+# 3. Verificación final
+PS C:\Projects\MiNuevoProyecto&gt; git remote -v
+# Debe confirmar:
+# origin  https://github.com/tu-usuario/MiNuevoProyecto.git (fetch)
+# origin  https://github.com/tu-usuario/MiNuevoProyecto.git (push)</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <div class="step-heading">
+      <span class="step-num">3</span>
+      <h2>Configuración del entorno virtual Python</h2>
+    </div>
+
+    <div class="card">
+      <h3>3.1 — Crear y activar el entorno virtual</h3>
+      <pre><code>PS C:\Projects\MiNuevoProyecto&gt; python -m venv venv
+
+# Si al activar da error "running scripts is disabled":
+PS C:\Projects\MiNuevoProyecto&gt; Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+PS C:\Projects\MiNuevoProyecto&gt; .\venv\Scripts\Activate.ps1
+(venv) PS C:\Projects\MiNuevoProyecto&gt;</code></pre>
+    </div>
+
+    <div class="card">
+      <h3>3.2 — Instalar dependencias</h3>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; python -m pip install --upgrade pip
+(venv) PS C:\Projects\MiNuevoProyecto&gt; pip install -r requirements.txt</code></pre>
+    </div>
+
+    <div class="card">
+      <h3>3.3 — Variables de entorno (.env)</h3>
+      <p>Copiá el archivo de ejemplo (ubicado en la carpeta de guía de uso):</p>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; Copy-Item .env.example .env</code></pre>
+      <p><strong>3.3.A — Generar una nueva clave secreta para JWT:</strong></p>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; python -c "import secrets; print(secrets.token_hex(32))"
+# Copiá la salida y pegala en SECRET_KEY dentro de .env</code></pre>
+      <p><strong>3.3.B — Base de datos PostgreSQL dedicada:</strong></p>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; psql -U postgres -c "CREATE DATABASE mi_nuevo_proyecto_db;"</code></pre>
+      <p>Cargá esa URL de conexión en el campo <code>DATABASE_URL</code> de tu <code>.env</code>.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="step-heading">
+      <span class="step-num">4</span>
+      <h2>Verificación operativa final (pre-flight checks)</h2>
+    </div>
+
+    <div class="card">
+      <h3>4.1 — Ejecutar la suite de tests (opcional)</h3>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; pytest
+# Confirmar salida verde, ej: "130 passed in 1.45s"</code></pre>
+    </div>
+
+    <div class="card">
+      <h3>4.2 — Ejecutar migraciones de Alembic</h3>
+      <p>Requiere la base de datos ya creada (vacía) y su URL guardada en <code>DATABASE_URL</code> dentro de <code>.env</code>.</p>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; alembic upgrade head
+# Verificar la creación correcta de las tablas de auth</code></pre>
+    </div>
+
+    <div class="card">
+      <h3>4.3 — Levantar el servidor de desarrollo</h3>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; uvicorn app.main:app --reload</code></pre>
+      <div class="note">
+        <strong>Verificar antes de correrlo:</strong>
+        Este comando asume que el punto de entrada vive en <code>app/main.py</code>. Si tu estructura real usa otro path (por ejemplo <code>src.main:app</code>), ajustá el comando acorde a como esté organizado tu proyecto antes de ejecutarlo.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="step-heading">
+      <span class="step-num">5</span>
+      <h2>Actualizaciones futuras</h2>
+    </div>
+
+    <div class="card">
+      <p>Una vez que la plantilla está funcional, podés extenderla según las reglas de negocio del proyecto. Tené en cuenta:</p>
+      <ul>
+        <li>La tabla principal es <strong>auth_user</strong>. No debería modificarse en profundidad salvo necesidad real.</li>
+        <li>La tabla <strong>usuario</strong> existe vacía, relacionada 1 a 1 con <code>auth_user</code> por su mismo id. Está pensada para ampliar el catálogo de datos del usuario sin tocar la tabla de autenticación — se puede extender tanto como lo requieran las reglas de negocio.</li>
+        <li>Modificar una tabla existente probablemente implique actualizar también los DTOs y modelos de recepción (no de tabla) asociados, además de las verificaciones correspondientes.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    Guía de uso interna — Plantilla de Autenticación (Clean Architecture / SOLID)
+  </footer>
+
+</div>
+</body>
+</html>
