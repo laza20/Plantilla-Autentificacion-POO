@@ -51,6 +51,9 @@ from src.container.providers import (
 from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.domain.exceptions.tokens import VerificacionInvalida, VerificacionExpirada
 
+#RATE LIMITER
+from src.auth.infrastructure.security.rate_limiter.limiter import limiter
+
 #SETTINGS
 from src.config.config import settings
 
@@ -61,7 +64,9 @@ router = APIRouter(prefix=f"/{settings.NOMBRE_APP}/usuarios",
 
 
 @router.post("/registrar", response_model=UsuarioCreado, status_code=status.HTTP_201_CREATED)
+@limiter.limit("5/hour")
 async def crear_usuario(
+    request: Request,
     datos: tuple[UserRegisterDTO, UploadFile | None] = Depends(parse_usuario_form),
     register_use_case: RegisterUseCase = Depends(get_register_use_case)):
     """
@@ -80,7 +85,9 @@ async def crear_usuario(
     return usuario_nuevo
 
 @router.get("/verificar/{token}", status_code=status.HTTP_200_OK)
+@limiter.limit("5/hour")
 async def verificar_mail(
+    request: Request,
     response: Response,
     token: str = Path(..., description="Token de verificación enviado al correo"),
     verify_mail: VerifyMailUseCase = Depends(get_verify_mail_use_case),
@@ -103,6 +110,7 @@ async def verificar_mail(
 
 
 @router.post("/login", response_model=LoginResponse, status_code=status.HTTP_202_ACCEPTED)
+@limiter.limit("3/minute")
 async def logearse(
     response: Response,
     request: Request,
@@ -124,6 +132,7 @@ async def logearse(
 
 
 @router.post("/Refresh/Token", status_code=status.HTTP_200_OK)
+@limiter.limit("3/minute")
 async def refresh_token(
     request: Request, 
     response: Response,
@@ -153,6 +162,7 @@ async def ver_usuario(
     return usuario
 
 @router.post("/Logout", status_code=status.HTTP_200_OK)
+@limiter.limit("5/hour")
 async def logout(
     response: Response,
     request: Request,
@@ -169,6 +179,7 @@ async def logout(
 
 
 @router.get("/listar_sesiones", status_code=status.HTTP_200_OK)
+@limiter.limit("5/minute")
 async def list_sesions(
     request: Request,
     user_validation_service: UserValidationService = Depends(get_user_validation_service),
@@ -184,7 +195,9 @@ async def list_sesions(
 
 
 @router.delete("/eliminar_sesion/{id_sesion}", status_code=status.HTTP_200_OK)
+@limiter.limit("3/minute")
 async def eliminar_sesion(
+    request: Request,
     id_sesion: int = Path(..., description="ID de la sesión a eliminar"),
     user_validation_service: UserValidationService = Depends(get_user_validation_service),
     eliminar_sesiones_use_case: EliminarSesionesUseCase = Depends(get_eliminar_sesiones_use_case),
@@ -199,7 +212,9 @@ async def eliminar_sesion(
 
 
 @router.post("/solicitud/recuperacion", status_code=status.HTTP_200_OK)
+@limiter.limit("5/hour")
 async def solicitud_recuperacion(
+    request: Request,
     body: SolicitudRecuperacionRequest,
     solicitur_recuperacion_use_case: SolicitudRecuperacionUseCase = Depends(get_solicitud_recuperacion_contraseña_use_case)
 ):
@@ -208,7 +223,9 @@ async def solicitud_recuperacion(
 
 
 @router.get("/recuperar/password/{token}", status_code=status.HTTP_200_OK)
+@limiter.limit("5/hour")
 async def verificar_token_recuperacion(
+    request: Request,
     response: Response,
     token: str = Path(..., description="Token de recuperacion enviado al correo"),
     verificar_token_recuperacion_contraseña_use_case: VerificarTokenUseCase = Depends(get_verificar_token_recuperacion_contraseña_use_case),
@@ -227,6 +244,7 @@ async def verificar_token_recuperacion(
 
 
 @router.patch("/modificar/password", status_code=status.HTTP_202_ACCEPTED)
+@limiter.limit("1/hour")
 async def modificar_password(
     request: Request,
     body: ModificarPassword,
@@ -248,7 +266,9 @@ async def modificar_password(
 
 
 @router.post("/reenviar/mail", status_code = status.HTTP_202_ACCEPTED)
+@limiter.limit("5/hour")
 async def reenviar_mail(
+    request: Request,
     body: SolicitudRecuperacionRequest,
     reenviar_mail_use_case: ReenviarMailUseCase = Depends(
         get_reenviar_mail_use_case
@@ -259,9 +279,11 @@ async def reenviar_mail(
 
 
 @router.put("/modificar/usuario", response_model=UsuarioCreado, status_code=status.HTTP_202_ACCEPTED)
+@limiter.limit("2/hour")
 async def modificar_usuario(
     #los datos que reciba en UserModifyDto pueden agregarse en su modelo. 
     #Lo mismo con el parce_usueario_form (si se agregan datos en uno, tambien se debe hacer en el otro)
+    request: Request,
     datos: tuple[UserModifyDTO, UploadFile | None] = Depends(parse_modificar_usuario_form),
     current_user: dict = Depends(get_current_user),
     user_validation_service: UserValidationService = Depends(get_user_validation_service),
@@ -276,7 +298,9 @@ async def modificar_usuario(
     
 
 @router.delete("/eliminar/usuario", status_code=status.HTTP_202_ACCEPTED)
+@limiter.limit("5/hour")
 async def eliminar_usuario(
+    request: Request,
     current_user: dict = Depends(get_current_user),
     user_validation_service: UserValidationService = Depends(get_user_validation_service),
     eliminar_usuario_use_case: SolicitudEliminacionUsuarioUseCase = Depends(
@@ -289,7 +313,9 @@ async def eliminar_usuario(
 
 
 @router.get("/eliminar/cuenta/{token}", status_code=status.HTTP_200_OK)
+@limiter.limit("5/hour")
 async def confirmar_eliminacion(
+    request: Request,
     response: Response,
     token: str = Path(...),
     eliminar_usuario_use_case: EliminarUsuarioUseCase = Depends(get_eliminar_usuario_use_case),
@@ -301,7 +327,9 @@ async def confirmar_eliminacion(
 
 
 @router.get("/solicitud/reactivacion/cuenta", status_code=status.HTTP_202_ACCEPTED)
+@limiter.limit("5/hour")
 async def solicitud_reactivacion(
+    request: Request,
     body: SolicitudReactivacionRequest,
     solicitur_reactivacion_use_case: EnviarMailReactivacionUseCase = Depends(get_solicitud_reactivacion_cuenta_use_case)
 ):
@@ -310,7 +338,9 @@ async def solicitud_reactivacion(
 
 
 @router.get("/reactivar/cuenta/{token}", status_code=status.HTTP_202_ACCEPTED)
+@limiter.limit("5/hour")
 async def reactivar_usuario(
+    request: Request,
     token: str = Path(...),
     reactivar_usuario_use_case: ReactivarUsuarioUseCase = Depends(get_reactivar_cuenta_use_case)
 ):
