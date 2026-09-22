@@ -1,0 +1,38 @@
+# Configuración de la base de datos PostgreSQL
+DATABASE_URL="url.base_de_datos"
+
+# Configuración de Cloudinary para manejo de imágenes
+CLOUDINARY_CLOUD_NAME="nombre_de_cloudinary"
+CLOUDINARY_API_KEY="xxxxxxxxxxxxxxx"
+CLOUDINARY_API_SECRET="xxxxxxxxxxxxxxxxxxxxxx"
+CLOUDINARY_UPLOAD_PRESET="nombre_de_la_carpeta_dentro_de_cloudinary"
+
+# Para la generación de tokens JWT (Cambiado para coincidir con tu código)
+JWT_SECRET_KEY="secret_key_xxx"
+ALGORITHM="HS256" #recomendado
+
+#Tiempos a disposicion de la persona que desee utilizar la plantilla
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+REFRESH_TOKEN_DURATION=7
+RESET_PASSWORD_TOKEN_EXPIRE_MINUTES=10
+VERIFY_MAIL_RECUPERACION=30
+EXPIRACION_MAIL_RECUPERACION=30
+#Tiempo en minutos que tiene el usuario para eliminar la cuenta por medio del mail que le llego al correo
+ELIMINACION_CUENTA=30
+#Tiempo en dias que tiene el usuario para reactivar la cuenta.
+REACTIVACION_CUENTA=30
+
+
+# Configuración para el envío de correos (Cambiados para coincidir con tu código)
+MAIL_USERNAME="xxxxxxxxxxxxx"
+MAIL_PASSWORD="xxxxxxxxxxxxx"
+MAIL_FROM="xxxxxx@BookTrace.com" #example
+MAIL_PORT=1111
+MAIL_SERVER="sandbox.smtp.mailtrap.io"
+MAIL_STARTTLS=True
+MAIL_SSL_TLS=False
+USE_CREDENTIALS=True
+
+# Local
+BASE_URL="http://localhost:8000" #base local
+NOMBRE_APP="PRUEBA-PLANTILLA"
