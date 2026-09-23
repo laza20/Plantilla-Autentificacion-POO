@@ -41,6 +41,8 @@ class Settings(BaseSettings):
     CLOUDINARY_API_SECRET: str
     CLOUDINARY_UPLOAD_PRESET: str
 
+    RATE_LIMITER_ENABLED: bool = True
+
     model_config = SettingsConfigDict(
         env_file=ENV_PATH, 
         env_file_encoding="utf-8",
