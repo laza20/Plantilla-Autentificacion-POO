@@ -1,7 +1,11 @@
+import os
+
+os.environ["RATE_LIMITER_ENABLED"] = "false"
+
 from fastapi.testclient import TestClient
 from src.main import app
-import pytest
 
+import pytest
 
 @pytest.fixture(scope="module")
 def test_client():
