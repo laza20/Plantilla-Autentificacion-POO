@@ -175,6 +175,12 @@
     margin-top: 0.8rem;
   }
   .note strong { display: inline-block; margin-bottom: 0.2rem; }
+  .note code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    font-weight: 600;
+  }
   .diagram-card {
     background: var(--bg-elevated);
     border: 1px solid var(--border);
@@ -314,14 +320,85 @@ PS C:\Projects\MiNuevoProyecto&gt; .\venv\Scripts\Activate.ps1
 
     <div class="card">
       <h3>3.3 — Variables de entorno (.env)</h3>
-      <p>Copiá el archivo de ejemplo (ubicado en la carpeta de guía de uso):</p>
-      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; Copy-Item .env.example .env</code></pre>
+      <p>El archivo de ejemplo se llama <code>env_example.txt</code> y está en la carpeta <code>guia de uso</code>. Copialo a la raíz del proyecto con el nombre <code>.env</code>. Como la carpeta tiene espacios, la ruta va entre comillas:</p>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; Copy-Item ".\guia de uso\env_example.txt" ".env"</code></pre>
+      <div class="note">
+        <strong>Si el comando falla:</strong>
+        Verificá el nombre exacto de la carpeta con <code>Get-ChildItem</code> (puede llevar tilde: <code>guía de uso</code>) o autocompletá la ruta con la tecla Tab.
+      </div>
       <p><strong>3.3.A — Generar una nueva clave secreta para JWT:</strong></p>
       <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; python -c "import secrets; print(secrets.token_hex(32))"
 # Copiá la salida y pegala en SECRET_KEY dentro de .env</code></pre>
       <p><strong>3.3.B — Base de datos PostgreSQL dedicada:</strong></p>
-      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; psql -U postgres -c "CREATE DATABASE mi_nuevo_proyecto_db;"</code></pre>
-      <p>Cargá esa URL de conexión en el campo <code>DATABASE_URL</code> de tu <code>.env</code>.</p>
+      <p>Requiere PostgreSQL instalado y con el servicio corriendo. Podés comprobarlo así:</p>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; Get-Service *postgres*
+# Debe mostrar Status: Running</code></pre>
+      <p>Luego creá la base (te pide la contraseña del usuario <code>postgres</code>, la que definiste al instalar):</p>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; psql -U postgres -c "CREATE DATABASE mi_nuevo_proyecto_db;"
+# Salida esperada: CREATE DATABASE</code></pre>
+      <div class="note">
+        <strong>¿Apareció "psql : El término 'psql' no se reconoce como nombre de un cmdlet…"?</strong>
+        PostgreSQL está instalado, pero su carpeta <code>bin</code> no está en el <code>PATH</code> (el instalador de Windows no siempre lo agrega). Seguí la sección 3.3.B.1.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>3.3.B.1 — Solución si "psql" no se reconoce</h3>
+      <p><strong>1. Detectar la versión instalada</strong> (el nombre de la carpeta es el número de versión):</p>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; Get-ChildItem "C:\Program Files\PostgreSQL"
+# Ejemplo de salida: una carpeta llamada 18</code></pre>
+      <p><strong>2. Opción rápida — solo para esta terminal.</strong> Reemplazá <code>18</code> por tu versión:</p>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; $env:Path += ";C:\Program Files\PostgreSQL\18\bin"
+(venv) PS C:\Projects\MiNuevoProyecto&gt; psql -U postgres -c "CREATE DATABASE mi_nuevo_proyecto_db;"</code></pre>
+      <p><strong>3. Alternativa — llamar a psql con la ruta completa</strong>, sin tocar el PATH:</p>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; &amp; "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -c "CREATE DATABASE mi_nuevo_proyecto_db;"</code></pre>
+      <p><strong>4. Opción permanente</strong> — se hace una sola vez por equipo:</p>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Program Files\PostgreSQL\18\bin", "User")</code></pre>
+      <p>Cerrá y volvé a abrir la terminal para que el cambio tenga efecto.</p>
+      <div class="note">
+        <strong>Si <code>Get-Service *postgres*</code> no devuelve nada:</strong>
+        PostgreSQL no está instalado. Instalalo antes de continuar; esta guía asume un servidor PostgreSQL local ya disponible.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>3.3.C — Armar la DATABASE_URL en el .env</h3>
+      <p>Una vez creada la base, cargá la URL de conexión en el campo <code>DATABASE_URL</code> del <code>.env</code>. Formato general:</p>
+      <pre><code>DATABASE_URL=postgresql+DRIVER://USUARIO:CONTRASEÑA@HOST:PUERTO/NOMBRE_BD</code></pre>
+      <p>Ejemplo listo para pegar y modificar (usa la base creada en 3.3.B):</p>
+      <pre><code>DATABASE_URL=postgresql+psycopg2://postgres:TU_PASSWORD@localhost:5432/mi_nuevo_proyecto_db</code></pre>
+      <p>Qué reemplazar en cada parte:</p>
+      <ul>
+        <li><code>DRIVER</code> — el que use la plantilla (ver abajo).</li>
+        <li><code>USUARIO</code> — <code>postgres</code> por defecto.</li>
+        <li><code>TU_PASSWORD</code> — la contraseña del usuario <code>postgres</code> definida al instalar PostgreSQL.</li>
+        <li><code>localhost</code> — el host; queda así si PostgreSQL corre en tu máquina.</li>
+        <li><code>5432</code> — el puerto por defecto de PostgreSQL.</li>
+        <li><code>mi_nuevo_proyecto_db</code> — el nombre exacto usado en el <code>CREATE DATABASE</code>.</li>
+      </ul>
+      <p>Prefijos según el driver:</p>
+      <ul>
+        <li><code>postgresql+psycopg2://</code> — SQLAlchemy síncrono con psycopg2.</li>
+        <li><code>postgresql+psycopg://</code> — SQLAlchemy con psycopg 3.</li>
+        <li><code>postgresql+asyncpg://</code> — SQLAlchemy asíncrono con asyncpg.</li>
+      </ul>
+      <p>Si el <code>.env</code> de ejemplo ya trae una URL, conservá su prefijo y cambiá solo el resto.</p>
+      <div class="note">
+        <strong>Contraseña con caracteres especiales:</strong>
+        Si contiene <code>@</code>, <code>:</code>, <code>/</code>, <code>#</code> o <code>%</code>, hay que codificarla para que la URL no se rompa. Generá la versión codificada así y pegala en la URL:
+        <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; python -c "import urllib.parse; print(urllib.parse.quote_plus('mi@pass:word'))"
+# Salida: mi%40pass%3Aword</code></pre>
+      </div>
+      <div class="note">
+        <strong>Seguridad:</strong>
+        El <code>.env</code> contiene la contraseña y la <code>SECRET_KEY</code>. Confirmá que <code>.env</code> figura en <code>.gitignore</code> antes de hacer commit.
+      </div>
+      <div class="note">
+        <strong>¿Aparece "python-dotenv could not parse statement starting at line N"?</strong>
+        Esa línea del <code>.env</code> tiene un formato inválido y no se está leyendo. Mirala con (el índice arranca en 0, por eso se resta 1 al número de línea):
+        <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; (Get-Content .env)[N-1]</code></pre>
+        Las causas habituales son un valor con espacios o <code>#</code> sin comillas, un comentario sin <code>#</code> al inicio, o una línea sin <code>=</code>. Si el valor tiene espacios, va entre comillas: <code>CLAVE="valor con espacios"</code>.
+      </div>
     </div>
   </section>
 
@@ -335,13 +412,33 @@ PS C:\Projects\MiNuevoProyecto&gt; .\venv\Scripts\Activate.ps1
       <h3>4.1 — Ejecutar la suite de tests (opcional)</h3>
       <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; pytest
 # Confirmar salida verde, ej: "130 passed in 1.45s"</code></pre>
+      <p>Los tests usan stubs y no necesitan tablas: ejecutarlos no debe crear ni modificar el esquema de la base. El esquema lo crea únicamente Alembic (paso 4.2).</p>
+      <div class="note">
+        <strong>Verificación opcional:</strong>
+        Con la base recién creada y vacía, después de correr <code>pytest</code> el comando <code>psql -U postgres -d mi_nuevo_proyecto_db -c "\dt"</code> debe devolver que no hay relaciones. Si aparecen tablas, algo del proyecto (por ejemplo un <code>SQLModel.metadata.create_all(engine)</code> a nivel de módulo en <code>main.py</code>) está creando el esquema por fuera de Alembic y va a provocar el error de la sección 4.2.
+      </div>
     </div>
 
     <div class="card">
       <h3>4.2 — Ejecutar migraciones de Alembic</h3>
       <p>Requiere la base de datos ya creada (vacía) y su URL guardada en <code>DATABASE_URL</code> dentro de <code>.env</code>.</p>
+      <p>Alembic es el único que crea el esquema: la aplicación no crea tablas al arrancar. Por eso este paso es obligatorio antes de levantar el servidor (4.3).</p>
       <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; alembic upgrade head
-# Verificar la creación correcta de las tablas de auth</code></pre>
+# Verificar la creación correcta de las tablas de auth
+
+(venv) PS C:\Projects\MiNuevoProyecto&gt; alembic current
+# Debe mostrar la revisión aplicada, ej: 0767bfec6564 (head)</code></pre>
+      <div class="note">
+        <strong>¿Apareció "DuplicateObject: ya existe un tipo «estado_entidad»"?</strong>
+        La base no estaba vacía: ya tenía el tipo o las tablas, creados por algo distinto a Alembic (por ejemplo, una base usada antes en otro intento). Comprobalo:
+        <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; psql -U postgres -d mi_nuevo_proyecto_db -c "\dT"
+(venv) PS C:\Projects\MiNuevoProyecto&gt; psql -U postgres -d mi_nuevo_proyecto_db -c "\dt"</code></pre>
+        Si aparecen <code>estado_entidad</code> o tablas y la base es descartable, recreala y volvé a migrar:
+        <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; psql -U postgres -c "DROP DATABASE mi_nuevo_proyecto_db;"
+(venv) PS C:\Projects\MiNuevoProyecto&gt; psql -U postgres -c "CREATE DATABASE mi_nuevo_proyecto_db;"
+(venv) PS C:\Projects\MiNuevoProyecto&gt; alembic upgrade head</code></pre>
+        Antes del <code>DROP</code>, confirmá que la base no tenga datos que necesites y cerrá las conexiones abiertas (servidor, pgAdmin); si no, PostgreSQL rechaza el borrado. Si la lista sale vacía, Alembic está conectando a otra base: revisá el nombre al final de <code>DATABASE_URL</code> en el <code>.env</code>.
+      </div>
     </div>
 
     <div class="card">
@@ -350,6 +447,10 @@ PS C:\Projects\MiNuevoProyecto&gt; .\venv\Scripts\Activate.ps1
       <div class="note">
         <strong>Verificar antes de correrlo:</strong>
         Este comando asume que el punto de entrada vive en <code>app/main.py</code>. Si tu estructura real usa otro path (por ejemplo <code>src.main:app</code>), ajustá el comando acorde a como esté organizado tu proyecto antes de ejecutarlo.
+      </div>
+      <div class="note">
+        <strong>Si aparece un error del tipo "la relación … no existe":</strong>
+        Faltó aplicar las migraciones. Volvé al paso 4.2 y ejecutá <code>alembic upgrade head</code>.
       </div>
     </div>
   </section>
@@ -366,7 +467,16 @@ PS C:\Projects\MiNuevoProyecto&gt; .\venv\Scripts\Activate.ps1
         <li>La tabla principal es <strong>auth_user</strong>. No debería modificarse en profundidad salvo necesidad real.</li>
         <li>La tabla <strong>usuario</strong> existe vacía, relacionada 1 a 1 con <code>auth_user</code> por su mismo id. Está pensada para ampliar el catálogo de datos del usuario sin tocar la tabla de autenticación — se puede extender tanto como lo requieran las reglas de negocio.</li>
         <li>Modificar una tabla existente probablemente implique actualizar también los DTOs y modelos de recepción (no de tabla) asociados, además de las verificaciones correspondientes.</li>
+        <li>Como la aplicación no crea tablas al arrancar, <strong>todo cambio de esquema requiere una migración de Alembic</strong>: un modelo nuevo o modificado no se refleja en la base hasta que se genera y aplica la migración.</li>
       </ul>
+      <pre><code>(venv) PS C:\Projects\MiNuevoProyecto&gt; alembic revision --autogenerate -m "descripcion del cambio"
+# Revisar el archivo generado en alembic/versions/ antes de aplicarlo
+
+(venv) PS C:\Projects\MiNuevoProyecto&gt; alembic upgrade head</code></pre>
+      <div class="note">
+        <strong>Requisito para el autogenerate:</strong>
+        <code>alembic/env.py</code> debe importar los modelos de tabla y definir <code>target_metadata = SQLModel.metadata</code>. Si falta alguno de los dos, Alembic no detecta los cambios y genera migraciones vacías.
+      </div>
     </div>
   </section>
 
