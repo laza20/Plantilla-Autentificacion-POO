@@ -6,7 +6,6 @@ from src.database.client import engine
 from src.auth.domain.exceptions.domain import DomainError
 from fastapi.responses import JSONResponse
 from src.auth.infrastructure.persistence.postgres.models import *
-SQLModel.metadata.create_all(engine)
 app = FastAPI()
 
 from src.auth.presentation.web import(routers as usuarios)
