@@ -6,8 +6,9 @@ from src.auth.application.use_cases.sesiones.listar_sesiones import ListarSesion
 from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
-from src.auth.domain.protocols.service.protocol_mail_service import MailProtocol
-from src.auth.domain.protocols.service.protocol_image_service import ImageProtocol
+from src.shared.protocols.protocol_mail_service import MailProtocol
+from src.shared.protocols.protocol_image_service import ImageProtocol
+from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
@@ -65,6 +66,7 @@ class ContainerRegister:
         token_service: TokenProtocol,
         password_service: PasswordProtocol, 
         mail_service: MailProtocol,        
+        mail_content: AuthMailContent,
         image_service: ImageProtocol,
         password_policy: PasswordPolicyService,
         mail_policy : MailPolicyService,
@@ -76,6 +78,7 @@ class ContainerRegister:
         self.token_service = token_service
         self.password_service = password_service
         self.mail_service = mail_service
+        self.mail_content = mail_content
         self.image_service = image_service
         self.password_policy = password_policy
         self.mail_policy = mail_policy
@@ -90,6 +93,7 @@ class ContainerRegister:
             password_service=self.password_service,
             password_policy=self.password_policy,
             mail_service=self.mail_service,
+            mail_content=self.mail_content,
             image_service=self.image_service,
             token_service=self.token_service,
             mail_policy=self.mail_policy,
@@ -183,6 +187,7 @@ class ContainerSolicitudRecuperacion:
         unit_of_work_service: UnitOfWorkProtocol,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service: MailProtocol,
+        mail_content: AuthMailContent,
         token_service: TokenProtocol,
         settings: Settings
     ):
@@ -191,6 +196,7 @@ class ContainerSolicitudRecuperacion:
         self.unit_of_work_service = unit_of_work_service
         self.auth_user_repository = auth_user_repository
         self.mail_service = mail_service
+        self.mail_content = mail_content
         self.token_service = token_service
         self.settings = settings
 
@@ -202,6 +208,7 @@ class ContainerSolicitudRecuperacion:
             unit_of_work_service = self.unit_of_work_service,
             auth_user_repository = self.auth_user_repository,
             mail_service = self.mail_service, 
+            mail_content = self.mail_content,
             token_service = self.token_service,
             settings=self.settings
         )
@@ -257,12 +264,14 @@ class ContainerReenviarMailUseCase:
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service: MailProtocol,
+        mail_content: AuthMailContent,
         token_service: TokenProtocol,
         mail_policy : MailPolicyService,
         settings: Settings
     ):
         self.auth_user_repository = auth_user_repository
         self.mail_service = mail_service
+        self.mail_content = mail_content
         self.token_service = token_service
         self.mail_policy = mail_policy
         self.settings = settings
@@ -271,6 +280,7 @@ class ContainerReenviarMailUseCase:
         return ReenviarMailUseCase(
             auth_user_repository = self.auth_user_repository,
             mail_service = self.mail_service,
+            mail_content = self.mail_content,
             token_service = self.token_service,
             mail_policy = self.mail_policy,
             settings = self.settings
@@ -284,6 +294,7 @@ class ContainerModificarUsuario:
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service: MailProtocol,
+        mail_content: AuthMailContent,
         image_service: ImageProtocol,
         token_service: TokenProtocol,
         mail_policy : MailPolicyService,
@@ -292,6 +303,7 @@ class ContainerModificarUsuario:
     ):
         self.auth_user_repository = auth_user_repository
         self.mail_service = mail_service
+        self.mail_content = mail_content
         self.image_service = image_service
         self.token_service = token_service
         self.mail_policy = mail_policy
@@ -303,6 +315,7 @@ class ContainerModificarUsuario:
         return ModificarUsuarioUseCase(
             auth_user_repository=self.auth_user_repository,
             mail_service=self.mail_service,
+            mail_content=self.mail_content,
             image_service=self.image_service,
             token_service=self.token_service,
             mail_policy=self.mail_policy,
@@ -316,11 +329,13 @@ class ContainerSolicitudEliminacionUsuario:
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service: MailProtocol,
+        mail_content: AuthMailContent,
         token_service: TokenProtocol,
         settings: Settings
     ):
         self.auth_user_repository = auth_user_repository
         self.mail_service = mail_service
+        self.mail_content = mail_content
         self.token_service = token_service
         self.settings = settings
     @property
@@ -329,6 +344,7 @@ class ContainerSolicitudEliminacionUsuario:
         return SolicitudEliminacionUsuarioUseCase(
             auth_user_repository=self.auth_user_repository,
             mail_service=self.mail_service,
+            mail_content=self.mail_content,
             token_service=self.token_service,
             settings=self.settings
         )
@@ -362,12 +378,14 @@ class ContainerSolicitudReactivacionCuentaUseCase:
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service: MailProtocol,
+        mail_content: AuthMailContent,
         token_service: TokenProtocol,
         mail_policy : MailPolicyService,
         settings: Settings
     ):
         self.auth_user_repository = auth_user_repository
         self.mail_service = mail_service
+        self.mail_content = mail_content
         self.token_service = token_service
         self.mail_policy = mail_policy
         self.settings = settings
@@ -376,6 +394,7 @@ class ContainerSolicitudReactivacionCuentaUseCase:
         return EnviarMailReactivacionUseCase(
             auth_user_repository = self.auth_user_repository,
             mail_service = self.mail_service,
+            mail_content = self.mail_content,
             token_service = self.token_service,
             mail_policy = self.mail_policy,
             settings = self.settings

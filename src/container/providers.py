@@ -35,12 +35,12 @@ from src.auth.domain.protocols.repository.protocol_recover_password_repository i
 from src.auth.domain.protocols.repository.protocol_history_password_repository import HistoryRepositoryProtocol
 from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from src.auth.domain.protocols.service.protocol_mail_service import MailProtocol
-from src.auth.domain.protocols.service.protocol_image_service import ImageProtocol
+from src.shared.protocols.protocol_mail_service import MailProtocol
+from src.shared.protocols.protocol_image_service import ImageProtocol
 from src.auth.infrastructure.security.tokens.tokens import TokenService
 from src.auth.infrastructure.security.security import PasswordService
-from src.auth.infrastructure.mail.mail import MailService
-from src.auth.infrastructure.images.cloudinary import ImageService
+from src.shared.infrastructure.mail.mail import MailService
+from src.shared.infrastructure.images.cloudinary import ImageService
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.login import LoginUseCase
@@ -51,6 +51,14 @@ from src.auth.domain.services.user_validation_service import UserValidationServi
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
+from src.shared.infrastructure.mail.template_renderer import TemplateRenderer
+from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent, TEMPLATES_DIR
+
+
+
+
+renderer = TemplateRenderer(template_dir=TEMPLATES_DIR)
+auth_mail_content = AuthMailContent(renderer=renderer)
 
 def get_history_password_repository(session: Session = Depends(get_session)) -> HistoryRepositoryProtocol:
     return HistoryPasswordRepository(session)
@@ -111,12 +119,16 @@ def get_password_policy(settings: Settings = Depends(get_settings)) -> PasswordP
 def get_mail_policy(settings: Settings = Depends(get_settings)) -> MailPolicyService:
     return MailPolicyService()
 
+def get_auth_mail_content() -> AuthMailContent:
+    return auth_mail_content
+
 def get_register_use_case(
     settings: Settings = Depends(get_settings),
     auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
     token_service: TokenProtocol = Depends(get_token_service),
     password_service: PasswordProtocol = Depends(get_password_service),
     password_policy: PasswordPolicyService = Depends(get_password_policy),
+    mail_content: AuthMailContent = Depends(get_auth_mail_content),
     mail_service: MailProtocol = Depends(get_mail_service),
     image_service: ImageProtocol = Depends(get_image_service),
     mail_policy : MailPolicyService = Depends(get_mail_policy),
@@ -131,6 +143,7 @@ def get_register_use_case(
         password_service=password_service,
         password_policy=password_policy,
         mail_service=mail_service,
+        mail_content=mail_content,
         image_service=image_service,
         mail_policy=mail_policy,
         usuario_repository=usuario_repository,
@@ -207,6 +220,7 @@ def get_solicitud_recuperacion_contraseña_use_case(
     unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
     auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
     mail_service: MailProtocol = Depends(get_mail_service),
+    mail_content: AuthMailContent = Depends(get_auth_mail_content),
     token_service: TokenProtocol = Depends(get_token_service),
     settings: Settings = Depends(get_settings)
 ) -> SolicitudRecuperacionUseCase:
@@ -215,6 +229,7 @@ def get_solicitud_recuperacion_contraseña_use_case(
         unit_of_work_service = unit_of_work_service,
         auth_user_repository=auth_user_repository,
         mail_service = mail_service,
+        mail_content = mail_content,
         token_service=token_service,
         settings=settings
     ).solicitud_recuperacion_use_case
@@ -251,6 +266,7 @@ def get_recuperar_contraseña_use_case(
 def get_reenviar_mail_use_case(
         auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
         mail_service: MailProtocol = Depends(get_mail_service),
+        mail_content: AuthMailContent = Depends(get_auth_mail_content),
         token_service: TokenProtocol = Depends(get_token_service),
         mail_policy : MailPolicyService = Depends(get_mail_policy),
         settings: Settings = Depends(get_settings)
@@ -258,6 +274,7 @@ def get_reenviar_mail_use_case(
     return ContainerReenviarMailUseCase(
             auth_user_repository = auth_user_repository,
             mail_service = mail_service,
+            mail_content = mail_content,
             token_service = token_service,
             mail_policy = mail_policy,
             settings = settings
@@ -266,6 +283,7 @@ def get_reenviar_mail_use_case(
 def get_modificar_usuario_use_case(
     auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
     mail_service: MailProtocol = Depends(get_mail_service),
+    mail_content: AuthMailContent = Depends(get_auth_mail_content),
     image_service: ImageProtocol = Depends(get_image_service),
     token_service: TokenProtocol = Depends(get_token_service),
     mail_policy : MailPolicyService = Depends(get_mail_policy),
@@ -276,6 +294,7 @@ def get_modificar_usuario_use_case(
     return ContainerModificarUsuario(
         auth_user_repository=auth_user_repository,
         mail_service=mail_service,
+        mail_content=mail_content,
         image_service=image_service,
         token_service=token_service,
         mail_policy=mail_policy,
@@ -287,12 +306,14 @@ def get_modificar_usuario_use_case(
 def get_solicitud_eliminacion_usuario_use_case(
     auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
     mail_service: MailProtocol = Depends(get_mail_service),
+    mail_content: AuthMailContent = Depends(get_auth_mail_content),
     token_service: TokenProtocol = Depends(get_token_service),
     settings: Settings = Depends(get_settings)
 ) -> SolicitudEliminacionUsuarioUseCase:
     return ContainerSolicitudEliminacionUsuario(
         auth_user_repository=auth_user_repository,
         mail_service=mail_service,
+        mail_content=mail_content,
         token_service=token_service,
         settings=settings
     ).solicitud_eliminacion_usuario_use_case
@@ -315,6 +336,7 @@ def get_eliminar_usuario_use_case(
 def get_solicitud_reactivacion_cuenta_use_case(
         auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
         mail_service: MailProtocol = Depends(get_mail_service),
+        mail_content: AuthMailContent = Depends(get_auth_mail_content),
         token_service: TokenProtocol = Depends(get_token_service),
         mail_policy : MailPolicyService = Depends(get_mail_policy),
         settings: Settings = Depends(get_settings)
@@ -322,6 +344,7 @@ def get_solicitud_reactivacion_cuenta_use_case(
     return ContainerSolicitudReactivacionCuentaUseCase(
             auth_user_repository = auth_user_repository,
             mail_service = mail_service,
+            mail_content = mail_content,
             token_service = token_service,
             mail_policy = mail_policy,
             settings = settings
