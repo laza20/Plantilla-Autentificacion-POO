@@ -3,8 +3,8 @@ import logging
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
-from src.auth.domain.protocols.service.protocol_mail_service import MailProtocol
-from src.auth.domain.protocols.service.protocol_image_service import ImageProtocol
+from src.shared.protocols.protocol_mail_service import MailProtocol
+from src.shared.protocols.protocol_image_service import ImageProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
 from src.auth.domain.services.password_policy import PasswordPolicyService
@@ -13,6 +13,7 @@ from src.auth.infrastructure.persistence.postgres.models.models_auth_users impor
 from src.auth.infrastructure.persistence.postgres.repository.usuario_repository import Usuario
 from pydantic import ValidationError
 from src.auth.domain.exceptions.domain import LongitudExcedida, SinCargas, ErrorCreacion
+from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
 from src.auth.infrastructure.security.security import Settings
 
 
@@ -24,6 +25,7 @@ class RegisterUseCase:
         auth_user_repository: AuthUserRepositoryProtocol,
         password_service: PasswordProtocol,
         mail_service: MailProtocol,
+        mail_content: AuthMailContent,
         image_service: ImageProtocol,
         token_service: TokenProtocol,
         password_policy : PasswordPolicyService,
@@ -35,6 +37,7 @@ class RegisterUseCase:
         self.auth_user_repository = auth_user_repository
         self.password_service = password_service
         self.mail_service = mail_service
+        self.mail_content = mail_content
         self.image_service = image_service
         self.token_service = token_service
         self.password_policy = password_policy
@@ -111,7 +114,7 @@ class RegisterUseCase:
             f"{self.settings.NOMBRE_APP}/usuarios/verificar/{token}"
         )
 
-        return self.mail_service.generar_correo_verificacion(
+        return self.mail_content.generar_correo_verificacion(
             url=url,
             nombre_proyecto=self.settings.NOMBRE_APP,
         )

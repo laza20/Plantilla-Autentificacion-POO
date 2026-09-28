@@ -3,9 +3,10 @@ from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWor
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
-from src.auth.domain.protocols.service.protocol_mail_service import MailProtocol
+from src.shared.protocols.protocol_mail_service import MailProtocol
 from datetime import datetime, timezone, timedelta
 from src.auth.infrastructure.security.security import Settings
+from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
 
 
 class SolicitudRecuperacionUseCase:
@@ -15,6 +16,7 @@ class SolicitudRecuperacionUseCase:
         unit_of_work_service: UnitOfWorkProtocol,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service:MailProtocol,
+        mail_content: AuthMailContent,
         token_service: TokenProtocol,
         settings: Settings
         ):
@@ -22,6 +24,7 @@ class SolicitudRecuperacionUseCase:
         self.unit_of_work_service = unit_of_work_service
         self.auth_user_repository = auth_user_repository
         self.mail_service = mail_service
+        self.mail_content = mail_content
         self.token_service = token_service
         self.settings = settings
 
@@ -69,7 +72,7 @@ class SolicitudRecuperacionUseCase:
             f"{self.settings.NOMBRE_APP}/usuarios/recuperar/password/{token}"
         )
 
-        return self.mail_service.generar_correo_recuperacion(
+        return self.mail_content.generar_correo_recuperacion(
             url=url,
             nombre_proyecto=self.settings.NOMBRE_APP,
         )
