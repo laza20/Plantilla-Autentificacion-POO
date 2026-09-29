@@ -52,7 +52,7 @@ from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.domain.exceptions.tokens import VerificacionInvalida, VerificacionExpirada
 
 #RATE LIMITER
-from src.auth.infrastructure.security.rate_limiter.limiter import limiter
+from src.shared.infrastructure.security.rate_limiter.limiter import limiter
 
 #SETTINGS
 from src.config.config import settings

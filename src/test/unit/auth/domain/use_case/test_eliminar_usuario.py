@@ -1,6 +1,6 @@
 from src.test.fixtures.fixture_eliminar_usuario import EliminarUsuarioTestEnvironment
 from src.test.factories.factory_usuarios import crear_usuario_de_prueba
-from src.auth.domain.exceptions.domain import ErrorEliminacion
+from src.domain.exceptions.domain import ErrorEliminacion
 import pytest
 from src.test.factories.factory_sesiones import crear_sesion_de_prueba
 

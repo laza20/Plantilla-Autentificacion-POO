@@ -1,7 +1,7 @@
 from fastapi import UploadFile
 import logging
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
+from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
 from src.shared.protocols.protocol_mail_service import MailProtocol
 from src.shared.protocols.protocol_image_service import ImageProtocol
@@ -12,7 +12,7 @@ from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser, UserRegisterDTO, AuthUserNoTable
 from src.auth.infrastructure.persistence.postgres.repository.usuario_repository import Usuario
 from pydantic import ValidationError
-from src.auth.domain.exceptions.domain import LongitudExcedida, SinCargas, ErrorCreacion
+from src.domain.exceptions.domain import LongitudExcedida, SinCargas, ErrorCreacion
 from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
 from src.auth.infrastructure.security.security import Settings
 

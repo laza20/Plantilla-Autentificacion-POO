@@ -1,5 +1,5 @@
 from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
-from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
+from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError

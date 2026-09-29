@@ -1,8 +1,8 @@
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
+from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
-from src.auth.domain.exceptions.domain import ErrorCreacion
+from src.domain.exceptions.domain import ErrorCreacion
 from src.auth.infrastructure.security.security import Settings
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoEliminado, PeriodoReactivacionFinalizado
 from src.database.enums.estado_entidad import EstadoEntidad

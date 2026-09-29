@@ -28,7 +28,7 @@ from src.auth.application.use_cases.recover_password.recuperar_contraseña impor
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
 from src.auth.domain.protocols.repository.protocol_history_password_repository import HistoryRepositoryProtocol
-from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
+from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 
 class ContainerEliminarSesiones:
     def __init__(

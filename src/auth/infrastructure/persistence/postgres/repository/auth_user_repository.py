@@ -1,8 +1,8 @@
 from sqlmodel import Session, select, update
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
-from src.auth.domain.exceptions.domain import MailRepetido
-from datetime import datetime, date
+from src.auth.domain.exceptions.usuarios_exceptions import MailRepetido
+from datetime import datetime
 
 class AuthUserRepository:
     def __init__(self, session: Session):

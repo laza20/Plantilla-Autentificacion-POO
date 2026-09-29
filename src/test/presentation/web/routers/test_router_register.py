@@ -2,11 +2,11 @@ from src.main import app
 from src.test.presentation.web.overrides.override_crear import crear_override
 from src.test.presentation.web.stub.stub_register_router import StubRegisterUseCase
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
-from src.auth.domain.exceptions.domain import (
-    MailRepetido, LongitudExcedida, ContraseñaNoSegura,
-    LimiteTamañoSuperado, ExtensionNoPermitida, ErrorCloudinary,
+from src.domain.exceptions.domain import (
+    LongitudExcedida, LimiteTamañoSuperado, ExtensionNoPermitida, ErrorCloudinary,
     SinCargas
     )
+from src.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura, MailRepetido
 from fastapi import status
 from src.container.providers import get_register_use_case
 from src.config.config import settings

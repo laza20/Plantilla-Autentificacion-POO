@@ -3,7 +3,7 @@ from src.test.factories.factory_create_password_recover import crear_recover_pas
 from src.test.factories.factory_usuarios import crear_usuario_de_prueba
 from src.auth.domain.exceptions.tokens import TokenNoDesactivado
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoModificado, UsuarioNoEncontrado
-from src.auth.domain.exceptions.domain import ErrorCreacion
+from src.domain.exceptions.domain import ErrorCreacion
 import pytest
 from datetime import datetime, timezone
 

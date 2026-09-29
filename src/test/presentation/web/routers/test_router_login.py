@@ -7,7 +7,7 @@ from fastapi import status
 from src.config.config import settings
 from src.main import app
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError
-from src.auth.domain.exceptions.domain import DomainError
+from src.domain.exceptions.domain import DomainError
 
 def test_logear_usuario_correctamente(test_client):
     usuario = UsuarioLogeado(

@@ -1,5 +1,5 @@
 from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
-from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
+from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
 from src.auth.domain.protocols.repository.protocol_history_password_repository import HistoryRepositoryProtocol
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
@@ -8,7 +8,7 @@ from src.auth.domain.services.password_policy import PasswordPolicyService
 from datetime import datetime, timezone
 from src.auth.domain.exceptions.tokens import TokenNoDesactivado
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoModificado, UsuarioNoEncontrado
-from src.auth.domain.exceptions.domain import ErrorCreacion
+from src.domain.exceptions.domain import ErrorCreacion
 
 
 

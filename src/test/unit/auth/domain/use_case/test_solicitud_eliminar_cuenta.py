@@ -1,7 +1,4 @@
 import pytest
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
-from src.auth.domain.exceptions.domain import MailRepetido, SinCargas, LongitudExcedida
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import UserRegisterDTO
 from src.test.fixtures.fixture_solicitud_eliminar_usuario import SolicitudEliminacionUsuarioTestEnvironment
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
 from src.test.factories.factory_usuarios import crear_usuario_de_prueba

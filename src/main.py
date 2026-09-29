@@ -3,7 +3,7 @@ load_dotenv()
 from fastapi import FastAPI, Request
 from sqlmodel import SQLModel
 from src.database.client import engine
-from src.auth.domain.exceptions.domain import DomainError
+from src.domain.exceptions.domain import DomainError
 from fastapi.responses import JSONResponse
 from src.auth.infrastructure.persistence.postgres.models import *
 app = FastAPI()
@@ -11,7 +11,7 @@ app = FastAPI()
 from src.auth.presentation.web import(routers as usuarios)
 from slowapi import _rate_limit_exceeded_handler 
 from slowapi.errors import RateLimitExceeded 
-from src.auth.infrastructure.security.rate_limiter.limiter import limiter
+from src.shared.infrastructure.security.rate_limiter.limiter import limiter
 app.include_router(usuarios.router)
 
 app.state.limiter = limiter 

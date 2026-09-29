@@ -29,11 +29,11 @@ from src.auth.domain.protocols.repository.protocol_user_repository import Usuari
 from src.auth.infrastructure.persistence.postgres.repository.usuario_repository import UserRepository
 from src.auth.infrastructure.persistence.postgres.repository.recover_password_repository import RecoverPasswordRepository
 from src.auth.infrastructure.persistence.postgres.repository.history_password_repository import HistoryPasswordRepository
-from src.auth.infrastructure.persistence.postgres.repository.unit_of_work import UnitOfWork
+from src.database.repository.unit_of_work import UnitOfWork
 from src.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
 from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
 from src.auth.domain.protocols.repository.protocol_history_password_repository import HistoryRepositoryProtocol
-from src.auth.domain.protocols.repository.protocol_unit_of_work import UnitOfWorkProtocol
+from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.shared.protocols.protocol_mail_service import MailProtocol
 from src.shared.protocols.protocol_image_service import ImageProtocol

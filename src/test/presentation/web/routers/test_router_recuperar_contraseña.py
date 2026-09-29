@@ -6,7 +6,7 @@ from src.container.providers import get_recuperar_contraseña_use_case, get_toke
 from src.config.config import settings
 from src.auth.domain.exceptions.tokens import TokenNoDesactivado
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoModificado, UsuarioNoEncontrado
-from src.auth.domain.exceptions.domain import ErrorCreacion
+from src.domain.exceptions.domain import ErrorCreacion
 import pytest
 
 

@@ -4,9 +4,8 @@ from src.auth.infrastructure.persistence.postgres.models.models_auth_users impor
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import UserModifyDTO
 from io import BytesIO
 from fastapi import UploadFile
-from src.auth.domain.exceptions.domain import LongitudExcedida
-from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoModificado
-from src.auth.domain.exceptions.domain import MailNoValido
+from src.domain.exceptions.domain import LongitudExcedida
+from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoModificado, MailNoValido
 from src.test.fixtures.fixture_modificar_usuario import ModificarUsuarioTestEnvironment
 from src.test.factories.factory_usuarios import crear_usuario_de_prueba
 from pydantic import ValidationError

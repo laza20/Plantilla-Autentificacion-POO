@@ -1,4 +1,4 @@
-from src.auth.domain.exceptions.domain import MailNoValido
+from src.auth.domain.exceptions.usuarios_exceptions import MailNoValido
 import re
 
 class MailPolicyService:

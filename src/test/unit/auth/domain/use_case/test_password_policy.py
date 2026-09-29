@@ -1,5 +1,5 @@
 import pytest
-from src.auth.domain.exceptions.domain import ContraseñaNoSegura
+from src.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura
 from src.auth.domain.services.password_policy import PasswordPolicyService
 
 
