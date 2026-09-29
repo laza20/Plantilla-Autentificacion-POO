@@ -3,7 +3,8 @@ from src.test.unit.auth.domain.service import (
     stub_mail_service,
     stub_password_service,
     stub_token_service,
-    stub_unit_of_work
+    stub_unit_of_work,
+    stub_auth_mail_content
 )
 from src.test.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
 from src.test.unit.auth.domain.fakes.fake_recuperar_contraseña_repository import FakeRecuperarContraseñaRepository
@@ -18,6 +19,7 @@ class SolicitudRecuperacionContraseñaTestEnvironment:
         self.unit_of_work_service = stub_unit_of_work.StubUnitOfWork()
         self.auth_user_repository = FakeUserRepository()
         self.mail_service = stub_mail_service.StubMailService()
+        self.mail_content = stub_auth_mail_content.StubAuthMailContent()
         self.token_service = stub_token_service.StubTokenService()
         self.settings = TestSettings()
 
@@ -27,6 +29,7 @@ class SolicitudRecuperacionContraseñaTestEnvironment:
             unit_of_work_service = self.unit_of_work_service,
             auth_user_repository = self.auth_user_repository,
             mail_service = self.mail_service,
+            mail_content = self.mail_content,
             token_service = self.token_service,
             settings = self.settings
         )

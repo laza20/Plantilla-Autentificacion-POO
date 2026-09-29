@@ -3,14 +3,15 @@ from src.test.unit.auth.domain.service import (
     stub_mail_service,
     stub_password_service,
     stub_token_service,
-    stub_unit_of_work
+    stub_unit_of_work,
+    stub_mail_policy_service, 
+    stub_auth_mail_content, 
+    stub_password_policy_service
 )
 from src.test.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
 from src.test.unit.auth.domain.fakes.fake_usuario_repository import FakeUsuarioRepository
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.test.config.config import TestSettings
-from src.test.unit.auth.domain.service import stub_password_policy_service
-from src.test.unit.auth.domain.service import stub_mail_policy_service
 
 
 class RegisterTestEnvironment:
@@ -20,6 +21,7 @@ class RegisterTestEnvironment:
         self.password_service = stub_password_service.StubPasswordService()
         self.token_service = stub_token_service.StubTokenService()
         self.mail_service = stub_mail_service.StubMailService()
+        self.mail_content = stub_auth_mail_content.StubAuthMailContent()
         self.image_service = stub_image_service.StubImageService()
         self.password_policy = stub_password_policy_service.StubPasswordPolicy()
         self.mail_policy = stub_mail_policy_service.StubMailPolicy()
@@ -32,6 +34,7 @@ class RegisterTestEnvironment:
             auth_user_repository=self.auth_user_repository,
             password_service=self.password_service,
             mail_service=self.mail_service,
+            mail_content = self.mail_content,
             image_service=self.image_service,
             token_service=self.token_service,
             password_policy=self.password_policy,
