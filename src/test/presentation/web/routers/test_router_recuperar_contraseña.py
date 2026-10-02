@@ -2,7 +2,7 @@ from src.main import app
 from src.test.presentation.web.overrides.override_crear import crear_override
 from src.test.presentation.web.stub.stub_recuperar_contraseña import StubRecuperarContraseñaUseCase
 from fastapi import status
-from src.container.providers import get_recuperar_contraseña_use_case, get_token_service
+from src.container.auth.providers import get_recuperar_contraseña_use_case, get_token_service
 from src.config.config import settings
 from src.auth.domain.exceptions.tokens import TokenNoDesactivado
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoModificado, UsuarioNoEncontrado

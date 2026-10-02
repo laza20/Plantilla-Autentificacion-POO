@@ -2,7 +2,7 @@ from src.main import app
 from src.test.presentation.web.overrides.override_crear import crear_override
 from src.test.presentation.web.stub.stub_verificar_token_recuperar_contraseña import StubVerificarTokenRecuperarContraseñaUseCase
 from fastapi import status
-from src.container.providers import get_verificar_token_recuperacion_contraseña_use_case
+from src.container.auth.providers import get_verificar_token_recuperacion_contraseña_use_case
 from src.config.config import settings
 from src.auth.domain.exceptions.tokens import TokenNoVerificado
 

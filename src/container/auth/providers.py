@@ -4,7 +4,7 @@ from fastapi import Request
 from src.auth.infrastructure.persistence.postgres.repository.auth_user_repository import AuthUserRepository
 from src.auth.infrastructure.persistence.postgres.repository.sesion_repository import SesionRepository
 from src.config.config import Settings, get_settings
-from src.container.auth_container import (
+from src.container.auth.auth_container import (
     ContainerRegister, ContainerLogin, 
     ContainerVerifyMail, ContainerLogout,
     ContainerRefreshToken, ContainerListarSesiones, ContainerEliminarSesiones,

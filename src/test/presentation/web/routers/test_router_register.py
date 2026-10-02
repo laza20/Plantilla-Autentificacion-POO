@@ -8,7 +8,7 @@ from src.domain.exceptions.domain import (
     )
 from src.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura, MailRepetido
 from fastapi import status
-from src.container.providers import get_register_use_case
+from src.container.auth.providers import get_register_use_case
 from src.config.config import settings
 import pytest
 from io import BytesIO

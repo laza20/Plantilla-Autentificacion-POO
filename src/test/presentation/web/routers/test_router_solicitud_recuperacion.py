@@ -3,7 +3,7 @@ from src.test.presentation.web.overrides.override_crear import crear_override
 from src.test.presentation.web.stub.stub_solicitud_recuperacion import StubSolicitudRecuperacionUseCase
 from src.auth.infrastructure.persistence.postgres.schemas.schemas_recepcion import SolicitudRecuperacionRequest
 from fastapi import status
-from src.container.providers import get_solicitud_recuperacion_contraseña_use_case
+from src.container.auth.providers import get_solicitud_recuperacion_contraseña_use_case
 from src.config.config import settings
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
 import pytest

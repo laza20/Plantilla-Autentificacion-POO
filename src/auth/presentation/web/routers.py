@@ -37,7 +37,7 @@ from src.auth.application.use_cases.recover_password.verificar_token import Veri
 from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
 
 #PROVIDERS
-from src.container.providers import (
+from src.container.auth.providers import (
     get_register_use_case, get_login_use_case, 
     get_verify_mail_use_case, get_user_validation_service, 
     get_logout_service, get_refresh_token_service, get_listar_sesiones_use_case,

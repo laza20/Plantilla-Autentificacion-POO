@@ -1,7 +1,7 @@
 from src.main import app
 from src.test.presentation.web.overrides.override_crear import crear_override
 from src.test.presentation.web.stub.stub_verify_mail import StubVerifyMailUseCase
-from src.container.providers import get_verify_mail_use_case
+from src.container.auth.providers import get_verify_mail_use_case
 from src.config.config import settings
 from src.auth.domain.exceptions.tokens import TokenInvalido
 import pytest
