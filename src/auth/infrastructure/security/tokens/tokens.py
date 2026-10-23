@@ -8,7 +8,7 @@ from src.auth.domain.exceptions.usuarios_exceptions import SinAccessToken
 from jose import JWTError
 from fastapi import Depends
 from src.config.config import get_settings, Settings
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import UserTokens
+from src.auth.domain.entities.entitie_auth_users import UserTokens
 import hashlib
 import secrets
 

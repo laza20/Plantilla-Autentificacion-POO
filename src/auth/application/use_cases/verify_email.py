@@ -1,4 +1,4 @@
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import UserTokens
+from src.auth.domain.entities.entitie_auth_users import UserTokens
 import logging
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol

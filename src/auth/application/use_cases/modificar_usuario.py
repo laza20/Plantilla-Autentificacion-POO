@@ -6,8 +6,7 @@ from src.shared.protocols.protocol_mail_service import MailProtocol
 from src.shared.protocols.protocol_image_service import ImageProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.services.mail_policy import MailPolicyService
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import (
-    AuthUser, AuthUserEmailValidation, UserModifyDTO)
+from src.auth.domain.entities.entitie_auth_users import AuthUser, AuthUserEmailValidation, UserModifyDTO
 from src.database.enums.estado_entidad import EstadoEntidad
 from pydantic import ValidationError
 from src.domain.exceptions.domain import LongitudExcedida

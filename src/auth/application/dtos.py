@@ -1,5 +1,5 @@
 from fastapi import Form, File, UploadFile
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import UserRegisterDTO, UserModifyDTO
+from src.auth.domain.entities.entitie_auth_users import UserRegisterDTO, UserModifyDTO
 
 def parse_usuario_form(
     email: str = Form(...),
