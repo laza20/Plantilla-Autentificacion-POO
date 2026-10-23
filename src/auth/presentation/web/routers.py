@@ -1,6 +1,7 @@
 #MODELS
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import (
-    LoginResponse, UserRegisterDTO, UsuarioCreado, UserModifyDTO)
+from src.auth.domain.entities.entitie_auth_users import (
+    LoginResponse, UserRegisterDTO, UsuarioCreado, UserModifyDTO
+)
 from src.auth.application.dtos import (parse_usuario_form, parse_modificar_usuario_form)
 
 #SCHEMAS
