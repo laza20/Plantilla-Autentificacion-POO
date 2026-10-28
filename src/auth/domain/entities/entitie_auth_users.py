@@ -40,6 +40,7 @@ class AuthUserNoTable:
 
 @dataclass
 class UsuarioCreado:
+    id_usuario: int
     email: str
     imagen_url: str | None = None
     created_at: date | None = None

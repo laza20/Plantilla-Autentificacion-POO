@@ -1,4 +1,4 @@
-from src.auth.domain.entities.entitie_auth_users import AuthUser, AuthUserNoTable, UsuarioCreado
+from src.auth.domain.entities.entitie_auth_users import AuthUser, AuthUserNoTable, UsuarioCreado, AuthUserEmailValidation
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser as AuthUserSqlModel
 
 
@@ -60,9 +60,15 @@ def a_modelo_desde_no_table(entidad: AuthUserNoTable) -> AuthUserSqlModel:
 
 def a_entidad_usuario_creado(modelo: AuthUserSqlModel) -> UsuarioCreado:
     return UsuarioCreado(
+        id_usuario=modelo.id_usuario,
         email=modelo.email,
         imagen_url=modelo.imagen_url,
         created_at=modelo.created_at,
-        is_verified=modelo.is_verified,
+        is_verified=modelo.is_verified
     )
 
+
+def a_entidad_email_validation(entidad:AuthUserEmailValidation) -> AuthUserSqlModel:
+    return UsuarioCreado(
+        email=entidad.email
+    )
