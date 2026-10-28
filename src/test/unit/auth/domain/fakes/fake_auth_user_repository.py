@@ -1,7 +1,10 @@
 from src.auth.domain.exceptions.usuarios_exceptions import (
     UsuarioNoEncontrado, UsuarioActivo, UsuarioNoEliminado, MailRepetido)
 from typing import Dict
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
+from dataclasses import replace
+from src.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad
+from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser as AuthUserSqlModel
 from src.database.enums.estado_entidad import EstadoEntidad
 from datetime import datetime, date
 
@@ -13,15 +16,17 @@ class FakeUserRepository:
         self.tiempo_eliminado = None
         self.activado = True
 
-    def insertar(self, usuario:AuthUser)-> AuthUser:
+    def insertar(self, usuario:AuthUser | AuthUserSqlModel)-> AuthUser:
         """
         Función para insertar un registro en la base de datos y retornar el usuario actualizado.
         """
+        if isinstance(usuario, AuthUserSqlModel):
+            usuario = a_entidad(usuario)
+
         if usuario.email in self._users:
             raise MailRepetido()
         
-        copia_usuario = usuario.model_copy()
-        copia_usuario.id_usuario = self._next_id
+        copia_usuario = replace(usuario, id_usuario=self._next_id)
         
         self._users[usuario.email] = copia_usuario
         self._next_id += 1
@@ -75,17 +80,18 @@ class FakeUserRepository:
     def obtener_por_email_sin_activar(self, email:str)-> (AuthUser | None):
         return self._users.get(email)
 
-    def modificar_usuario(self, usuario: AuthUser) -> (AuthUser | None):
-        if self.accion_realizada == False:
-            return False
+    def modificar_usuario(self, usuario: AuthUser) -> AuthUser | None:
+        if not self.accion_realizada:
+            return None
 
-        
-        usuario_db = self.obtener_por_id(usuario["id_usuario"])
+        usuario_db = self.obtener_por_id(usuario.id_usuario)
 
         if not usuario_db:
             return None
-        
-        self._users[usuario_db.email] = usuario
+
+        if usuario_db.email != usuario.email:
+            del self._users[usuario_db.email]
+        self._users[usuario.email] = usuario
         return usuario
 
     def eliminar_usuario(self, usuario: AuthUser) -> bool | None:

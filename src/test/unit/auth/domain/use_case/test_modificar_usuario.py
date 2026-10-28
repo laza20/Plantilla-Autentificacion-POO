@@ -1,16 +1,11 @@
 import pytest
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import (
-    AuthUser, AuthUserEmailValidation, UserModifyDTO)
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import UserModifyDTO
+from src.auth.domain.entities.entitie_auth_users import UserModifyDTO
 from io import BytesIO
 from fastapi import UploadFile
 from src.domain.exceptions.domain import LongitudExcedida
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoModificado, MailNoValido
 from src.test.fixtures.fixture_modificar_usuario import ModificarUsuarioTestEnvironment
 from src.test.factories.factory_usuarios import crear_usuario_de_prueba
-from pydantic import ValidationError
-
-
 
 @pytest.mark.asyncio
 async def test_debe_verificar_que_se_modifica_el_usuario():
@@ -24,6 +19,22 @@ async def test_debe_verificar_que_se_modifica_el_usuario():
         )
 
     assert usuario_creado != usuario_modificado
+
+
+@pytest.mark.asyncio
+async def test_un_dto_sin_campos_mantiene_el_usuario():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    usuario_modificado = await context.use_case().ejecutar(
+        id_usuario=usuario_creado.id_usuario,
+        usuario=UserModifyDTO(),
+        imagen=None,
+    )
+
+    assert usuario_modificado.email == usuario_creado.email
+    assert usuario_modificado.id_usuario == usuario_creado.id_usuario
+
 
 @pytest.mark.asyncio
 async def test_debe_modificar_un_mail_correctamente():

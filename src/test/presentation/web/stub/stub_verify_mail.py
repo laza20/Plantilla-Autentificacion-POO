@@ -1,4 +1,4 @@
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import UserTokens
+from src.auth.domain.entities.entitie_auth_users import UserTokens
 
 
 class StubVerifyMailUseCase:
