@@ -1,5 +1,6 @@
 from src.auth.infrastructure.persistence.postgres.models.models_usuario import Usuario
 from typing import Dict
+from dataclasses import replace
 
 
 class FakeUsuarioRepository:
@@ -13,7 +14,7 @@ class FakeUsuarioRepository:
         """
         Función para insertar un registro en la base de datos y retornar el usuario actualizado.
         """
-        copia_usuario = usuario.model_copy()
+        copia_usuario = replace(usuario)
         self._usuarios[usuario.id_usuario] = copia_usuario
         self.fue_llamado = True
         return copia_usuario
