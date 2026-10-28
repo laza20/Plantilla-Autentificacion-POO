@@ -1,4 +1,3 @@
-from fastapi import UploadFile
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
@@ -31,14 +30,13 @@ class EliminarUsuarioUseCase:
         usuario_id = self.token_service.get_user_id_from_eliminacion_token(token_hash)
 
         usuario_db = self.auth_user_repository.obtener_por_id(usuario_id)
-        usuario_db_copia = usuario_db.model_copy()
-        usuario_db_copia.updated_at = date.today()
-        usuario_db_copia.estado = EstadoEntidad.ELIMINADO
-        usuario_db_copia.eliminado_en = date.today()
+        usuario_db.updated_at = date.today()
+        usuario_db.estado = EstadoEntidad.ELIMINADO
+        usuario_db.eliminado_en = date.today()
 
         with self.unit_of_work_service:
-            resultado_eliminacion = self.auth_user_repository.eliminar_usuario(usuario_db_copia.model_dump())
-            self.sesion_repository.eliminar_todas_las_sesiones_de_un_usuario(id_usuario=usuario_db_copia.id_usuario)
+            resultado_eliminacion = self.auth_user_repository.eliminar_usuario(usuario_db)
+            self.sesion_repository.eliminar_todas_las_sesiones_de_un_usuario(id_usuario=usuario_db.id_usuario)
             if not resultado_eliminacion:
                 self._mostrar_errores()
 
