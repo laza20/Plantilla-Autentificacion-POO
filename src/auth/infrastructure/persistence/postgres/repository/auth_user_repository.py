@@ -5,6 +5,7 @@ from src.auth.domain.exceptions.usuarios_exceptions import MailRepetido
 from src.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad, a_modelo
 from src.auth.domain.entities.entitie_auth_users import AuthUser
 from datetime import datetime
+from dataclasses import asdict
 
 class AuthUserRepository:
     def __init__(self, session: Session):
@@ -99,25 +100,27 @@ class AuthUserRepository:
         return a_entidad(result) if result else None
 
 
-    def modificar_usuario(self, usuario:dict)-> bool | None: 
+    def modificar_usuario(self, usuario: AuthUser) -> AuthUser | None:
+        modelo = a_modelo(usuario)
         statement = (
             update(AuthUserSqlModel)
             .where(
-                AuthUserSqlModel.id_usuario == usuario["id_usuario"]
+                AuthUserSqlModel.id_usuario == usuario.id_usuario
             )
-            .values(**usuario)
+            .values(**modelo.model_dump(exclude={"id_usuario"}))
         )
 
         resultado = self.session.exec(statement)
-        return resultado.rowcount > 0
+        return a_entidad(modelo) if resultado.rowcount > 0 else None
 
     def eliminar_usuario(self, usuario:AuthUser)-> bool | None:
+        dict_usuario = asdict(usuario)
         statement = (
             update(AuthUserSqlModel)
             .where(
-                AuthUserSqlModel.id_usuario == usuario["id_usuario"]
+                AuthUserSqlModel.id_usuario == dict_usuario["id_usuario"]
             )
-            .values(**usuario)
+            .values(**dict_usuario)
         )
 
         resultado = self.session.exec(statement)
@@ -133,7 +136,7 @@ class AuthUserRepository:
 
 
     def obtener_usuario_eliminado_por_id(self, id_usuario:int)->AuthUser | None:
-        statement = select(AuthUser).where(
+        statement = select(AuthUserSqlModel).where(
             AuthUserSqlModel.id_usuario == id_usuario, 
             AuthUserSqlModel.estado == EstadoEntidad.ELIMINADO
         )
