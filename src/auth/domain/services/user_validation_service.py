@@ -2,6 +2,7 @@ from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.infrastructure.security.security import Settings
+from src.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad_usuario_creado
 
 class UserValidationService:
     def __init__(
@@ -25,6 +26,6 @@ class UserValidationService:
             raise UsuarioNoEncontrado("Usuario no encontrado")
         
     def get_user(self, current_user:AuthUser)-> AuthUser:
-        return self.auth_user_repository.obtener_por_id(current_user.id_usuario)
+        return a_entidad_usuario_creado(self.auth_user_repository.obtener_por_id(current_user.id_usuario))
 
 
