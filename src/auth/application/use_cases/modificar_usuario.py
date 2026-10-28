@@ -5,15 +5,19 @@ from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.shared.protocols.protocol_mail_service import MailProtocol
 from src.shared.protocols.protocol_image_service import ImageProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad_usuario_creado
 from src.auth.domain.services.mail_policy import MailPolicyService
-from src.auth.domain.entities.entitie_auth_users import AuthUser, AuthUserEmailValidation, UserModifyDTO
+from src.auth.domain.entities.entitie_auth_users import (
+    EMAIL_MAX_LENGTH,
+    AuthUser,
+    UserModifyDTO,
+)
 from src.database.enums.estado_entidad import EstadoEntidad
-from pydantic import ValidationError
 from src.domain.exceptions.domain import LongitudExcedida
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoModificado
 from src.auth.infrastructure.security.security import Settings
 from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
-
+from dataclasses import replace
 
 
 class ModificarUsuarioUseCase:
@@ -37,39 +41,38 @@ class ModificarUsuarioUseCase:
         self.settings = settings
         self.unit_of_work_service = unit_of_work_service
 
-    async def ejecutar(self, id_usuario:str, usuario:UserModifyDTO, imagen:UploadFile | None) -> AuthUser:
+    async def ejecutar(self, id_usuario:int, usuario:UserModifyDTO | None, imagen:UploadFile | None) -> AuthUser:
         mail_modificado = False
 
         usuario_db = self.auth_user_repository.obtener_por_id(id_usuario=id_usuario)
-        if usuario:
-            copia_usuario = usuario.model_dump()
-            objeto_usuario_modificacion = self._normalizar_registro_a_cargar(copia_usuario)
-        else:
-            objeto_usuario_modificacion = usuario_db.model_copy()
-        
         if usuario_db is None:
             raise UsuarioNoEncontrado("El usuario no fue encontrado")
 
-        if usuario_db.email != objeto_usuario_modificacion.email and objeto_usuario_modificacion.email is not None:
-            mail_modificado = True
-            self.mail_policy.validar(objeto_usuario_modificacion.email)
-            usuario_db.estado = EstadoEntidad.PENDIENTE
+        cambios = {}
+        if usuario is not None and usuario.email is not None:
+            email = self._normalizar_email(usuario.email)
 
-        objeto_modificado = usuario_db.model_copy(update=objeto_usuario_modificacion.model_dump(exclude_none=True))
+            if usuario_db.email != email:
+                self.mail_policy.validar(email)
+                cambios["email"] = email
+                cambios["estado"] = EstadoEntidad.PENDIENTE
+                mail_modificado = True
+
+        objeto_modificado = replace(usuario_db, **cambios)
 
         if imagen is not None:
             objeto_modificado = self.image_service.insertar_imagen(objeto_modificado, imagen, servicio="usuarios")
 
         objeto_modificado.updated_at = date.today()
         with self.unit_of_work_service:
-            usuario_auth= self.auth_user_repository.modificar_usuario(usuario=objeto_modificado.model_dump())
+            usuario_auth = self.auth_user_repository.modificar_usuario(usuario=objeto_modificado)
             if not usuario_auth:
                 raise UsuarioNoModificado("El usuario no pudo ser modificado")
 
         if mail_modificado:
             await self._enviar_mail(objeto_modificado)
 
-        return objeto_modificado
+        return a_entidad_usuario_creado(objeto_modificado)
 
     async def _enviar_mail(self, usuario:AuthUser)->None:
         token_verificacion = self.token_service.create_verificacion_token(str(usuario.id_usuario))
@@ -82,31 +85,13 @@ class ModificarUsuarioUseCase:
         )  
             
 
-    def _normalizar_registro_a_cargar(self, usuario: dict) -> AuthUserEmailValidation:
-        """
-        Funcion encargada de normalizar los datos del usuario antes de ser insertados en la base de datos.
-        - Datos limpios debe utilizarse para los datos str con una longitud maxima definida.
-        """
-        try:
-            dict_modificado = usuario.copy()
-            for clave, valor in usuario.items():
-                if valor is None:
-                    continue
-                if isinstance(valor, str) and clave == 'email':
-                    dict_modificado[clave] = valor.strip().lower()
-
-            usuario_normalizado = AuthUserEmailValidation(**dict_modificado)
-            return usuario_normalizado
-
-        except ValidationError as e:
-            error_detalle = e.errors()[0]
-            campo_afectado = error_detalle.get("loc", ["campo"])[0]
-            
-            if error_detalle.get("type") == "string_too_long":
-                raise LongitudExcedida(
-                    message=f"El campo '{campo_afectado}' excede el tamaño máximo permitido."
-                )
-            raise e
+    def _normalizar_email(self, email: str) -> str:
+        email_normalizado = email.strip().lower()
+        if len(email_normalizado) > EMAIL_MAX_LENGTH:
+            raise LongitudExcedida(
+                message=f"El campo 'email' excede el tamaño máximo permitido."
+            )
+        return email_normalizado
         
     def _generar_correo_verificacion(self, token: str) -> str:
         url = (
@@ -118,4 +103,3 @@ class ModificarUsuarioUseCase:
             url=url,
             nombre_proyecto=self.settings.NOMBRE_APP,
         )
-
