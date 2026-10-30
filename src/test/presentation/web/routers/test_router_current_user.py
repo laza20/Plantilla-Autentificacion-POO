@@ -1,7 +1,7 @@
 import pytest
 from src.test.presentation.web.overrides.override_crear import crear_override
 from src.test.presentation.web.stub.stub_current_user import StubCurrentUserUseCase
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
+from src.auth.domain.entities.entitie_auth_users import UsuarioCreado
 from src.container.auth.providers import get_user_validation_service, get_current_user
 from fastapi import status
 from src.config.config import settings
@@ -9,11 +9,10 @@ from src.main import app
 
 
 def test_ver_usuario_correctamente(test_client):
-    usuario_esperado = AuthUser(
+    usuario_esperado = UsuarioCreado(
             **{
                 "id_usuario":1,
-                "email": "test@test.com",
-                "password": "password@123",
+                "email": "test@test.com"
             }
         )
 

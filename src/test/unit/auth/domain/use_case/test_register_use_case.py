@@ -63,7 +63,9 @@ async def test_debe_hashear_la_contraseña_del_usuario():
         imagen=None
     )
 
-    assert usuario_creado.password == "hashed_Password123!"
+    usuario = context.auth_user_repository.obtener_por_id(usuario_creado.id_usuario)
+
+    assert usuario.password == "hashed_Password123!"
 
 @pytest.mark.asyncio
 async def test_no_debe_registrar_un_email_duplicado():

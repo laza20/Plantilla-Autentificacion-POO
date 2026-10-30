@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Literal
 from src.database.enums.estado_entidad import EstadoEntidad
+from src.domain.exceptions.domain import LongitudExcedida
 
 
 EMAIL_MAX_LENGTH = 255
@@ -22,7 +23,7 @@ class AuthUser:
 
     def __post_init__(self) -> None:
         if len(self.email) > EMAIL_MAX_LENGTH:
-            raise ValueError(f"email excede {EMAIL_MAX_LENGTH} caracteres")
+            raise LongitudExcedida(f"email excede {EMAIL_MAX_LENGTH} caracteres")
 
 
 @dataclass
@@ -40,7 +41,7 @@ class AuthUserNoTable:
 
 @dataclass
 class UsuarioCreado:
-    id_usuario: int
+    id_usuario: int 
     email: str
     imagen_url: str | None = None
     created_at: date | None = None
