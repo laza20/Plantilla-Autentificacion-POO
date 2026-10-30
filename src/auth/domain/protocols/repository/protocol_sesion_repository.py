@@ -1,5 +1,5 @@
 from typing import Protocol, runtime_checkable
-from src.auth.infrastructure.persistence.postgres.models.models_sesiones import SesionesVisual as Sesiones
+from src.auth.domain.entities.entitie_sesiones import Sesion
 
 
 @runtime_checkable
@@ -30,7 +30,7 @@ class TokenRepositoryProtocol(Protocol):
     def listar_sesiones(
         self,
         id_usuario: int
-    ) -> list[Sesiones]:
+    ) -> list[Sesion]:
         """Devuelve todas las sesiones registradas de un usuario.
 
         Args:

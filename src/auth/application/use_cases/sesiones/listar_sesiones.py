@@ -1,6 +1,6 @@
 from src.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
-from src.auth.infrastructure.persistence.postgres.models.models_sesiones import ListaSesiones, SesionesVisual
-
+from src.auth.domain.entities.entitie_sesiones import ListaSesiones, SesionVisual, Sesion
+from src.auth.infrastructure.persistence.postgres.mappers.mapper_sesiones import a_entidad_no_table
 
 class ListarSesionesUseCase:
     def __init__(
@@ -13,10 +13,6 @@ class ListarSesionesUseCase:
         sesiones = self.sesion_repository.listar_sesiones(id_usuario=id_usuario)
         return self._transformar_sesiones(sesiones, ip)
 
-    def _transformar_sesiones(self, sesiones: list[SesionesVisual], ip:str) -> ListaSesiones:
-        sesiones_transformadas = [SesionesVisual(**s.model_dump()) for s in sesiones]
-        for s in sesiones_transformadas:
-            if s.ip == ip:
-                s.es_actual = True
-        return ListaSesiones(sesiones=sesiones_transformadas)
-
+    def _transformar_sesiones(self, sesiones: list[Sesion], ip: str) -> ListaSesiones:
+        sesiones_visuales = [a_entidad_no_table(s, es_actual=(s.ip == ip)) for s in sesiones]
+        return ListaSesiones(sesiones=sesiones_visuales)
