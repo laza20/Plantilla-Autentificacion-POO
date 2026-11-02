@@ -1,7 +1,6 @@
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
 from src.domain.exceptions.domain import ErrorCreacion
 from src.auth.infrastructure.security.security import Settings
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoEliminado, PeriodoReactivacionFinalizado
@@ -22,7 +21,7 @@ class ReactivarUsuarioUseCase:
         self.settings = settings
         self.unit_of_work_service = unit_of_work_service
 
-    def ejecutar(self, token:str) -> AuthUser:
+    def ejecutar(self, token:str) -> dict:
 
         id_usuario = self.token_service.get_user_id_from_reactivacion_token(token)
         usuario_db = self.auth_user_repository.obtener_usuario_eliminado_por_id(id_usuario)

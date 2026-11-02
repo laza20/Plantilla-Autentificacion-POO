@@ -9,13 +9,12 @@ from src.auth.domain.protocols.service.protocol_token_service import TokenProtoc
 from src.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.domain.services.mail_policy import MailPolicyService
+from src.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad_usuario_creado_desde_entidad
 from src.auth.domain.entities.entitie_auth_users import AuthUser, UserRegisterDTO
 from src.auth.domain.entities.entitie_usuario import Usuario
 from pydantic import ValidationError
 from src.domain.exceptions.domain import LongitudExcedida, SinCargas, ErrorCreacion
 from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
-from src.auth.infrastructure.persistence.postgres.mappers.mapper_usuario import a_entidad
-from src.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad_usuario_creado
 from src.auth.infrastructure.security.security import Settings
 
 
@@ -77,7 +76,7 @@ class RegisterUseCase:
             asunto = "Activa tu cuenta"
         )   
 
-        return a_entidad_usuario_creado(usuario_auth)
+        return a_entidad_usuario_creado_desde_entidad(usuario_auth)
 
 
     def _mostrar_errores(self, usuario_auth, usuario):
@@ -123,5 +122,5 @@ class RegisterUseCase:
         """
         Funcion encargada de preparar el objeto Usuario para ser insertado en la base de datos.
         """
-        return a_entidad(usuario)
+        return usuario
 
