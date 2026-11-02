@@ -245,7 +245,7 @@ async def verificar_token_recuperacion(
 
 
 @router.patch("/modificar/password", status_code=status.HTTP_202_ACCEPTED)
-@limiter.limit("1/hour")
+@limiter.limit("3/hour")
 async def modificar_password(
     request: Request,
     body: ModificarPassword,
