@@ -1,4 +1,4 @@
-from src.auth.infrastructure.persistence.postgres.models.models_history_password import HistoryPassword
+from src.auth.infrastructure.persistence.postgres.models.models_history_password import HistoryPassword as HistoryPasswordSqlModel
 from sqlalchemy.orm import Session
 from datetime import datetime
 
@@ -14,7 +14,7 @@ class HistoryPasswordRepository:
         password_hash_anterior:str, 
         fecha_cambio:datetime)->bool:
 
-        history_password = HistoryPassword(
+        history_password = HistoryPasswordSqlModel(
             id_usuario=id_usuario,
             fecha_cambio=fecha_cambio,
             password_hash_anterior=password_hash_anterior

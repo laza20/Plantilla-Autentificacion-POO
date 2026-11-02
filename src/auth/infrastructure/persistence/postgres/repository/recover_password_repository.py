@@ -1,4 +1,6 @@
-from src.auth.infrastructure.persistence.postgres.models.models_recover_password import RecoverPassword
+from src.auth.infrastructure.persistence.postgres.models.models_recover_password import RecoverPassword as RecoverPasswordSqlModel
+from src.auth.domain.entities.entitie_recover_password import RecoverPassword
+from src.auth.infrastructure.persistence.postgres.mappers.mapper_recover_password import a_entidad
 from sqlalchemy.orm import Session
 from sqlmodel import update, select
 from datetime import datetime
@@ -11,10 +13,10 @@ class RecoverPasswordRepository:
 
     def invalidar_tokens_anteriores(self, id_usuario: int) -> bool:
         statement = (
-            update(RecoverPassword)
+            update(RecoverPasswordSqlModel)
             .where(
-                RecoverPassword.id_usuario == id_usuario,
-                RecoverPassword.usado == False
+                RecoverPasswordSqlModel.id_usuario == id_usuario,
+                RecoverPasswordSqlModel.usado == False
             )
             .values(usado=True)
         )
@@ -29,7 +31,7 @@ class RecoverPasswordRepository:
             token_hash:str,
             expira_en:datetime )->bool:
 
-        recover_password = RecoverPassword(
+        recover_password = RecoverPasswordSqlModel(
             id_usuario=id_usuario,
             token_hash=token_hash,
             expira_en=expira_en
@@ -43,9 +45,9 @@ class RecoverPasswordRepository:
             tiempo_actual:datetime,
             token_hash:str)->RecoverPassword | bool:
 
-        statement = select(RecoverPassword).where(
-            RecoverPassword.token_hash == token_hash,
-            RecoverPassword.usado == False
+        statement = select(RecoverPasswordSqlModel).where(
+            RecoverPasswordSqlModel.token_hash == token_hash,
+            RecoverPasswordSqlModel.usado == False
         )
 
         recover_password = self.session.exec(statement).first()
@@ -56,7 +58,7 @@ class RecoverPasswordRepository:
         if recover_password.expira_en < tiempo_actual:
             return False
 
-        return recover_password
+        return a_entidad(recover_password)
 
     def desactivar_token_utilizado(self, id_usuario: int)->bool:
         resultado = self.invalidar_tokens_anteriores(id_usuario=id_usuario)
