@@ -1,5 +1,4 @@
 from sqlmodel import Session
-from src.auth.infrastructure.persistence.postgres.models.models_usuario import Usuario as UsuarioSqlModel
 from src.auth.infrastructure.persistence.postgres.mappers.mapper_usuario import a_entidad, a_modelo
 from src.auth.domain.entities.entitie_usuario import Usuario
 
