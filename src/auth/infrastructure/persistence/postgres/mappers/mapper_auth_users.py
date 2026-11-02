@@ -67,6 +67,15 @@ def a_entidad_usuario_creado(modelo: AuthUserSqlModel) -> UsuarioCreado:
         is_verified=modelo.is_verified
     )
 
+def a_entidad_usuario_creado_desde_entidad(entidad: AuthUser) -> UsuarioCreado:
+    return UsuarioCreado(
+        id_usuario=entidad.id_usuario,
+        email=entidad.email,
+        imagen_url=entidad.imagen_url,
+        created_at=entidad.created_at,
+        is_verified=entidad.is_verified
+    )
+
 
 def a_entidad_email_validation(entidad:AuthUserEmailValidation) -> AuthUserSqlModel:
     return UsuarioCreado(
