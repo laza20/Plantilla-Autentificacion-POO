@@ -136,7 +136,8 @@ def get_register_use_case(
 ) -> RegisterUseCase:
 
     return ContainerRegister(
-        settings=settings,
+        base_de_datos_url=settings.BASE_URL,
+        nombre_app=settings.NOMBRE_APP,
         auth_user_repository=auth_user_repository,
         token_service=token_service,
         password_service=password_service,
@@ -230,7 +231,9 @@ def get_solicitud_recuperacion_contraseña_use_case(
         mail_service = mail_service,
         mail_content = mail_content,
         token_service=token_service,
-        settings=settings
+        base_de_datos_url=settings.BASE_URL,
+        nombre_app=settings.NOMBRE_APP,
+        verificar_mail_recuperacion=timedelta(minutes=settings.VERIFY_MAIL_RECUPERACION)
     ).solicitud_recuperacion_use_case
 
 
@@ -276,7 +279,8 @@ def get_reenviar_mail_use_case(
             mail_content = mail_content,
             token_service = token_service,
             mail_policy = mail_policy,
-            settings = settings
+            base_de_datos_url=settings.BASE_URL,
+            nombre_app=settings.NOMBRE_APP,
     ).reenviar_mail_use_case
 
 def get_modificar_usuario_use_case(
@@ -297,7 +301,8 @@ def get_modificar_usuario_use_case(
         image_service=image_service,
         token_service=token_service,
         mail_policy=mail_policy,
-        settings=settings,
+        base_de_datos_url=settings.BASE_URL,
+        nombre_app=settings.NOMBRE_APP,
         unit_of_work_service=unit_of_work_service
     ).modificar_usuario_use_case
 
@@ -314,7 +319,8 @@ def get_solicitud_eliminacion_usuario_use_case(
         mail_service=mail_service,
         mail_content=mail_content,
         token_service=token_service,
-        settings=settings
+        base_de_datos_url=settings.BASE_URL,
+        nombre_app=settings.NOMBRE_APP
     ).solicitud_eliminacion_usuario_use_case
 
 
@@ -346,7 +352,8 @@ def get_solicitud_reactivacion_cuenta_use_case(
             mail_content = mail_content,
             token_service = token_service,
             mail_policy = mail_policy,
-            settings = settings
+            base_de_datos_url=settings.BASE_URL,
+            nombre_app=settings.NOMBRE_APP
     ).solicitud_reactivacion_cuenta_use_case
 
 def get_reactivar_cuenta_use_case(

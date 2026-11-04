@@ -5,7 +5,6 @@ from src.auth.domain.protocols.service.protocol_token_service import TokenProtoc
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
 from src.shared.protocols.protocol_mail_service import MailProtocol
 from datetime import datetime, timezone, timedelta
-from src.auth.infrastructure.security.security import Settings
 from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
 
 
@@ -18,7 +17,9 @@ class SolicitudRecuperacionUseCase:
         mail_service:MailProtocol,
         mail_content: AuthMailContent,
         token_service: TokenProtocol,
-        settings: Settings
+        base_de_datos_url: str,
+        nombre_app:str,
+        verificar_mail_recuperacion: timedelta
         ):
         self.recuperar_contraseña_repository = recuperar_contraseña_repository
         self.unit_of_work_service = unit_of_work_service
@@ -26,8 +27,9 @@ class SolicitudRecuperacionUseCase:
         self.mail_service = mail_service
         self.mail_content = mail_content
         self.token_service = token_service
-        self.settings = settings
-
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
+        self.verificar_mail_recuperacion = verificar_mail_recuperacion
 
     async def ejecutar(self, email):
         usuario_encontrado = self.auth_user_repository.obtener_por_email(email)
@@ -35,7 +37,7 @@ class SolicitudRecuperacionUseCase:
         if not usuario_encontrado:
             raise UsuarioNoEncontrado("Usuario no encontrado en la base de datos")
 
-        expira = datetime.now(timezone.utc) + timedelta(minutes=self.settings.VERIFY_MAIL_RECUPERACION)
+        expira = datetime.now(timezone.utc) + self.verificar_mail_recuperacion
 
         token_recuperacion = self.token_service.generar_token_plano()
         token_hash = self.token_service.hash_token(token_recuperacion)
@@ -68,11 +70,11 @@ class SolicitudRecuperacionUseCase:
 
     def _generar_correo_recuperacion(self, token: str) -> str:
         url = (
-            f"{self.settings.BASE_URL}/"
-            f"{self.settings.NOMBRE_APP}/usuarios/recuperar/password/{token}"
+            f"{self.base_de_datos_url}/"
+            f"{self.nombre_app}/usuarios/recuperar/password/{token}"
         )
 
         return self.mail_content.generar_correo_recuperacion(
             url=url,
-            nombre_proyecto=self.settings.NOMBRE_APP,
+            nombre_proyecto=self.nombre_app,
         )

@@ -17,7 +17,8 @@ class ReenviarMailTestEnvironment:
         self.mail_content = stub_auth_mail_content.StubAuthMailContent()
         self.token_service = stub_token_service.StubTokenService()
         self.mail_policy = stub_mail_policy_service.StubMailPolicy()
-        self.settings = TestSettings()
+        self.base_de_datos_url = TestSettings().BASE_URL
+        self.nombre_app = TestSettings().NOMBRE_APP
 
     def use_case(self):
         return ReenviarMailUseCase(
@@ -26,5 +27,6 @@ class ReenviarMailTestEnvironment:
             mail_content = self.mail_content,
             token_service=self.token_service,
             mail_policy=self.mail_policy,
-            settings=self.settings
+            base_de_datos_url=self.base_de_datos_url,
+            nombre_app=self.nombre_app
         )

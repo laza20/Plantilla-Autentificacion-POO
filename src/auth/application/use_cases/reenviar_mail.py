@@ -2,7 +2,6 @@ from src.auth.domain.protocols.repository.protocol_auth_user_repository import A
 from src.shared.protocols.protocol_mail_service import MailProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.services.mail_policy import MailPolicyService
-from src.auth.infrastructure.security.security import Settings
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
 from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
 
@@ -14,14 +13,16 @@ class ReenviarMailUseCase:
         mail_content: AuthMailContent,
         token_service: TokenProtocol,
         mail_policy : MailPolicyService,
-        settings : Settings
+        base_de_datos_url: str,
+        nombre_app:str
     ):
         self.auth_user_repository = auth_user_repository
         self.mail_service = mail_service
         self.mail_content = mail_content
         self.token_service = token_service
         self.mail_policy = mail_policy
-        self.settings = settings
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
 
     async def ejecutar(self, mail_usuario:str) -> dict:
         self.mail_policy.validar(mail_usuario)
@@ -43,13 +44,13 @@ class ReenviarMailUseCase:
         
     def _generar_correo_verificacion(self, token: str) -> str:
         url = (
-            f"{self.settings.BASE_URL}/"
-            f"{self.settings.NOMBRE_APP}/usuarios/verificar/{token}"
+            f"{self.base_de_datos_url}/"
+            f"{self.nombre_app}/usuarios/verificar/{token}"
         )
 
         return self.mail_content.generar_correo_verificacion(
             url=url,
-            nombre_proyecto=self.settings.NOMBRE_APP,
+            nombre_proyecto=self.nombre_app,
         )
 
 

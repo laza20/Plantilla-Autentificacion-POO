@@ -15,7 +15,6 @@ from src.auth.domain.entities.entitie_auth_users import (
 from src.database.enums.estado_entidad import EstadoEntidad
 from src.domain.exceptions.domain import LongitudExcedida
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoModificado
-from src.auth.infrastructure.security.security import Settings
 from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
 from dataclasses import replace
 
@@ -29,7 +28,8 @@ class ModificarUsuarioUseCase:
         image_service: ImageProtocol,
         token_service: TokenProtocol,
         mail_policy : MailPolicyService,
-        settings : Settings,
+        base_de_datos_url: str,
+        nombre_app: str,
         unit_of_work_service: UnitOfWorkProtocol
     ):
         self.auth_user_repository = auth_user_repository
@@ -38,7 +38,8 @@ class ModificarUsuarioUseCase:
         self.image_service = image_service
         self.token_service = token_service
         self.mail_policy = mail_policy
-        self.settings = settings
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
         self.unit_of_work_service = unit_of_work_service
 
     async def ejecutar(self, id_usuario:int, usuario:UserModifyDTO | None, imagen:UploadFile | None) -> AuthUser:
@@ -95,11 +96,11 @@ class ModificarUsuarioUseCase:
         
     def _generar_correo_verificacion(self, token: str) -> str:
         url = (
-            f"{self.settings.BASE_URL}/"
-            f"{self.settings.NOMBRE_APP}/usuarios/verificar/{token}"
+            f"{self.base_de_datos_url}/"
+            f"{self.nombre_app}/usuarios/verificar/{token}"
         )
 
         return self.mail_content.generar_correo_verificacion(
             url=url,
-            nombre_proyecto=self.settings.NOMBRE_APP,
+            nombre_proyecto=self.nombre_app,
         )

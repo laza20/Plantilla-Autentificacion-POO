@@ -62,7 +62,8 @@ class ContainerListarSesiones:
 class ContainerRegister:
     def __init__(
         self,
-        settings: Settings,
+        base_de_datos_url: str,
+        nombre_app:str,
         auth_user_repository: AuthUserRepositoryProtocol,
         token_service: TokenProtocol,
         password_service: PasswordProtocol, 
@@ -74,7 +75,8 @@ class ContainerRegister:
         usuario_repository: UsuarioRepositoryProtocol,
         unit_of_work_service: UnitOfWorkProtocol,
     ):
-        self.settings = settings
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
         self.auth_user_repository = auth_user_repository
         self.token_service = token_service
         self.password_service = password_service
@@ -89,7 +91,8 @@ class ContainerRegister:
     def register_use_case(self) -> RegisterUseCase:
 
         return RegisterUseCase(
-            settings=self.settings,
+            base_de_datos_url=self.base_de_datos_url,
+            nombre_app=self.nombre_app,
             auth_user_repository=self.auth_user_repository,
             password_service=self.password_service,
             password_policy=self.password_policy,
@@ -190,7 +193,9 @@ class ContainerSolicitudRecuperacion:
         mail_service: MailProtocol,
         mail_content: AuthMailContent,
         token_service: TokenProtocol,
-        settings: Settings
+        base_de_datos_url: str,
+        nombre_app:str,
+        verificar_mail_recuperacion:timedelta
     ):
 
         self.recuperar_contraseña_repository = recuperar_contraseña_repository
@@ -199,7 +204,9 @@ class ContainerSolicitudRecuperacion:
         self.mail_service = mail_service
         self.mail_content = mail_content
         self.token_service = token_service
-        self.settings = settings
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
+        self.verificar_mail_recuperacion = verificar_mail_recuperacion
 
     @property
     def solicitud_recuperacion_use_case(self) -> SolicitudRecuperacionUseCase:
@@ -211,7 +218,9 @@ class ContainerSolicitudRecuperacion:
             mail_service = self.mail_service, 
             mail_content = self.mail_content,
             token_service = self.token_service,
-            settings=self.settings
+            base_de_datos_url=self.base_de_datos_url,
+            nombre_app=self.nombre_app,
+            verificar_mail_recuperacion=self.verificar_mail_recuperacion
         )
 
 
@@ -268,14 +277,16 @@ class ContainerReenviarMailUseCase:
         mail_content: AuthMailContent,
         token_service: TokenProtocol,
         mail_policy : MailPolicyService,
-        settings: Settings
+        base_de_datos_url: str,
+        nombre_app:str
     ):
         self.auth_user_repository = auth_user_repository
         self.mail_service = mail_service
         self.mail_content = mail_content
         self.token_service = token_service
         self.mail_policy = mail_policy
-        self.settings = settings
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
     @property
     def reenviar_mail_use_case(self) -> ReenviarMailUseCase:
         return ReenviarMailUseCase(
@@ -284,7 +295,8 @@ class ContainerReenviarMailUseCase:
             mail_content = self.mail_content,
             token_service = self.token_service,
             mail_policy = self.mail_policy,
-            settings = self.settings
+            base_de_datos_url=self.base_de_datos_url,
+            nombre_app=self.nombre_app
         )
 
 
@@ -299,7 +311,8 @@ class ContainerModificarUsuario:
         image_service: ImageProtocol,
         token_service: TokenProtocol,
         mail_policy : MailPolicyService,
-        settings: Settings,
+        base_de_datos_url: str,
+        nombre_app:str,
         unit_of_work_service: UnitOfWorkProtocol,
     ):
         self.auth_user_repository = auth_user_repository
@@ -308,7 +321,8 @@ class ContainerModificarUsuario:
         self.image_service = image_service
         self.token_service = token_service
         self.mail_policy = mail_policy
-        self.settings = settings
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
         self.unit_of_work_service = unit_of_work_service
     @property
     def modificar_usuario_use_case(self) -> ModificarUsuarioUseCase:
@@ -320,7 +334,8 @@ class ContainerModificarUsuario:
             image_service=self.image_service,
             token_service=self.token_service,
             mail_policy=self.mail_policy,
-            settings=self.settings,
+            base_de_datos_url=self.base_de_datos_url,
+            nombre_app=self.nombre_app,
             unit_of_work_service=self.unit_of_work_service
         )
 
@@ -332,13 +347,15 @@ class ContainerSolicitudEliminacionUsuario:
         mail_service: MailProtocol,
         mail_content: AuthMailContent,
         token_service: TokenProtocol,
-        settings: Settings
+        base_de_datos_url: str,
+        nombre_app:str,
     ):
         self.auth_user_repository = auth_user_repository
         self.mail_service = mail_service
         self.mail_content = mail_content
         self.token_service = token_service
-        self.settings = settings
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
     @property
     def solicitud_eliminacion_usuario_use_case(self) -> SolicitudEliminacionUsuarioUseCase:
 
@@ -347,7 +364,8 @@ class ContainerSolicitudEliminacionUsuario:
             mail_service=self.mail_service,
             mail_content=self.mail_content,
             token_service=self.token_service,
-            settings=self.settings
+            base_de_datos_url=self.base_de_datos_url,
+            nombre_app=self.nombre_app
         )
 
 
@@ -382,14 +400,16 @@ class ContainerSolicitudReactivacionCuentaUseCase:
         mail_content: AuthMailContent,
         token_service: TokenProtocol,
         mail_policy : MailPolicyService,
-        settings: Settings
+        base_de_datos_url: str,
+        nombre_app:str
     ):
         self.auth_user_repository = auth_user_repository
         self.mail_service = mail_service
         self.mail_content = mail_content
         self.token_service = token_service
         self.mail_policy = mail_policy
-        self.settings = settings
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
     @property
     def solicitud_reactivacion_cuenta_use_case(self) -> EnviarMailReactivacionUseCase:
         return EnviarMailReactivacionUseCase(
@@ -398,7 +418,8 @@ class ContainerSolicitudReactivacionCuentaUseCase:
             mail_content = self.mail_content,
             token_service = self.token_service,
             mail_policy = self.mail_policy,
-            settings = self.settings
+            base_de_datos_url = self.base_de_datos_url,
+            nombre_app = self.nombre_app
         )
 
 

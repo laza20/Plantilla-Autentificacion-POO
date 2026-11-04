@@ -12,7 +12,8 @@ class SolicitudEliminacionUsuarioTestEnvironment:
         self.mail_service = stub_mail_service.StubMailService()
         self.mail_content = stub_auth_mail_content.StubAuthMailContent()
         self.token_service = stub_token_service.StubTokenService()
-        self.settings = TestSettings()
+        self.base_de_datos_url = TestSettings().BASE_URL
+        self.nombre_app = TestSettings().NOMBRE_APP
 
     def use_case(self):
         return SolicitudEliminacionUsuarioUseCase(
@@ -20,5 +21,6 @@ class SolicitudEliminacionUsuarioTestEnvironment:
             mail_service=self.mail_service,
             mail_content=self.mail_content,
             token_service=self.token_service,
-            settings=self.settings
+            base_de_datos_url=self.base_de_datos_url,
+            nombre_app=self.nombre_app
         )

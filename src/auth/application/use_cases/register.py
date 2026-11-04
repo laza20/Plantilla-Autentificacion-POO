@@ -15,7 +15,6 @@ from src.auth.domain.entities.entitie_usuario import Usuario
 from pydantic import ValidationError
 from src.domain.exceptions.domain import LongitudExcedida, SinCargas, ErrorCreacion
 from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
-from src.auth.infrastructure.security.security import Settings
 
 
 logger = logging.getLogger(__name__)
@@ -31,7 +30,8 @@ class RegisterUseCase:
         token_service: TokenProtocol,
         password_policy : PasswordPolicyService,
         mail_policy : MailPolicyService,
-        settings : Settings,
+        base_de_datos_url: str,
+        nombre_app: str,
         usuario_repository: UsuarioRepositoryProtocol,
         unit_of_work_service: UnitOfWorkProtocol
     ):
@@ -43,7 +43,8 @@ class RegisterUseCase:
         self.token_service = token_service
         self.password_policy = password_policy
         self.mail_policy = mail_policy
-        self.settings = settings
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
         self.usuario_repository = usuario_repository
         self.unit_of_work_service = unit_of_work_service
 
@@ -109,13 +110,13 @@ class RegisterUseCase:
         
     def _generar_correo_verificacion(self, token: str) -> str:
         url = (
-            f"{self.settings.BASE_URL}/"
-            f"{self.settings.NOMBRE_APP}/usuarios/verificar/{token}"
+            f"{self.base_de_datos_url}/"
+            f"{self.nombre_app}/usuarios/verificar/{token}"
         )
 
         return self.mail_content.generar_correo_verificacion(
             url=url,
-            nombre_proyecto=self.settings.NOMBRE_APP,
+            nombre_proyecto=self.nombre_app,
         )
 
     def _preparar_usuario_registro(self, usuario:AuthUser)->Usuario:

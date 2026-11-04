@@ -20,7 +20,8 @@ class ModificarUsuarioTestEnvironment:
         self.mail_content = stub_auth_mail_content.StubAuthMailContent()
         self.token_service = stub_token_service.StubTokenService()
         self.mail_policy = stub_mail_policy_service.StubMailPolicy()
-        self.settings = TestSettings()
+        self.base_de_datos_url = TestSettings().BASE_URL
+        self.nombre_app = TestSettings().NOMBRE_APP
         self.unit_of_work_service = stub_unit_of_work.StubUnitOfWork()
 
     def use_case(self):
@@ -31,6 +32,7 @@ class ModificarUsuarioTestEnvironment:
             image_service=self.image_service,
             token_service=self.token_service,
             mail_policy=self.mail_policy,
-            settings=self.settings,
+            base_de_datos_url=self.base_de_datos_url,
+            nombre_app=self.nombre_app,
             unit_of_work_service=self.unit_of_work_service
         )
