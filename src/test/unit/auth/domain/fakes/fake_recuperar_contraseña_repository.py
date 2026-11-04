@@ -1,5 +1,6 @@
 from src.auth.domain.entities.entitie_recover_password import RecoverPassword
 from datetime import datetime
+from dataclasses import replace
 
 class FakeRecuperarContraseñaRepository:
     def __init__(self):
@@ -43,7 +44,7 @@ class FakeRecuperarContraseñaRepository:
         )
 
         recover_password.id_recover_password = self._next_recover_id
-        copia_recuperacion_contraseña = recover_password.model_copy()
+        copia_recuperacion_contraseña = replace(recover_password)
         self.tokens[token_hash] = copia_recuperacion_contraseña
         self._next_recover_id += 1
         self.fue_llamado = True
@@ -59,7 +60,7 @@ class FakeRecuperarContraseñaRepository:
 
         for token in self.tokens.values():
             if token_hash == token.token_hash and token.usado != True:
-                token_retorno = token.model_copy()
+                token_retorno = replace(token)
                 break
 
         if not token_retorno:

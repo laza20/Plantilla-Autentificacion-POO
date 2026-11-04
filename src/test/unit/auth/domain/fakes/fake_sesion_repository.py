@@ -1,5 +1,6 @@
-from src.auth.infrastructure.persistence.postgres.models.models_sesiones import Sesiones
+from src.auth.domain.entities.entitie_sesiones import Sesion as Sesiones
 from typing import Dict
+from dataclasses import replace
 
 
 class FakeSesionRepository:
@@ -13,20 +14,21 @@ class FakeSesionRepository:
 
     def insertar_sesion(
         self,
-        hash_token: str,
         id_usuario: int,
+        hash_token: str,
         ip: str,
         user_agent: str):
         """
         Función para insertar un registro en la base de datos y retornar la sesión actualizada.
         """
         sesion = Sesiones(
+            id_sesion=1,
             hash_refresh_token=hash_token,
             id_usuario=id_usuario,
             ip=ip,
             user_agent=user_agent
         )
-        copia_sesion = sesion.model_copy()
+        copia_sesion = replace(sesion)
         copia_sesion.id_sesion = self._next_sesion_id
         copia_sesion.id_usuario = id_usuario
         self._sesiones[hash_token] = copia_sesion

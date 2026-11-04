@@ -1,5 +1,6 @@
-from src.auth.infrastructure.persistence.postgres.models.models_history_password import HistoryPassword
+from src.auth.domain.entities.entitie_history_password import HistoryPassword
 from datetime import datetime
+from dataclasses import replace
 
 class FakeHistoryPasswordRepository:
     def __init__(self):
@@ -20,7 +21,7 @@ class FakeHistoryPasswordRepository:
         )
 
         history_password.id_history_password = self._next_history_password_id
-        copia_history_password = history_password.model_copy()
+        copia_history_password = replace(history_password)
         self.history_password[id_usuario] = copia_history_password
         self._next_history_password_id += 1
         self.fue_llamado = True

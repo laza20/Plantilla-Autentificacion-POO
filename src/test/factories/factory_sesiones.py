@@ -6,8 +6,8 @@ def crear_sesion_de_prueba(
     user_agent: str = "user_agent_1",
 ):
     return sesion_repository.insertar_sesion(
-        hash_token=hash_token,
         id_usuario=id_usuario,
+        hash_token=hash_token,
         ip=ip,
         user_agent=user_agent,
     )
