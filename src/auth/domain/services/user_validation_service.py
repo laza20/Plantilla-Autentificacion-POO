@@ -2,7 +2,7 @@ from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
 from src.auth.domain.entities.entitie_auth_users import AuthUser
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.infrastructure.security.security import Settings
-from src.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad_usuario_creado, a_entidad
+from src.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad_usuario_creado
 from src.auth.domain.entities.entitie_auth_users import AuthUser, UsuarioCreado
 
 class UserValidationService:
@@ -19,7 +19,7 @@ class UserValidationService:
 
         self.verificacion_usuario(usuario)
 
-        return a_entidad(usuario)
+        return usuario
     
 
     def verificacion_usuario(self, usuario:AuthUser)-> None:
