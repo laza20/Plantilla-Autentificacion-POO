@@ -76,12 +76,10 @@ def get_auth_user_repository(session: Session = Depends(get_session)) -> AuthUse
     return AuthUserRepository(session)
 
 def get_user_validation_service(
-    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
-    settings: Settings = Depends(get_settings)
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository)
 ) -> UserValidationService:
     return UserValidationService(
-        auth_user_repository=auth_user_repository, 
-        settings=settings
+        auth_user_repository=auth_user_repository
     )
 
 def get_cookies_service(settings: Settings = Depends(get_settings)) -> CookiesService:

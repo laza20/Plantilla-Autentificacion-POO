@@ -23,8 +23,7 @@ class TokenProtocol(Protocol):
     Ejemplo de implementación (JWT):
     
     class TokenService:
-        def __init__(self, settings: Settings):
-            self.settings = settings
+        def __init__(self):
         
         def create_access_token(self, user_id: str) -> str:
             # Crea JWT con duración corta
@@ -99,7 +98,7 @@ class TokenProtocol(Protocol):
         # token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         
         # Se usa para enviar email de verificación
-        url_verificacion = f"{settings.BASE_URL}/verificar/{token}"
+        url_verificacion = f"ejemplo.url/verificar/{token}"
         
         Ciclo de vida:
         ---------------

@@ -21,8 +21,7 @@ class PasswordProtocol(Protocol):
     from pwdlib import PasswordHash
     
     class PasswordService:
-        def __init__(self, settings: Settings):
-            self.settings = settings
+        def __init__(self):
             self.pwd_context = PasswordHash.recommended()
         
         def hash_password(self, password: str) -> str:
@@ -78,7 +77,7 @@ class PasswordProtocol(Protocol):
         
         Ejemplo práctico:
         -----------------
-        >>> password_service = PasswordService(settings)
+        >>> password_service = PasswordService()
         >>> plain_password = "MiContraseña123!"
         >>> hashed = password_service.hash_password(plain_password)
         >>> print(type(hashed))
@@ -147,7 +146,7 @@ class PasswordProtocol(Protocol):
         -----------------
         # Scenario: Login de usuario
         
-        >>> password_service = PasswordService(settings)
+        >>> password_service = PasswordService()
         >>> usuario_db_password = "$argon2id$v=19$..."  # Hash en BD
         
         # Usuario ingresa contraseña en login
