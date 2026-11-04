@@ -53,6 +53,7 @@ from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.shared.infrastructure.mail.template_renderer import TemplateRenderer
 from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent, TEMPLATES_DIR
+from datetime import timedelta
 
 
 
@@ -357,7 +358,7 @@ def get_reactivar_cuenta_use_case(
     return ContainerReactivarUsuarioUseCase(
             auth_user_repository = auth_user_repository,
             token_service = token_service,
-            settings = settings,
+            ventana_reactivacion=timedelta(days=settings.REACTIVACION_CUENTA),
             unit_of_work_service = unit_of_work_service
     ).reactivar_usuario_use_case
 

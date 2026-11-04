@@ -2,7 +2,6 @@ from src.auth.domain.protocols.repository.protocol_auth_user_repository import A
 from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.domain.exceptions.domain import ErrorCreacion
-from src.auth.infrastructure.security.security import Settings
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoEliminado, PeriodoReactivacionFinalizado
 from src.database.enums.estado_entidad import EstadoEntidad
 from datetime import date, timedelta
@@ -13,12 +12,12 @@ class ReactivarUsuarioUseCase:
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         token_service: TokenProtocol,
-        settings : Settings,
+        ventana_reactivacion: timedelta,
         unit_of_work_service: UnitOfWorkProtocol
     ):
         self.auth_user_repository = auth_user_repository
         self.token_service = token_service
-        self.settings = settings
+        self._ventana_reactivacion = ventana_reactivacion
         self.unit_of_work_service = unit_of_work_service
 
     def ejecutar(self, token:str) -> dict:
@@ -32,7 +31,7 @@ class ReactivarUsuarioUseCase:
             raise UsuarioNoEliminado()
 
         dia_actual = date.today()
-        if usuario_db.eliminado_en + timedelta(days=self.settings.REACTIVACION_CUENTA) < dia_actual:
+        if usuario_db.eliminado_en + self._ventana_reactivacion < dia_actual:
             raise PeriodoReactivacionFinalizado()
 
         with self.unit_of_work_service:

@@ -29,6 +29,7 @@ from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
 from src.auth.domain.protocols.repository.protocol_history_password_repository import HistoryRepositoryProtocol
 from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from datetime import timedelta
 
 class ContainerEliminarSesiones:
     def __init__(
@@ -406,18 +407,18 @@ class ContainerReactivarUsuarioUseCase:
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         token_service: TokenProtocol,
-        settings: Settings,
+        ventana_reactivacion: timedelta,
         unit_of_work_service: UnitOfWorkProtocol
     ):
         self.auth_user_repository = auth_user_repository
         self.token_service = token_service
-        self.settings = settings
+        self.ventana_reactivacion = ventana_reactivacion
         self.unit_of_work_service= unit_of_work_service
     @property
     def reactivar_usuario_use_case(self) -> ReactivarUsuarioUseCase:
         return ReactivarUsuarioUseCase(
             auth_user_repository = self.auth_user_repository,
             token_service = self.token_service,
-            settings = self.settings,
+            ventana_reactivacion=self.ventana_reactivacion,
             unit_of_work_service = self.unit_of_work_service
         )
