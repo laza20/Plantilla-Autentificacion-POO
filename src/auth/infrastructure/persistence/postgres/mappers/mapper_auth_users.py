@@ -1,5 +1,6 @@
-from src.auth.domain.entities.entitie_auth_users import AuthUser, AuthUserNoTable, UsuarioCreado, AuthUserEmailValidation
+from src.auth.domain.entities.entitie_auth_users import AuthUser, AuthUserNoTable, AuthUserEmailValidation
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser as AuthUserSqlModel
+from src.auth.application.dtos.auth_user_dto import UsuarioCreado
 
 
 def a_entidad(modelo: AuthUserSqlModel) -> AuthUser:

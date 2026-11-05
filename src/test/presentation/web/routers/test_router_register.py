@@ -1,7 +1,7 @@
 from src.main import app
 from src.test.presentation.web.overrides.override_crear import crear_override
 from src.test.presentation.web.stub.stub_register_router import StubRegisterUseCase
-from src.auth.domain.entities.entitie_auth_users import UsuarioCreado
+from src.auth.application.dtos.auth_user_dto import UsuarioCreado
 from src.domain.exceptions.domain import (
     LongitudExcedida, LimiteTamañoSuperado, ExtensionNoPermitida, ErrorCloudinary,
     SinCargas

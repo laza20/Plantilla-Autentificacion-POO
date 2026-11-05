@@ -1,7 +1,8 @@
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad_usuario_creado
-from src.auth.domain.entities.entitie_auth_users import AuthUser, UsuarioCreado
+from src.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth.application.dtos.auth_user_dto import UsuarioCreado
 
 class UserValidationService:
     def __init__(
