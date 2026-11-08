@@ -20,6 +20,7 @@ from src.auth.domain.services.user_validation_service import UserValidationServi
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
+from src.auth.application.use_cases.obtener_usuario_actual import ObtenerUsuarioActualUseCase
 from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
 from src.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
@@ -45,6 +46,19 @@ class ContainerEliminarSesiones:
             sesion_repository=self.sesion_repository,
             unit_of_work_service=self.unit_of_work_service
             )
+
+
+class ContainerObternerUsuarioActual:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol
+    ):
+        self.auth_user_repository = auth_user_repository
+    @property
+    def obtener_usuario_actual_use_case(self) -> ObtenerUsuarioActualUseCase:
+        return ObtenerUsuarioActualUseCase(
+            auth_user_repository=self.auth_user_repository
+        )
 
 class ContainerListarSesiones:
     def __init__(

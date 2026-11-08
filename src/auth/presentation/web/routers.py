@@ -17,11 +17,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 #SERVICIOS
 from src.auth.presentation.web.utils.request_metadata import RequestMetadata
 from src.auth.presentation.web.cookies.cookies import CookiesService
-from src.auth.domain.services.user_validation_service import UserValidationService
 from src.auth.infrastructure.security.tokens.tokens import TokenService
 
 #USE CASES
 from src.auth.application.use_cases.register import RegisterUseCase
+from src.auth.application.use_cases.obtener_usuario_actual import ObtenerUsuarioActualUseCase
 from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
 from src.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
 from src.auth.application.use_cases.eliminar_usuario.eliminar_usuario import EliminarUsuarioUseCase
@@ -41,7 +41,7 @@ from src.auth.application.use_cases.recover_password.recuperar_contraseña impor
 #PROVIDERS
 from src.container.auth.providers import (
     get_register_use_case, get_login_use_case, 
-    get_verify_mail_use_case, get_user_validation_service, 
+    get_verify_mail_use_case, get_obtener_usuario_actual, 
     get_logout_service, get_refresh_token_service, get_listar_sesiones_use_case,
     get_eliminar_sesiones_use_case, get_solicitud_recuperacion_contraseña_use_case,
     get_verificar_token_recuperacion_contraseña_use_case, get_cookies_service,
@@ -156,11 +156,12 @@ async def refresh_token(
 @router.get("/user/current", status_code=status.HTTP_200_OK, response_model=UsuarioCreado)
 async def ver_usuario(
     current_user: dict = Depends(get_current_user),
-    user_validation_service: UserValidationService = Depends(get_user_validation_service)):
+    obtener_usuario_actual_use_case: ObtenerUsuarioActualUseCase = Depends(get_obtener_usuario_actual)
+    ):
     """
     End point encargado de devolver un usuario completo.
     """
-    usuario = user_validation_service.get_user(current_user)
+    usuario = obtener_usuario_actual_use_case.ejecutar(current_user.id_usuario)
     return usuario
 
 @router.post("/Logout", status_code=status.HTTP_200_OK)
@@ -184,7 +185,6 @@ async def logout(
 @limiter.limit("5/minute")
 async def list_sesions(
     request: Request,
-    user_validation_service: UserValidationService = Depends(get_user_validation_service),
     listar_sesiones_use_case: ListarSesionesUseCase = Depends(get_listar_sesiones_use_case),
     current_user: dict = Depends(get_current_user)
 ):
@@ -192,7 +192,7 @@ async def list_sesions(
     End point encargado de listar las sesiones activas de un usuario.
     """
     ip = RequestMetadata(request).get_ip()
-    id_usuario = user_validation_service.get_user(current_user).id_usuario
+    id_usuario = current_user["id_usuario"]
     return listar_sesiones_use_case.ejecutar(id_usuario=id_usuario, ip=ip)
 
 
@@ -201,14 +201,13 @@ async def list_sesions(
 async def eliminar_sesion(
     request: Request,
     id_sesion: int = Path(..., description="ID de la sesión a eliminar"),
-    user_validation_service: UserValidationService = Depends(get_user_validation_service),
     eliminar_sesiones_use_case: EliminarSesionesUseCase = Depends(get_eliminar_sesiones_use_case),
     current_user: dict = Depends(get_current_user)
 ):
     """
     End point encargado de eliminar una sesión activa de un usuario.
     """
-    id_usuario = user_validation_service.get_user(current_user).id_usuario
+    id_usuario = current_user["id_usuario"]
     resultado = eliminar_sesiones_use_case.ejecutar(id_sesion=id_sesion, id_usuario=id_usuario)
     return resultado
 
@@ -288,12 +287,11 @@ async def modificar_usuario(
     request: Request,
     datos: tuple[UserModifyDTO, UploadFile | None] = Depends(parse_modificar_usuario_form),
     current_user: dict = Depends(get_current_user),
-    user_validation_service: UserValidationService = Depends(get_user_validation_service),
     modificar_usuario_use_case: ModificarUsuarioUseCase = Depends(
         get_modificar_usuario_use_case
     )
 ):
-    id_usuario = user_validation_service.get_user(current_user).id_usuario
+    id_usuario = current_user["id_usuario"]
     usuario, imagen = datos
     resultado = await modificar_usuario_use_case.ejecutar(id_usuario=id_usuario, usuario=usuario, imagen=imagen)
     return resultado
@@ -304,12 +302,11 @@ async def modificar_usuario(
 async def eliminar_usuario(
     request: Request,
     current_user: dict = Depends(get_current_user),
-    user_validation_service: UserValidationService = Depends(get_user_validation_service),
     eliminar_usuario_use_case: SolicitudEliminacionUsuarioUseCase = Depends(
         get_solicitud_eliminacion_usuario_use_case
     )
 ):
-    id_usuario = user_validation_service.get_user(current_user).id_usuario
+    id_usuario = current_user["id_usuario"]
     resultado = await eliminar_usuario_use_case.ejecutar(id_usuario=id_usuario)
     return resultado
 

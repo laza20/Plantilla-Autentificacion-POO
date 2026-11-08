@@ -10,9 +10,11 @@ from src.container.auth.auth_container import (
     ContainerRefreshToken, ContainerListarSesiones, ContainerEliminarSesiones,
     ContainerSolicitudRecuperacion, ContainerVerificarTokenRecuperacion, ContainerRecuperarContraseña,
     ContainerReenviarMailUseCase, ContainerModificarUsuario, ContainerSolicitudEliminacionUsuario,
-    ContainerEliminarUsuario, ContainerSolicitudReactivacionCuentaUseCase, ContainerReactivarUsuarioUseCase)
+    ContainerEliminarUsuario, ContainerSolicitudReactivacionCuentaUseCase, ContainerReactivarUsuarioUseCase,
+    ContainerObternerUsuarioActual)
 from src.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
 from src.auth.application.use_cases.reactivacion_cuenta.reactivar_cuenta import ReactivarUsuarioUseCase
+from src.auth.application.use_cases.obtener_usuario_actual import ObtenerUsuarioActualUseCase
 from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
 from src.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
 from src.auth.application.use_cases.eliminar_usuario.eliminar_usuario import EliminarUsuarioUseCase
@@ -368,6 +370,14 @@ def get_reactivar_cuenta_use_case(
             ventana_reactivacion=timedelta(days=settings.REACTIVACION_CUENTA),
             unit_of_work_service = unit_of_work_service
     ).reactivar_usuario_use_case
+
+
+def get_obtener_usuario_actual(
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository)
+) -> ObtenerUsuarioActualUseCase:
+    return ContainerObternerUsuarioActual(
+        auth_user_repository=auth_user_repository
+    ).obtener_usuario_actual_use_case
 
 def get_auth_dependencies(
     settings: Settings = Depends(get_settings),
