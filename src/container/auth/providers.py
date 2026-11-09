@@ -1,9 +1,9 @@
 from fastapi import Depends
 from sqlmodel import Session
 from fastapi import Request
-from src.auth.infrastructure.persistence.postgres.repository.auth_user_repository import AuthUserRepository
-from src.auth.infrastructure.persistence.postgres.repository.sesion_repository import SesionRepository
+
 from src.config.config import Settings, get_settings
+#Contenedores
 from src.container.auth.auth_container import (
     ContainerRegister, ContainerLogin, 
     ContainerVerifyMail, ContainerLogout,
@@ -12,27 +12,30 @@ from src.container.auth.auth_container import (
     ContainerReenviarMailUseCase, ContainerModificarUsuario, ContainerSolicitudEliminacionUsuario,
     ContainerEliminarUsuario, ContainerSolicitudReactivacionCuentaUseCase, ContainerReactivarUsuarioUseCase,
     ContainerObternerUsuarioActual)
-from src.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
-from src.auth.application.use_cases.reactivacion_cuenta.reactivar_cuenta import ReactivarUsuarioUseCase
-from src.auth.application.use_cases.obtener_usuario_actual import ObtenerUsuarioActualUseCase
-from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
-from src.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
-from src.auth.application.use_cases.eliminar_usuario.eliminar_usuario import EliminarUsuarioUseCase
-from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
+
+#Presentacion
 from src.auth.presentation.web.cookies.cookies import CookiesService
-from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
-from src.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
-from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
-from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
-from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
-from src.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
-from src.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
-from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
-from src.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
+from src.auth.presentation.web.guards import AuthDependencies
+
+from src.database.repository.unit_of_work import UnitOfWork
+from src.auth.domain.services.password_policy import PasswordPolicyService
+from src.database.client import get_session
+from src.auth.domain.services.user_validation_service import UserValidationService
+
+#Infrastructure
+from src.auth.infrastructure.security.tokens.tokens import TokenService
+from src.auth.infrastructure.security.security import PasswordService
+from src.shared.infrastructure.mail.mail import MailService
+from src.shared.infrastructure.images.cloudinary import ImageService
 from src.auth.infrastructure.persistence.postgres.repository.usuario_repository import UserRepository
 from src.auth.infrastructure.persistence.postgres.repository.recover_password_repository import RecoverPasswordRepository
 from src.auth.infrastructure.persistence.postgres.repository.history_password_repository import HistoryPasswordRepository
-from src.database.repository.unit_of_work import UnitOfWork
+from src.shared.infrastructure.mail.template_renderer import TemplateRenderer
+from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent, TEMPLATES_DIR
+from src.auth.infrastructure.persistence.postgres.repository.auth_user_repository import AuthUserRepository
+from src.auth.infrastructure.persistence.postgres.repository.sesion_repository import SesionRepository
+
+#Protocols
 from src.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
 from src.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
 from src.auth.domain.protocols.repository.protocol_history_password_repository import HistoryRepositoryProtocol
@@ -40,22 +43,31 @@ from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.shared.protocols.protocol_mail_service import MailProtocol
 from src.shared.protocols.protocol_image_service import ImageProtocol
-from src.auth.infrastructure.security.tokens.tokens import TokenService
-from src.auth.infrastructure.security.security import PasswordService
-from src.shared.infrastructure.mail.mail import MailService
-from src.shared.infrastructure.images.cloudinary import ImageService
-from src.auth.domain.services.password_policy import PasswordPolicyService
+from src.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from src.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
+from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
+
+#Casos de uso
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.login import LoginUseCase
-from src.auth.presentation.web.guards import AuthDependencies
 from src.auth.application.use_cases.verify_email import VerifyMailUseCase
-from src.database.client import get_session
-from src.auth.domain.services.user_validation_service import UserValidationService
 from src.auth.application.use_cases.logout import LogoutUseCase
 from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
+from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
+from src.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
+from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
+from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
+from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
+from src.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
+from src.auth.application.use_cases.reactivacion_cuenta.reactivar_cuenta import ReactivarUsuarioUseCase
+from src.auth.application.use_cases.obtener_usuario_actual import ObtenerUsuarioActualUseCase
+from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
+from src.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
+from src.auth.application.use_cases.eliminar_usuario.eliminar_usuario import EliminarUsuarioUseCase
+from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
+
 from src.auth.domain.services.mail_policy import MailPolicyService
-from src.shared.infrastructure.mail.template_renderer import TemplateRenderer
-from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent, TEMPLATES_DIR
 from datetime import timedelta
 
 
