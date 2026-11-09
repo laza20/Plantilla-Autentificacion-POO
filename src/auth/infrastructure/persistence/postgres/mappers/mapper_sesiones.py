@@ -21,13 +21,3 @@ def a_modelo(entity: Sesion) -> SesionesSqlModel:
         inicio_sesion=entity.inicio_sesion,
         id_usuario=entity.id_usuario,
     )
-
-def a_entidad_no_table(entity: Sesion, es_actual: bool = False) -> SesionVisual:
-    return SesionVisual(
-        id_sesion=entity.id_sesion,
-        id_usuario=entity.id_usuario,
-        user_agent=entity.user_agent,
-        ip=entity.ip,
-        inicio_sesion=entity.inicio_sesion,
-        es_actual=es_actual,
-    )

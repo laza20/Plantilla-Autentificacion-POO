@@ -161,7 +161,7 @@ async def ver_usuario(
     """
     End point encargado de devolver un usuario completo.
     """
-    usuario = obtener_usuario_actual_use_case.ejecutar(current_user.id_usuario)
+    usuario = obtener_usuario_actual_use_case.ejecutar(current_user["id_usuario"])
     return usuario
 
 @router.post("/Logout", status_code=status.HTTP_200_OK)

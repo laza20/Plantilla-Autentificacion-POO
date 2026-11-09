@@ -5,7 +5,7 @@ from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.shared.protocols.protocol_mail_service import MailProtocol
 from src.shared.protocols.protocol_image_service import ImageProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
-from src.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad_usuario_creado
+from src.auth.application.mappers.auth_users import a_usuario_creado
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.domain.entities.entitie_auth_users import (
     EMAIL_MAX_LENGTH,
@@ -73,7 +73,7 @@ class ModificarUsuarioUseCase:
         if mail_modificado:
             await self._enviar_mail(objeto_modificado)
 
-        return a_entidad_usuario_creado(objeto_modificado)
+        return a_usuario_creado(objeto_modificado)
 
     async def _enviar_mail(self, usuario:AuthUser)->None:
         token_verificacion = self.token_service.create_verificacion_token(str(usuario.id_usuario))

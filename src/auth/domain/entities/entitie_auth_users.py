@@ -27,20 +27,6 @@ class AuthUser:
 
 
 @dataclass
-class AuthUserNoTable:
-    email: str
-    password: str
-    imagen_url: str | None = None
-    imagen_public_id: str | None = None
-    created_at: date | None = None
-    updated_at: date | None = None
-    is_verified: bool = False
-    eliminado_en: date | None = None
-
-
-
-
-@dataclass
 class UserRegisterDTO:
     email: str
     password: str
@@ -50,10 +36,6 @@ class UserRegisterDTO:
 class UserModifyDTO:
     email: str | None = None
 
-
-@dataclass
-class AuthUserEmailValidation:
-    email: str
 
 
 @dataclass
@@ -73,9 +55,3 @@ class UsuarioLogeado:
 class LoginResponse:
     tokens: UserTokens
     usuario: UsuarioLogeado
-
-
-@dataclass
-class AuthUserNoImage:
-    email: str
-    password: str
