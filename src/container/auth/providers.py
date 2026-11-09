@@ -26,6 +26,7 @@ from src.auth.application.use_cases.recover_password.verificar_token import Veri
 from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
 from src.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from src.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from src.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
 from src.auth.infrastructure.persistence.postgres.repository.usuario_repository import UserRepository
@@ -129,7 +130,7 @@ def get_register_use_case(
     token_service: TokenProtocol = Depends(get_token_service),
     password_service: PasswordProtocol = Depends(get_password_service),
     password_policy: PasswordPolicyService = Depends(get_password_policy),
-    mail_content: AuthMailContent = Depends(get_auth_mail_content),
+    mail_content: AuthMailContentProtocol = Depends(get_auth_mail_content),
     mail_service: MailProtocol = Depends(get_mail_service),
     image_service: ImageProtocol = Depends(get_image_service),
     mail_policy : MailPolicyService = Depends(get_mail_policy),

@@ -1,7 +1,7 @@
-from src.config.config import Settings
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
 from src.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from src.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
 from src.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
 from src.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
@@ -82,7 +82,7 @@ class ContainerRegister:
         token_service: TokenProtocol,
         password_service: PasswordProtocol, 
         mail_service: MailProtocol,        
-        mail_content: AuthMailContent,
+        mail_content: AuthMailContentProtocol,
         image_service: ImageProtocol,
         password_policy: PasswordPolicyService,
         mail_policy : MailPolicyService,

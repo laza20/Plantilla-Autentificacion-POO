@@ -7,6 +7,7 @@ from src.shared.protocols.protocol_mail_service import MailProtocol
 from src.shared.protocols.protocol_image_service import ImageProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
+from src.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.application.mappers.auth_users import a_usuario_creado
@@ -14,7 +15,6 @@ from src.auth.domain.entities.entitie_auth_users import AuthUser, UserRegisterDT
 from src.auth.domain.entities.entitie_usuario import Usuario
 from pydantic import ValidationError
 from src.domain.exceptions.domain import LongitudExcedida, SinCargas, ErrorCreacion
-from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
 
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ class RegisterUseCase:
         auth_user_repository: AuthUserRepositoryProtocol,
         password_service: PasswordProtocol,
         mail_service: MailProtocol,
-        mail_content: AuthMailContent,
+        mail_content: AuthMailContentProtocol,
         image_service: ImageProtocol,
         token_service: TokenProtocol,
         password_policy : PasswordPolicyService,
