@@ -27,31 +27,7 @@ class AuthUser:
 
 
 @dataclass
-class UserRegisterDTO:
-    email: str
-    password: str
-
-
-@dataclass
-class UserModifyDTO:
-    email: str | None = None
-
-
-
-@dataclass
 class UserTokens:
     access_token: str
     refresh_token: str
     token_type: Literal["bearer"] = "bearer"
-
-
-@dataclass
-class UsuarioLogeado:
-    email: str
-    imagen_url: str | None = None
-
-
-@dataclass
-class LoginResponse:
-    tokens: UserTokens
-    usuario: UsuarioLogeado

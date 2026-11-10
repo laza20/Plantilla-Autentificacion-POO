@@ -1,5 +1,5 @@
 import pytest
-from src.auth.domain.entities.entitie_auth_users import UserModifyDTO
+from src.auth.application.dtos.auth_user_dto import UserModifyDTO
 from io import BytesIO
 from fastapi import UploadFile
 from src.domain.exceptions.domain import LongitudExcedida

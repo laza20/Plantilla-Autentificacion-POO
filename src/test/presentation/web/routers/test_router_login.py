@@ -1,7 +1,8 @@
 import pytest
 from src.test.presentation.web.overrides.override_crear import crear_override
 from src.test.presentation.web.stub.stub_login import StubLoginUseCase
-from src.auth.domain.entities.entitie_auth_users import LoginResponse, UsuarioLogeado, UserTokens
+from src.auth.application.dtos.auth_user_dto import LoginResponse, UsuarioLogeado
+from src.auth.domain.entities.entitie_auth_users import UserTokens
 from src.container.auth.providers import get_login_use_case
 from fastapi import status
 from src.config.config import settings

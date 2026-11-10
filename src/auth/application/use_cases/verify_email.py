@@ -2,7 +2,6 @@ from src.auth.domain.entities.entitie_auth_users import UserTokens
 import logging
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
-from src.auth.domain.exceptions.tokens import TokenInvalido, VerificacionInvalida
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 
 logger = logging.getLogger(__name__)

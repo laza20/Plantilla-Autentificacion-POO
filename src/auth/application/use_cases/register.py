@@ -11,11 +11,11 @@ from src.auth.domain.protocols.service.protocol_auth_mail_content import AuthMai
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.application.mappers.auth_users import a_usuario_creado
-from src.auth.domain.entities.entitie_auth_users import AuthUser, UserRegisterDTO
+from src.auth.domain.entities.entitie_auth_users import AuthUser
 from src.auth.domain.entities.entitie_usuario import Usuario
 from pydantic import ValidationError
 from src.domain.exceptions.domain import LongitudExcedida, SinCargas, ErrorCreacion
-
+from src.auth.application.dtos.auth_user_dto import UserRegisterDTO
 
 logger = logging.getLogger(__name__)
 

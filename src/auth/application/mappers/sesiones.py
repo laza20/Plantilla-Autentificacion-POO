@@ -1,4 +1,5 @@
-from src.auth.domain.entities.entitie_sesiones import Sesion, SesionVisual
+from src.auth.domain.entities.entitie_sesiones import Sesion
+from src.auth.application.dtos.sesiones_dto import SesionVisual
 
 
 def a_sesion_visual(entity: Sesion, es_actual: bool = False) -> SesionVisual:

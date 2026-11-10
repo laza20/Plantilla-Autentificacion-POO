@@ -1,4 +1,4 @@
-from src.auth.domain.entities.entitie_sesiones import Sesion, SesionVisual
+from src.auth.domain.entities.entitie_sesiones import Sesion
 from src.auth.infrastructure.persistence.postgres.models.models_sesiones import Sesiones as SesionesSqlModel
 
 def a_entidad(model: SesionesSqlModel) -> Sesion:

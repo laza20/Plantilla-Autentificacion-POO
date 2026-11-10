@@ -1,5 +1,6 @@
 from src.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
-from src.auth.domain.entities.entitie_sesiones import ListaSesiones, Sesion
+from src.auth.domain.entities.entitie_sesiones import Sesion
+from src.auth.application.dtos.sesiones_dto import ListaSesiones
 from src.auth.application.mappers.sesiones import a_sesion_visual
 
 class ListarSesionesUseCase:

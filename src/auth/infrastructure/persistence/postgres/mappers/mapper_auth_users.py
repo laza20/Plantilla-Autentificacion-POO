@@ -1,6 +1,5 @@
 from src.auth.domain.entities.entitie_auth_users import AuthUser
 from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser as AuthUserSqlModel
-from src.auth.application.dtos.auth_user_dto import UsuarioCreado
 
 
 def a_entidad(modelo: AuthUserSqlModel) -> AuthUser:
@@ -30,28 +29,4 @@ def a_modelo(entidad: AuthUser) -> AuthUserSqlModel:
         updated_at=entidad.updated_at,
         is_verified=entidad.is_verified,
         eliminado_en=entidad.eliminado_en,
-    )
-
-
-
-
-
-
-
-def a_entidad_usuario_creado(modelo: AuthUserSqlModel) -> UsuarioCreado:
-    return UsuarioCreado(
-        id_usuario=modelo.id_usuario,
-        email=modelo.email,
-        imagen_url=modelo.imagen_url,
-        created_at=modelo.created_at,
-        is_verified=modelo.is_verified
-    )
-
-def a_entidad_usuario_creado_desde_entidad(entidad: AuthUser) -> UsuarioCreado:
-    return UsuarioCreado(
-        id_usuario=entidad.id_usuario,
-        email=entidad.email,
-        imagen_url=entidad.imagen_url,
-        created_at=entidad.created_at,
-        is_verified=entidad.is_verified
     )

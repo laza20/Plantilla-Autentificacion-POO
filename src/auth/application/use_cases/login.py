@@ -1,4 +1,5 @@
-from src.auth.domain.entities.entitie_auth_users import LoginResponse, AuthUser, UsuarioLogeado
+from src.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth.application.dtos.auth_user_dto import LoginResponse, UsuarioLogeado
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError
 from src.domain.exceptions.domain import DomainError
 import logging

@@ -1,9 +1,7 @@
 #MODELS
-from src.auth.domain.entities.entitie_auth_users import (
-    LoginResponse, UserRegisterDTO, UserModifyDTO
-)
-from src.auth.application.dtos.auth_user_dto import UsuarioCreado
+from src.auth.application.dtos.auth_user_dto import UserRegisterDTO, UsuarioCreado, UserModifyDTO
 from src.auth.presentation.web.utils.mappers import (parse_usuario_form, parse_modificar_usuario_form)
+from src.auth.application.dtos.auth_user_dto import LoginResponse
 
 #SCHEMAS
 from src.auth.infrastructure.persistence.postgres.schemas.schemas_recepcion import (
