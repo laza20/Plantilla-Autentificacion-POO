@@ -3,14 +3,14 @@ from src.shared.protocols.protocol_mail_service import MailProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.services.mail_policy import MailPolicyService
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
-from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
+from src.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
 
 class ReenviarMailUseCase:
     def __init__(
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service: MailProtocol,
-        mail_content: AuthMailContent,
+        mail_content: AuthMailContentProtocol,
         token_service: TokenProtocol,
         mail_policy : MailPolicyService,
         base_de_datos_url: str,

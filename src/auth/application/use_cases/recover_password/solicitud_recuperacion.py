@@ -5,7 +5,7 @@ from src.auth.domain.protocols.service.protocol_token_service import TokenProtoc
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
 from src.shared.protocols.protocol_mail_service import MailProtocol
 from datetime import datetime, timezone, timedelta
-from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
+from src.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
 
 
 class SolicitudRecuperacionUseCase:
@@ -15,7 +15,7 @@ class SolicitudRecuperacionUseCase:
         unit_of_work_service: UnitOfWorkProtocol,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service:MailProtocol,
-        mail_content: AuthMailContent,
+        mail_content: AuthMailContentProtocol,
         token_service: TokenProtocol,
         base_de_datos_url: str,
         nombre_app:str,

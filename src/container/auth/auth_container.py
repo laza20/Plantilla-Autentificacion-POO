@@ -8,7 +8,6 @@ from src.auth.domain.protocols.service.protocol_token_service import TokenProtoc
 from src.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
 from src.shared.protocols.protocol_mail_service import MailProtocol
 from src.shared.protocols.protocol_image_service import ImageProtocol
-from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
 from src.auth.domain.services.password_policy import PasswordPolicyService
 from src.auth.application.use_cases.register import RegisterUseCase
 from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
@@ -205,7 +204,7 @@ class ContainerSolicitudRecuperacion:
         unit_of_work_service: UnitOfWorkProtocol,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service: MailProtocol,
-        mail_content: AuthMailContent,
+        mail_content: AuthMailContentProtocol,
         token_service: TokenProtocol,
         base_de_datos_url: str,
         nombre_app:str,
@@ -288,7 +287,7 @@ class ContainerReenviarMailUseCase:
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service: MailProtocol,
-        mail_content: AuthMailContent,
+        mail_content: AuthMailContentProtocol,
         token_service: TokenProtocol,
         mail_policy : MailPolicyService,
         base_de_datos_url: str,
@@ -321,7 +320,7 @@ class ContainerModificarUsuario:
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service: MailProtocol,
-        mail_content: AuthMailContent,
+        mail_content: AuthMailContentProtocol,
         image_service: ImageProtocol,
         token_service: TokenProtocol,
         mail_policy : MailPolicyService,
@@ -359,7 +358,7 @@ class ContainerSolicitudEliminacionUsuario:
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service: MailProtocol,
-        mail_content: AuthMailContent,
+        mail_content: AuthMailContentProtocol,
         token_service: TokenProtocol,
         base_de_datos_url: str,
         nombre_app:str,
@@ -411,7 +410,7 @@ class ContainerSolicitudReactivacionCuentaUseCase:
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service: MailProtocol,
-        mail_content: AuthMailContent,
+        mail_content: AuthMailContentProtocol,
         token_service: TokenProtocol,
         mail_policy : MailPolicyService,
         base_de_datos_url: str,

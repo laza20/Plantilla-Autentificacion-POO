@@ -7,15 +7,12 @@ from src.shared.protocols.protocol_image_service import ImageProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.application.mappers.auth_users import a_usuario_creado
 from src.auth.domain.services.mail_policy import MailPolicyService
-from src.auth.domain.entities.entitie_auth_users import (
-    EMAIL_MAX_LENGTH,
-    AuthUser,
-    UserModifyDTO,
-)
+from src.auth.application.dtos.auth_user_dto import UserModifyDTO
+from src.auth.domain.entities.entitie_auth_users import EMAIL_MAX_LENGTH, AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
 from src.domain.exceptions.domain import LongitudExcedida
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoModificado
-from src.auth.infrastructure.mail.auth_mail_content import AuthMailContent
+from src.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
 from dataclasses import replace
 
 
@@ -24,7 +21,7 @@ class ModificarUsuarioUseCase:
         self,
         auth_user_repository: AuthUserRepositoryProtocol,
         mail_service: MailProtocol,
-        mail_content: AuthMailContent,
+        mail_content: AuthMailContentProtocol,
         image_service: ImageProtocol,
         token_service: TokenProtocol,
         mail_policy : MailPolicyService,
