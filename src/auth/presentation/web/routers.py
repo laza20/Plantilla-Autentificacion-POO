@@ -159,7 +159,7 @@ async def ver_usuario(
     """
     End point encargado de devolver un usuario completo.
     """
-    usuario = obtener_usuario_actual_use_case.ejecutar(current_user["id_usuario"])
+    usuario = obtener_usuario_actual_use_case.ejecutar(current_user.id_usuario)
     return usuario
 
 @router.post("/Logout", status_code=status.HTTP_200_OK)
@@ -190,7 +190,7 @@ async def list_sesions(
     End point encargado de listar las sesiones activas de un usuario.
     """
     ip = RequestMetadata(request).get_ip()
-    id_usuario = current_user["id_usuario"]
+    id_usuario = current_user.id_usuario
     return listar_sesiones_use_case.ejecutar(id_usuario=id_usuario, ip=ip)
 
 
@@ -205,7 +205,7 @@ async def eliminar_sesion(
     """
     End point encargado de eliminar una sesión activa de un usuario.
     """
-    id_usuario = current_user["id_usuario"]
+    id_usuario = current_user.id_usuario
     resultado = eliminar_sesiones_use_case.ejecutar(id_sesion=id_sesion, id_usuario=id_usuario)
     return resultado
 
@@ -289,7 +289,7 @@ async def modificar_usuario(
         get_modificar_usuario_use_case
     )
 ):
-    id_usuario = current_user["id_usuario"]
+    id_usuario = current_user.id_usuario
     usuario, imagen = datos
     resultado = await modificar_usuario_use_case.ejecutar(id_usuario=id_usuario, usuario=usuario, imagen=imagen)
     return resultado
@@ -304,7 +304,7 @@ async def eliminar_usuario(
         get_solicitud_eliminacion_usuario_use_case
     )
 ):
-    id_usuario = current_user["id_usuario"]
+    id_usuario = current_user.id_usuario
     resultado = await eliminar_usuario_use_case.ejecutar(id_usuario=id_usuario)
     return resultado
 
