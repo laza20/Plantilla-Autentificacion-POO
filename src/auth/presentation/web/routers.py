@@ -1,6 +1,6 @@
 #MODELS
 from src.auth.application.dtos.auth_user_dto import UserRegisterDTO, UsuarioCreado, UserModifyDTO
-from src.auth.presentation.web.utils.mappers import (parse_usuario_form, parse_modificar_usuario_form)
+from src.auth.presentation.web.utils.forms import (parse_usuario_form, parse_modificar_usuario_form)
 from src.auth.application.dtos.auth_user_dto import LoginResponse
 
 #SCHEMAS
