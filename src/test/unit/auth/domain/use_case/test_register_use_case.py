@@ -1,5 +1,5 @@
 import pytest
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
+from src.auth.domain.entities.entitie_auth_users import AuthUser
 from src.domain.exceptions.domain import SinCargas, LongitudExcedida
 from src.auth.application.dtos.auth_user_dto import UserRegisterDTO
 from src.test.fixtures.fixture_register_case import RegisterTestEnvironment
@@ -19,7 +19,7 @@ async def test_debe_registrar_un_usuario_valido_sin_imagen():
         email = "test@test.com",
         password = "Password123!"
     )
-    usuario_creado = await context.use_case().ejecutar(
+    await context.use_case().ejecutar(
         usuario,
         imagen=None
     )

@@ -1,6 +1,6 @@
 from fastapi import Request
 from src.config.config import Settings
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
+from src.auth.domain.entities.entitie_auth_users import AuthUser
 from src.auth.domain.exceptions.usuarios_exceptions import (NoAutenticado, UsuarioNoEncontrado)
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol

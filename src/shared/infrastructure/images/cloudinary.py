@@ -1,5 +1,5 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, status, Query
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser
+from fastapi import FastAPI, UploadFile
+from src.auth.domain.entities.entitie_auth_users import AuthUser
 from fastapi import UploadFile
 from src.domain.exceptions.domain import LimiteTamañoSuperado, ExtensionNoPermitida, ErrorCloudinary, DomainError
 from src.shared.infrastructure.images.cloudinary_config import cloudinary_uploader

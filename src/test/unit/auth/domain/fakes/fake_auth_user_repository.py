@@ -4,7 +4,6 @@ from typing import Dict
 from dataclasses import replace
 from src.auth.domain.entities.entitie_auth_users import AuthUser
 from src.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad
-from src.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser as AuthUserSqlModel
 from src.database.enums.estado_entidad import EstadoEntidad
 from datetime import datetime, date
 
@@ -16,12 +15,11 @@ class FakeUserRepository:
         self.tiempo_eliminado = None
         self.activado = True
 
-    def insertar(self, usuario:AuthUser | AuthUserSqlModel)-> AuthUser:
+    def insertar(self, usuario:AuthUser)-> AuthUser:
         """
         Función para insertar un registro en la base de datos y retornar el usuario actualizado.
         """
-        if isinstance(usuario, AuthUserSqlModel):
-            usuario = a_entidad(usuario)
+        usuario = a_entidad(usuario)
 
         if usuario.email in self._users:
             raise MailRepetido()
