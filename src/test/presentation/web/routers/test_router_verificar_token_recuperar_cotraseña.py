@@ -5,6 +5,7 @@ from fastapi import status
 from src.container.auth.providers import get_verificar_token_recuperacion_contraseña_use_case
 from src.config.config import settings
 from src.auth.domain.exceptions.tokens import TokenNoVerificado
+from fastapi import status
 
 
 def test_debe_verificar_el_retorno_del_reset_token_correctamente(test_client):
@@ -55,7 +56,7 @@ def test_debe_verificar_que_se_produce_una_excepcion_si_se_envia_el_reset_token_
 
     data = response.json()
 
-    assert response.status_code == TokenNoVerificado.status_code
+    assert response.status_code == status.HTTP_409_CONFLICT
     assert data["detail"] == "Token no verificado"
 
 

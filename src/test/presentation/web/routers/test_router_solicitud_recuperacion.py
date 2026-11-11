@@ -25,15 +25,22 @@ def test_solicitud_recuperacion_correctamente(test_client):
     assert data["message"] == resultado["message"]
 
 
+
 @pytest.mark.parametrize(
-    "exception",
+    "exception, expected_status",
     [
-        UsuarioNoEncontrado("Usuario no encontrado en la base de datos"), 
-        UsuarioError("No se pudo registrar la solicitud de recuperación.")
+        (
+            UsuarioNoEncontrado("Usuario no encontrado en la base de datos"),
+            status.HTTP_409_CONFLICT
+        ),
+        (
+            UsuarioError("No se pudo registrar la solicitud de recuperación."),
+            status.HTTP_400_BAD_REQUEST
+        ),
     ],
-    ids=lambda exception: type(exception).__name__
+    ids=lambda value: type(value).__name__
 )
-def test_debe_transmitir_excepciones(test_client, exception):
+def test_debe_transmitir_excepciones(test_client, exception, expected_status):
     app.dependency_overrides[get_solicitud_recuperacion_contraseña_use_case] = crear_override(stub_class=StubSolicitudRecuperacionUseCase, excepcion=exception)
 
     response = test_client.post(
@@ -44,7 +51,7 @@ def test_debe_transmitir_excepciones(test_client, exception):
     )
 
     data = response.json()
-    assert response.status_code == exception.status_code
+    assert response.status_code == expected_status
     assert data["detail"] == exception.message
 
 

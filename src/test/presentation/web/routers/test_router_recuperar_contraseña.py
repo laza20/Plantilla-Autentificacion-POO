@@ -35,18 +35,31 @@ def test_debe_verificar_que_el_retorno_sea_correcto_en_el_caso_positivo(test_cli
 
 
 @pytest.mark.parametrize(
-    "excepcion",
+    "exception, expected_status",
     [
-        TokenNoDesactivado("El token no pudo ser desactivado."),
-        UsuarioNoModificado("La contraseña no pudo ser modificada."),
-        UsuarioNoEncontrado("Usuario no encontrado en la base de datos."),
-        ErrorCreacion("Error al crear el registro en la base de datos.")
-    ]
+        (
+            TokenNoDesactivado("El token no pudo ser desactivado"),
+            status.HTTP_409_CONFLICT
+        ),
+        (
+            UsuarioNoModificado("La contraseña no pudo ser modificada."),
+            status.HTTP_409_CONFLICT
+        ),
+        (
+            UsuarioNoEncontrado("Usuario no encontrado en la base de datos."),
+            status.HTTP_409_CONFLICT
+        ),
+        (
+            ErrorCreacion("Error al crear el registro en la base de datos."),
+            status.HTTP_409_CONFLICT
+        ),
+    ],
+    ids=lambda value: type(value).__name__
 )
-def test_debe_verificar_que_se_produce_una_excepcion_si_algo_falla(test_client, excepcion):
+def test_debe_verificar_que_se_produce_una_excepcion_si_algo_falla(test_client, exception, expected_status):
     app.dependency_overrides[get_recuperar_contraseña_use_case] = crear_override(
         stub_class=StubRecuperarContraseñaUseCase,
-        excepcion=excepcion
+        excepcion=exception
     )
     app.dependency_overrides[get_token_service] = crear_override(
         stub_class=StubRecuperarContraseñaUseCase,
@@ -60,5 +73,5 @@ def test_debe_verificar_que_se_produce_una_excepcion_si_algo_falla(test_client, 
             "password": "Boca1234@"} #contraseña nueva
     )
 
-    assert response.status_code == excepcion.status_code
-    assert response.json()["detail"] == excepcion.message
+    assert response.status_code == expected_status
+    assert response.json()["detail"] == exception.message

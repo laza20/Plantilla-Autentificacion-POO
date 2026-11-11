@@ -5,6 +5,7 @@ from src.container.auth.providers import get_refresh_token_service
 from src.config.config import settings
 from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
 from src.auth.domain.exceptions.tokens import VerificacionInvalida
+from fastapi import status
 
 
 def test_debe_refrescar_el_token_correctamente(test_client):
@@ -38,5 +39,5 @@ def test_debe_verificar_que_la_verificacion_fue_invalida(test_client):
         f"/{settings.NOMBRE_APP}/usuarios/Refresh/Token",
     )
     
-    assert response.status_code == VerificacionInvalida().status_code
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json()["detail"] == VerificacionInvalida().message

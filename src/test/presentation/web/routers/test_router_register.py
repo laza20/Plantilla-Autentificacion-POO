@@ -39,19 +39,45 @@ def test_register_crear_correctamente(test_client):
     assert "password" not in response.json()
 
 @pytest.mark.parametrize(
-    "exception",
+    "exception, expected_status",
     [
-        SinCargas(),
-        MailRepetido(),
-        LongitudExcedida(),
-        ContraseñaNoSegura(),
-        LimiteTamañoSuperado(),
-        ExtensionNoPermitida(),
-        ErrorCloudinary("Error 505")
+        (
+            SinCargas("No se han realizado cargas."),
+            status.HTTP_409_CONFLICT
+        ),
+        (
+            MailRepetido("El correo electrónico ya está en uso."),
+            status.HTTP_409_CONFLICT
+        ),
+        (
+            LongitudExcedida("Uno o más campos exceden el límite de caracteres permitido."),
+            status.HTTP_422_UNPROCESSABLE_CONTENT
+        ),
+        (
+            ContraseñaNoSegura("""La contraseña no cumple con los requisitos de seguridad. Debe contener al menos:        
+                - Al menos 8 caracteres
+                - Al menos una letra mayúscula
+                - Al menos una letra minúscula
+                - Al menos un número
+                - Al menos un carácter especial"""),
+            status.HTTP_400_BAD_REQUEST
+        ),
+        (
+            LimiteTamañoSuperado("El tamaño de la imagen excede el límite permitido."),
+            status.HTTP_413_CONTENT_TOO_LARGE
+        ),
+        (
+            ExtensionNoPermitida("La extensión del archivo no está permitida."),
+            status.HTTP_400_BAD_REQUEST
+        ),
+        (
+            ErrorCloudinary("Error al subir la imagen a Cloudinary."),
+            status.HTTP_500_INTERNAL_SERVER_ERROR
+        ),
     ],
-    ids=lambda exception: type(exception).__name__
+    ids=lambda value: type(value).__name__
 )
-def test_debe_lanzar_excepciones(test_client, exception):
+def test_debe_lanzar_excepciones(test_client, exception, expected_status):
 
     app.dependency_overrides[get_register_use_case] = crear_override(stub_class=StubRegisterUseCase, excepcion=exception)
 
@@ -62,7 +88,7 @@ def test_debe_lanzar_excepciones(test_client, exception):
             "password": "password@123"}
     )
 
-    assert response.status_code == exception.status_code
+    assert response.status_code == expected_status
     assert "email" not in response.json()
 
 

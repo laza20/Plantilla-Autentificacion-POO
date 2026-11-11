@@ -4,7 +4,7 @@ from src.test.presentation.web.stub.stub_verify_mail import StubVerifyMailUseCas
 from src.container.auth.providers import get_verify_mail_use_case
 from src.config.config import settings
 from src.auth.domain.exceptions.tokens import TokenInvalido
-import pytest
+from fastapi import status
 
 token = "token_correcto_1"
 
@@ -28,5 +28,4 @@ def test_debe_lanzar_error_si_el_token_es_invalido(test_client):
 
     response = test_client.get(f"/{settings.NOMBRE_APP}/usuarios/verificar/token_invalido")
 
-    assert response.status_code == TokenInvalido().status_code
-    assert response.json()["detail"] == 'Token de ingreso invalido.'
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED

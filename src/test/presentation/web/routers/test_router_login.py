@@ -120,15 +120,24 @@ def test_debe_fallar_al_mandar_los_campos_incorrectos(test_client):
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 @pytest.mark.parametrize(
-    "exception",
+    "exception, expected_status",
     [
-        LoginError("Usuario o contraseña incorrectos"),
-        UsuarioError("Error al inicial sesion"),
-        DomainError("Error crítico en service")
+        (
+            LoginError("Usuario o contraseña incorrectos"),
+            status.HTTP_400_BAD_REQUEST
+        ),
+        (
+            UsuarioError("Error al iniciar sesión"),
+            status.HTTP_400_BAD_REQUEST
+        ),
+        (
+            DomainError("Error crítico en service"),
+            status.HTTP_500_INTERNAL_SERVER_ERROR
+        ),
     ],
-    ids=lambda exception: type(exception).__name__
+    ids=lambda value: type(value).__name__
 )
-def test_debe_lanzar_excepciones(test_client, exception):
+def test_debe_lanzar_excepciones(test_client, exception, expected_status):
 
     app.dependency_overrides[get_login_use_case] = crear_override(
         stub_class=StubLoginUseCase,
@@ -146,4 +155,4 @@ def test_debe_lanzar_excepciones(test_client, exception):
         }
     )
 
-    assert response.status_code == exception.status_code
+    assert response.status_code == expected_status
