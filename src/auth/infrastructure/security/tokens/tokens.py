@@ -74,7 +74,7 @@ class TokenService:
             raise SinAccessToken("Se proporcionó un Refresh Token")
                     
         user_id = payload.get("sub")
-        if not user_id:
+        if user_id is None:
             raise TokenInvalido()
         
         return int(user_id)
@@ -87,7 +87,7 @@ class TokenService:
                 raise TokenInvalido()
 
             user_id = payload.get("sub")
-            if not user_id:
+            if user_id is None:
                 raise TokenInvalido("Refresh token inválido")
             
             return user_id
@@ -103,7 +103,7 @@ class TokenService:
                 raise TokenInvalido()
 
             user_id = payload.get("sub")
-            if not user_id:
+            if user_id is None:
                 raise TokenResetInactivo()
             
             return user_id
@@ -176,7 +176,7 @@ class TokenService:
                 raise TokenInvalido()
 
             user_id = payload.get("sub")
-            if not user_id:
+            if user_id is None:
                 raise TokenVerificacionInactivo()
             
             return user_id
@@ -193,7 +193,7 @@ class TokenService:
                 raise TokenInvalido()
 
             user_id = payload.get("sub")
-            if not user_id:
+            if user_id is None:
                 raise TokenReactivacionInactivo()
             
             return int(user_id)
@@ -209,7 +209,7 @@ class TokenService:
                 raise TokenInvalido()
 
             user_id = payload.get("sub")
-            if not user_id:
+            if user_id is None:
                 raise TokenEliminacionInactivo()
             
             return user_id

@@ -26,7 +26,7 @@ class AuthDependencies:
             raise NoAutenticado("Usuario no autenticado")
 
         user_id = self.token_service.get_user_id_from_access_token(token)
-        if not user_id:
+        if user_id is None:
             raise TokenInvalido("Token inválido: falta el sub")
 
         usuario = self.auth_user_repository.obtener_por_id(user_id)
