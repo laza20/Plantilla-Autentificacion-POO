@@ -388,13 +388,11 @@ def get_obtener_usuario_actual(
     ).obtener_usuario_actual_use_case
 
 def get_auth_dependencies(
-    settings: Settings = Depends(get_settings),
     token_service: TokenService = Depends(get_token_service),
     auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository)
 ) -> AuthDependencies:
     """Factory para inyectar AuthDependencies en endpoints."""
     return AuthDependencies(
-        settings=settings,
         token_service=token_service,
         auth_user_repository=auth_user_repository
     )

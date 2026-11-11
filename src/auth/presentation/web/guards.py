@@ -1,5 +1,4 @@
 from fastapi import Request
-from src.config.config import Settings
 from src.auth.domain.entities.entitie_auth_users import AuthUser
 from src.auth.domain.exceptions.usuarios_exceptions import (NoAutenticado, UsuarioNoEncontrado)
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
@@ -10,11 +9,9 @@ from src.auth.domain.exceptions.tokens import TokenInvalido
 class AuthDependencies:
     def __init__(
         self,
-        settings: Settings,
         token_service: TokenProtocol,
         auth_user_repository: AuthUserRepositoryProtocol
     ):
-        self.settings = settings
         self.token_service = token_service
         self.auth_user_repository = auth_user_repository
 

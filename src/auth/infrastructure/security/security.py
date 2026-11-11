@@ -5,9 +5,6 @@ from fastapi import Depends
 pwd_context = PasswordHash.recommended()
 
 class PasswordService:
-    def __init__(self, settings: Settings):
-        self.settings = settings
-
     def hash_password(self, password: str) -> str:
         """
         Funcion encargada de realizar el hasheo de la contraseña proporsionada por el usuario
@@ -24,5 +21,5 @@ class PasswordService:
         return pwd_context.verify(plain, hashed)
 
 
-def get_password_service(settings: Settings = Depends(get_settings)) -> PasswordService:
-    return PasswordService(settings=settings)
+def get_password_service() -> PasswordService:
+    return PasswordService()
