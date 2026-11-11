@@ -16,7 +16,7 @@ def test_ver_usuario_correctamente(test_client):
             }
         )
 
-    app.dependency_overrides[get_current_user] = lambda: {"id_usuario": 1, "email": "test@test.com"}
+    app.dependency_overrides[get_current_user] = lambda: usuario_esperado
     app.dependency_overrides[get_obtener_usuario_actual] = crear_override(
         stub_class=StubCurrentUserUseCase,
         resultado=usuario_esperado

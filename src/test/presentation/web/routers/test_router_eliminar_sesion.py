@@ -17,7 +17,7 @@ def test_eliminar_sesion(test_client):
     )
 
     sesion_resultado = {"message": "Sesión eliminada"}
-    app.dependency_overrides[get_current_user] = lambda: {"id_usuario": 1, "email": "test@test.com"}
+    app.dependency_overrides[get_current_user] = lambda: usuario
     app.dependency_overrides[get_user_validation_service] = crear_override(
         stub_class=StubCurrentUserUseCase, 
         resultado=usuario
@@ -45,7 +45,7 @@ def test_no_se_encontro_la_sesion_a_eliminar(test_client):
     )
 
     sesion_resultado = {"message": "La sesion que se quiso eliminar, no pudo ser encontrada"}
-    app.dependency_overrides[get_current_user] = lambda: {"id_usuario": 1, "email": "test@test.com"}
+    app.dependency_overrides[get_current_user] = lambda: usuario
     app.dependency_overrides[get_user_validation_service] = crear_override(
         stub_class=StubCurrentUserUseCase, 
         resultado=usuario

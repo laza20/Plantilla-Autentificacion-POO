@@ -22,7 +22,7 @@ def test_debe_listar_sesiones(test_client):
         "ip": "localhost",
         "id_usuario": 1
     }
-    app.dependency_overrides[get_current_user] = lambda: {"id_usuario": 1, "email": "test@test.com"}
+    app.dependency_overrides[get_current_user] = lambda: usuario
     app.dependency_overrides[get_user_validation_service] = crear_override(
         stub_class=StubCurrentUserUseCase, 
         resultado=usuario
