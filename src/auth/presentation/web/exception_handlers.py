@@ -25,7 +25,8 @@ from src.auth.domain.exceptions.usuarios_exceptions import (
     UsuariosNoEncontrados,
     ContraseñaNoSegura,
     MailNoValido,
-    UsuarioActivo
+    UsuarioActivo,
+    LoginError
 )
 from src.domain.exceptions.domain import (
     DomainError,
@@ -63,6 +64,7 @@ HTTP_STATUS_BY_EXCEPTION = {
     TokenReactivacionInactivo: status.HTTP_401_UNAUTHORIZED,
     TokenEliminacionInactivo: status.HTTP_401_UNAUTHORIZED,
     VerificacionInvalida: status.HTTP_401_UNAUTHORIZED,
+    LoginError: status.HTTP_401_UNAUTHORIZED,
 
     # Excepciones de usuarios
     UsuarioNoModificado: status.HTTP_409_CONFLICT,

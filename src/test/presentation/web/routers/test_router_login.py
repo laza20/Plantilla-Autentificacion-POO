@@ -124,7 +124,7 @@ def test_debe_fallar_al_mandar_los_campos_incorrectos(test_client):
     [
         (
             LoginError("Usuario o contraseña incorrectos"),
-            status.HTTP_400_BAD_REQUEST
+            status.HTTP_401_UNAUTHORIZED
         ),
         (
             UsuarioError("Error al iniciar sesión"),
