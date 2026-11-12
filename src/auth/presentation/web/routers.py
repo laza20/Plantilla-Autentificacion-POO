@@ -9,7 +9,7 @@ from src.auth.infrastructure.persistence.postgres.schemas.schemas_recepcion impo
 
 #FASTAPI
 from fastapi import (
-    APIRouter, Depends, status, Response, Path, HTTPException, UploadFile, Request)
+    APIRouter, Depends, status, Response, Path, UploadFile, Request)
 from fastapi.security import OAuth2PasswordRequestForm
 
 #SERVICIOS
@@ -95,18 +95,14 @@ async def verificar_mail(
     """
     End point el cual permite la verificacion de una cuenta por medio de un token enviado al correo del usuario.
     """
-    try:
-        tokens = verify_mail.ejecutar(token)
-        cookies_service.set_auth_cookies(
-            response = response, 
-            access_token = tokens.access_token, 
-            refresh_token = tokens.refresh_token
-            )
-        return {"status": "success", "message": "¡Cuenta activada con éxito!"}
-    except VerificacionExpirada:
-        raise HTTPException(status_code=400, detail="Token expirado")
-    except VerificacionInvalida:
-        raise HTTPException(status_code=400, detail="Token inválido")
+    tokens = verify_mail.ejecutar(token)
+    cookies_service.set_auth_cookies(
+        response = response, 
+        access_token = tokens.access_token, 
+        refresh_token = tokens.refresh_token
+        )
+    return {"status": "success", "message": "¡Cuenta activada con éxito!"}
+
 
 
 @router.post("/login", response_model=LoginResponse, status_code=status.HTTP_202_ACCEPTED)
