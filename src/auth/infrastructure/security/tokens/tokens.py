@@ -3,8 +3,7 @@ from jose import jwt
 from typing import Dict
 from src.auth.domain.exceptions.tokens import (
     TokenInvalido, TokenResetInactivo, TokenVerificacionInactivo, TokenEliminacionInactivo,
-    TokenReactivacionInactivo)
-from src.auth.domain.exceptions.usuarios_exceptions import SinAccessToken
+    TokenReactivacionInactivo, SinAccessToken)
 from src.config.config import Settings
 from src.auth.domain.entities.entitie_auth_users import UserTokens
 import hashlib

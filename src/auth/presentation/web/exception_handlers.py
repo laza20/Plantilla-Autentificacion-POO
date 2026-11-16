@@ -11,6 +11,10 @@ from src.auth.domain.exceptions.tokens import (
     TokenEliminacionInactivo,
     VerificacionInvalida,
     VerificacionExpirada,
+    SinResetToken,
+    SinAccessToken,
+    SinRefreshToken,
+
 )
 from src.auth.domain.exceptions.usuarios_exceptions import (
     UsuarioError,
@@ -20,13 +24,11 @@ from src.auth.domain.exceptions.usuarios_exceptions import (
     MailRepetido,
     UsuarioNoEncontrado,
     NoAutenticado,
-    SinAccessToken,
-    SinRefreshToken,
     UsuariosNoEncontrados,
     ContraseñaNoSegura,
     MailNoValido,
     UsuarioActivo,
-    LoginError
+    LoginError,
 )
 from src.domain.exceptions.domain import (
     DomainError,
@@ -78,7 +80,8 @@ HTTP_STATUS_BY_EXCEPTION = {
     UsuarioActivo: status.HTTP_400_BAD_REQUEST,
     NoAutenticado: status.HTTP_401_UNAUTHORIZED,
     SinAccessToken: status.HTTP_401_UNAUTHORIZED,
-    SinRefreshToken: status.HTTP_401_UNAUTHORIZED
+    SinRefreshToken: status.HTTP_401_UNAUTHORIZED,
+    SinResetToken: status.HTTP_401_UNAUTHORIZED
 }
 
 

@@ -60,14 +60,6 @@ class NoAutenticado(UsuarioError):
     def __init__(self, message: str = "El usuario no está autenticado."):
         super().__init__(message)
 
-class SinAccessToken(UsuarioError):
-    def __init__(self, message: str = "No se proporcionó un token de acceso."):
-        super().__init__(message)
-
-class SinRefreshToken(UsuarioError):
-    def __init__(self, message: str = "No se proporcionó un token de refresco."):
-        super().__init__(message)
-
 
 class UsuariosNoEncontrados(UsuarioError):
     def __init__(self, message: str = "No se encontraron usuarios."):

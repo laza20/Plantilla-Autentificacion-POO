@@ -52,3 +52,17 @@ class TokenEliminacionInactivo(TokenException):
 class VerificacionInvalida(TokenException):
     def __init__(self, message: str = "El usuario NO ah sido identificado con exito."):
         super().__init__(message)
+
+
+class SinAccessToken(TokenException):
+    def __init__(self, message: str = "No se proporcionó un token de acceso."):
+        super().__init__(message)
+
+class SinRefreshToken(TokenException):
+    def __init__(self, message: str = "No se proporcionó un token de refresco."):
+        super().__init__(message)
+
+
+class SinResetToken(TokenException):
+    def __init__(self, message: str = "No se proporcionó un token de restablecimiento."):
+        super().__init__(message)

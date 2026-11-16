@@ -3,7 +3,7 @@ from src.test.presentation.web.overrides.override_crear import crear_override
 from src.test.presentation.web.stub.stub_refresh_token import StubRefreshTokenUseCase
 from src.container.auth.providers import get_refresh_token_service
 from src.config.config import settings
-from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
+from src.auth.domain.exceptions.tokens import SinRefreshToken
 from src.auth.domain.exceptions.tokens import VerificacionInvalida
 from fastapi import status
 
