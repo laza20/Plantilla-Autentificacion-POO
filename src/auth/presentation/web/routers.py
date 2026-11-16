@@ -48,8 +48,7 @@ from src.container.auth.providers import (
     get_eliminar_usuario_use_case, get_solicitud_reactivacion_cuenta_use_case, get_reactivar_cuenta_use_case)
 
 #EXCEPTIONS
-from src.auth.domain.exceptions.usuarios_exceptions import SinRefreshToken
-from src.auth.domain.exceptions.tokens import VerificacionInvalida, VerificacionExpirada
+from src.auth.domain.exceptions.tokens import SinRefreshToken, SinResetToken
 
 #RATE LIMITER
 from src.shared.infrastructure.security.rate_limiter.limiter import limiter
@@ -149,7 +148,7 @@ async def refresh_token(
 
 @router.get("/user/current", status_code=status.HTTP_200_OK, response_model=UsuarioCreado)
 async def ver_usuario(
-    current_user: dict = Depends(get_current_user),
+    current_user: UsuarioCreado = Depends(get_current_user),
     obtener_usuario_actual_use_case: ObtenerUsuarioActualUseCase = Depends(get_obtener_usuario_actual)
     ):
     """
@@ -170,6 +169,8 @@ async def logout(
     End point encargado de desloguear un usuario.
     """
     refresh_token = request.cookies.get("refresh_token")
+    if not refresh_token:
+        raise SinRefreshToken("No hay refresh token")
     logout_service.ejecutar(refresh_token=refresh_token)
     cookies_service.delete_auth_cookies(response=response)
     return {"message": "Sesión cerrada"}
@@ -180,7 +181,7 @@ async def logout(
 async def list_sesions(
     request: Request,
     listar_sesiones_use_case: ListarSesionesUseCase = Depends(get_listar_sesiones_use_case),
-    current_user: dict = Depends(get_current_user)
+    current_user: UsuarioCreado = Depends(get_current_user)
 ):
     """
     End point encargado de listar las sesiones activas de un usuario.
@@ -196,7 +197,7 @@ async def eliminar_sesion(
     request: Request,
     id_sesion: int = Path(..., description="ID de la sesión a eliminar"),
     eliminar_sesiones_use_case: EliminarSesionesUseCase = Depends(get_eliminar_sesiones_use_case),
-    current_user: dict = Depends(get_current_user)
+    current_user: UsuarioCreado = Depends(get_current_user)
 ):
     """
     End point encargado de eliminar una sesión activa de un usuario.
@@ -249,6 +250,8 @@ async def modificar_password(
     token_service: TokenService = Depends(get_token_service)
 ):
     reset_token = request.cookies.get("reset_token")
+    if not reset_token:
+        raise SinResetToken()
 
     payload = token_service.decode_token(reset_token)
     id_usuario = payload["sub"]
@@ -280,7 +283,7 @@ async def modificar_usuario(
     #Lo mismo con el parce_usueario_form (si se agregan datos en uno, tambien se debe hacer en el otro)
     request: Request,
     datos: tuple[UserModifyDTO, UploadFile | None] = Depends(parse_modificar_usuario_form),
-    current_user: dict = Depends(get_current_user),
+    current_user: UsuarioCreado = Depends(get_current_user),
     modificar_usuario_use_case: ModificarUsuarioUseCase = Depends(
         get_modificar_usuario_use_case
     )
@@ -295,13 +298,12 @@ async def modificar_usuario(
 @limiter.limit("5/hour")
 async def eliminar_usuario(
     request: Request,
-    current_user: dict = Depends(get_current_user),
+    current_user: UsuarioCreado = Depends(get_current_user),
     eliminar_usuario_use_case: SolicitudEliminacionUsuarioUseCase = Depends(
         get_solicitud_eliminacion_usuario_use_case
     )
 ):
-    id_usuario = current_user.id_usuario
-    resultado = await eliminar_usuario_use_case.ejecutar(id_usuario=id_usuario)
+    resultado = await eliminar_usuario_use_case.ejecutar(id_usuario=current_user.id_usuario)
     return resultado
 
 
