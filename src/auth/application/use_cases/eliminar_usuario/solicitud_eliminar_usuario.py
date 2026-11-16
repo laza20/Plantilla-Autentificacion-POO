@@ -22,7 +22,7 @@ class SolicitudEliminacionUsuarioUseCase:
         self.base_de_datos_url = base_de_datos_url
         self.nombre_app = nombre_app
 
-    async def ejecutar(self, id_usuario:str):
+    async def ejecutar(self, id_usuario:int):
         usuario = self.auth_user_repository.obtener_por_id(id_usuario=id_usuario)
         if usuario is None:
             raise UsuarioNoEncontrado("No se pudo encontrar el usuario")
