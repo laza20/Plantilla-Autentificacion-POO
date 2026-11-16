@@ -1,10 +1,10 @@
 from fastapi import Request
-from src.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth.application.dtos.auth_user_dto import UsuarioCreado
 from src.auth.domain.exceptions.usuarios_exceptions import (NoAutenticado, UsuarioNoEncontrado)
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.auth.domain.exceptions.tokens import TokenInvalido
-
+from src.auth.application.mappers.auth_users import a_usuario_creado
 
 class AuthDependencies:
     def __init__(
@@ -18,7 +18,7 @@ class AuthDependencies:
     async def get_current_user(
         self, 
         request: Request
-    ) -> AuthUser:
+    ) -> UsuarioCreado:
         """Obtiene el usuario actual del token en cookies."""
         token = request.cookies.get("access_token")
 
@@ -33,18 +33,18 @@ class AuthDependencies:
         if not usuario:
             raise UsuarioNoEncontrado("Usuario no encontrado")
 
-        return usuario
+        return a_usuario_creado(usuario)
 
     async def get_admin_user(
         self, 
         request: Request
-    ) -> AuthUser:
+    ) -> UsuarioCreado:
         """
         Obtiene el usuario actual y valida que sea admin.
-        TODO: 'role' no existe todavía en AuthUser — pendiente de agregar
+        TODO: 'role' no existe todavía en UsuarioCreado — pendiente de agregar
         cuando se implemente el sistema de roles.
         """
-        raise NotImplementedError("get_admin_user: falta el campo 'role' en AuthUser")
+        raise NotImplementedError("get_admin_user: falta el campo 'role' en UsuarioCreado")
         #user = await self.get_current_user(request)
         #if user.role != "admin":  # AttributeError hasta que exista el campo
         #    raise HTTPException(status_code=403, detail="Se requieren permisos de administrador")
@@ -55,13 +55,13 @@ class AuthDependencies:
     async def get_premium_user(
         self, 
         request: Request
-    ) -> AuthUser:
+    ) -> UsuarioCreado:
         """
         Obtiene el usuario actual y valida que sea premium.
-        TODO: 'role' no existe todavía en AuthUser — pendiente de agregar
+        TODO: 'role' no existe todavía en UsuarioCreado — pendiente de agregar
         cuando se implemente el sistema de roles.
         """
-        raise NotImplementedError("get_premium_user: falta el campo 'role' en AuthUser")
+        raise NotImplementedError("get_premium_user: falta el campo 'role' en UsuarioCreado")
         #user = await self.get_current_user(request)
         #if user.role != "premium":  # AttributeError hasta que exista el campo
         #    raise HTTPException(status_code=403, detail="Se requieren permisos de premium")
