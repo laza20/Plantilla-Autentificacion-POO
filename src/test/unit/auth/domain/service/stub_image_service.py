@@ -1,5 +1,5 @@
-from fastapi import UploadFile
 from src.auth.domain.entities.entitie_auth_users import AuthUser
+from src.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
 
 class StubImageService:
     def __init__(self):
@@ -8,7 +8,7 @@ class StubImageService:
         self.servicio_recibido = None
         self.imagen_guardada = None
 
-    def insertar_imagen(self, objeto_usuario: AuthUser, imagen: UploadFile, servicio="usuarios") -> AuthUser:
+    def insertar_imagen(self, objeto_usuario: AuthUser, imagen: TipadoImagenProtocol, servicio="usuarios") -> AuthUser:
         """
         Función para simular la inserción de una imagen.
         """

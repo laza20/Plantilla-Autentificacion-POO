@@ -1,9 +1,9 @@
-from fastapi import UploadFile
 from datetime import date
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.shared.protocols.protocol_mail_service import MailProtocol
 from src.shared.protocols.protocol_image_service import ImageProtocol
+from src.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.application.mappers.auth_users import a_usuario_creado
 from src.auth.domain.services.mail_policy import MailPolicyService
@@ -39,7 +39,7 @@ class ModificarUsuarioUseCase:
         self.nombre_app = nombre_app
         self.unit_of_work_service = unit_of_work_service
 
-    async def ejecutar(self, id_usuario:int, usuario:UserModifyDTO | None, imagen:UploadFile | None) -> AuthUser:
+    async def ejecutar(self, id_usuario:int, usuario:UserModifyDTO | None, imagen:TipadoImagenProtocol | None) -> AuthUser:
         mail_modificado = False
 
         usuario_db = self.auth_user_repository.obtener_por_id(id_usuario=id_usuario)

@@ -1,9 +1,9 @@
-from fastapi import UploadFile
 import logging
 from src.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
 from src.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 from src.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
 from src.shared.protocols.protocol_mail_service import MailProtocol
+from src.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
 from src.shared.protocols.protocol_image_service import ImageProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
@@ -48,7 +48,7 @@ class RegisterUseCase:
         self.usuario_repository = usuario_repository
         self.unit_of_work_service = unit_of_work_service
 
-    async def ejecutar(self, usuario:UserRegisterDTO, imagen:UploadFile | None) -> AuthUser:
+    async def ejecutar(self, usuario:UserRegisterDTO, imagen:TipadoImagenProtocol | None) -> AuthUser:
         if usuario is None:
             raise SinCargas()
 

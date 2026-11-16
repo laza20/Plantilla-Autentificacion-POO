@@ -1,6 +1,6 @@
 from typing import Protocol, runtime_checkable
-from fastapi import UploadFile
 from src.auth.domain.entities.entitie_auth_users import AuthUser
+from src.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
 
 @runtime_checkable
 class ImageProtocol(Protocol):
@@ -24,7 +24,7 @@ class ImageProtocol(Protocol):
         def __init__(self, settings: Settings):
             self.settings = settings
         
-        def insertar_imagen(self, objeto: AuthUser, imagen: UploadFile, servicio: str) -> AuthUser:
+        def insertar_imagen(self, objeto: AuthUser, imagen: TipadoImagenProtocol, servicio: str) -> AuthUser:
             # 1. Valida el archivo (tamaño, extensión)
             # 2. Sube a Cloudinary (método privado _subir_imagen)
             # 3. Actualiza objeto.imagen_url con URL pública
@@ -43,7 +43,7 @@ class ImageProtocol(Protocol):
     -------------------
     """
     
-    def insertar_imagen(self, objeto: AuthUser, imagen: UploadFile, servicio: str) -> AuthUser:
+    def insertar_imagen(self, objeto: AuthUser, imagen: TipadoImagenProtocol, servicio: str) -> AuthUser:
         """
         Procesa y almacena una imagen, actualizando el objeto del usuario con la información del servidor.
         

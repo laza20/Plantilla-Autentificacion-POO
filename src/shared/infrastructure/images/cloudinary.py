@@ -1,13 +1,8 @@
-from fastapi import FastAPI, UploadFile
 from src.auth.domain.entities.entitie_auth_users import AuthUser
-from fastapi import UploadFile
+from src.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
 from src.domain.exceptions.domain import LimiteTamañoSuperado, ExtensionNoPermitida, ErrorCloudinary, DomainError
 from src.shared.infrastructure.images.cloudinary_config import cloudinary_uploader
-from src.config.config import Settings, get_settings
-from fastapi import Depends
-
-app = FastAPI(title="FastAPI Cloudinary Integration")
-
+from src.config.config import Settings
 """
 Servicios validos engloba todos los servicios que pueden utilizar imagenes dentro del sistema
 Max_file_size es el tamaño máximo permitido para las imágenes a subir, en este caso 5MB.
@@ -28,12 +23,15 @@ class ImageService:
     ):
         self.settings = settings
 
-    def insertar_imagen(self, objeto:AuthUser, imagen: UploadFile, servicio:str)-> AuthUser:
+    def insertar_imagen(self, objeto:AuthUser, imagen: TipadoImagenProtocol, servicio:str)-> AuthUser:
         """
         Funcion encargada de eniar los datos a la funcion principal de subida de imagenes y actualizar el objeto con la URL optimizada y el public_id.
         - Recibe un objeto que contiene el campo imagen_url con el archivo a subir y el servicio al que pertenece la imagen.
         - Retorna el mismo objeto con los campos imagen_url e imagen_public_id actualizados con
         """
+        if not imagen:
+            raise ErrorCloudinary()
+        
         subir_imagen_resultado = self.subir_imagen(servicio=servicio, imagen=imagen)
         objeto.imagen_url = subir_imagen_resultado["url_optimizada"]
         objeto.imagen_public_id = subir_imagen_resultado["public_id"]
@@ -42,7 +40,7 @@ class ImageService:
     def subir_imagen(
         self,
         servicio: str,
-        imagen: UploadFile,
+        imagen: TipadoImagenProtocol,
         ):  
         """
         Funcion encargada de subir una imagen a Cloudinary, validando el servicio y la extensión del archivo.
@@ -82,12 +80,3 @@ class ImageService:
             
         except Exception as e:
             raise ErrorCloudinary(error=str(e))
-
-
-
-def get_image_service(
-    settings: Settings = Depends(get_settings)
-):
-    return ImageService(
-        settings
-    )
