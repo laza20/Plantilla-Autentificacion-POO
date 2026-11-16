@@ -64,7 +64,7 @@ class RegisterUseCase:
 
         with self.unit_of_work_service:
             usuario_auth= self.auth_user_repository.insertar(objeto_usuario)
-            usuario_insertado = self.usuario_repository.insertar(self._preparar_usuario_registro(usuario_auth))
+            usuario_insertado = self.usuario_repository.insertar(usuario_auth)
             self._mostrar_errores(usuario_auth, usuario_insertado)
             
 
@@ -94,9 +94,7 @@ class RegisterUseCase:
         """
         try:
 
-            datos_limpios = {"email": usuario.email.strip().lower(),
-                             "password":usuario.password}
-            return AuthUser(**datos_limpios)
+            return AuthUser(email=usuario.email.strip().lower(), password=usuario.password)
 
         except ValidationError as e:
             error_detalle = e.errors()[0]
@@ -118,10 +116,3 @@ class RegisterUseCase:
             url=url,
             nombre_proyecto=self.nombre_app,
         )
-
-    def _preparar_usuario_registro(self, usuario:AuthUser)->Usuario:
-        """
-        Funcion encargada de preparar el objeto Usuario para ser insertado en la base de datos.
-        """
-        return usuario
-

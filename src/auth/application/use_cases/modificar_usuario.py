@@ -14,6 +14,7 @@ from src.domain.exceptions.domain import LongitudExcedida
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoModificado
 from src.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
 from dataclasses import replace
+from typing import Any
 
 
 class ModificarUsuarioUseCase:
@@ -50,7 +51,7 @@ class ModificarUsuarioUseCase:
         if usuario_db is None:
             raise UsuarioNoEncontrado("El usuario no fue encontrado")
 
-        cambios = {}
+        cambios: dict[str, Any] = {}
         if usuario is not None and usuario.email is not None:
             email = self._normalizar_email(usuario.email)
 
