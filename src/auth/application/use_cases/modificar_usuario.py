@@ -7,7 +7,7 @@ from src.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
 from src.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from src.auth.application.mappers.auth_users import a_usuario_creado
 from src.auth.domain.services.mail_policy import MailPolicyService
-from src.auth.application.dtos.auth_user_dto import UserModifyDTO
+from src.auth.application.dtos.auth_user_dto import UserModifyDTO, UsuarioCreado
 from src.auth.domain.entities.entitie_auth_users import EMAIL_MAX_LENGTH, AuthUser
 from src.database.enums.estado_entidad import EstadoEntidad
 from src.domain.exceptions.domain import LongitudExcedida
@@ -39,7 +39,11 @@ class ModificarUsuarioUseCase:
         self.nombre_app = nombre_app
         self.unit_of_work_service = unit_of_work_service
 
-    async def ejecutar(self, id_usuario:int, usuario:UserModifyDTO | None, imagen:TipadoImagenProtocol | None) -> AuthUser:
+    async def ejecutar(
+            self, 
+            id_usuario:int, 
+            usuario:UserModifyDTO | None, 
+            imagen:TipadoImagenProtocol | None) -> UsuarioCreado:
         mail_modificado = False
 
         usuario_db = self.auth_user_repository.obtener_por_id(id_usuario=id_usuario)

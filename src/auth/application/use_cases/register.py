@@ -15,7 +15,7 @@ from src.auth.domain.entities.entitie_auth_users import AuthUser
 from src.auth.domain.entities.entitie_usuario import Usuario
 from pydantic import ValidationError
 from src.domain.exceptions.domain import LongitudExcedida, SinCargas, ErrorCreacion
-from src.auth.application.dtos.auth_user_dto import UserRegisterDTO
+from src.auth.application.dtos.auth_user_dto import UserRegisterDTO, UsuarioCreado
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ class RegisterUseCase:
         self.usuario_repository = usuario_repository
         self.unit_of_work_service = unit_of_work_service
 
-    async def ejecutar(self, usuario:UserRegisterDTO, imagen:TipadoImagenProtocol | None) -> AuthUser:
+    async def ejecutar(self, usuario:UserRegisterDTO, imagen:TipadoImagenProtocol | None) -> UsuarioCreado:
         if usuario is None:
             raise SinCargas()
 
