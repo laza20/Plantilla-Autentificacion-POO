@@ -38,7 +38,7 @@ class RecuperarContraseñaProtocol(Protocol):
         ...
 
 
-    def invalidar_tokens_anteriores(self, id_usuario:int)->None:
+    def invalidar_tokens_anteriores(self, id_usuario:int)->bool:
         """
         los tokens no utilizado tienen por defecto el campo usado:false, por ende, si se pide un nuevo token
         de recuperacion, los token no utilizados cambian su estado a true

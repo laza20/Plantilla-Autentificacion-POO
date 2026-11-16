@@ -174,7 +174,7 @@ class TokenProtocol(Protocol):
         """
         ...
     
-    def get_user_id_from_access_token(self, token: str) -> str:
+    def get_user_id_from_access_token(self, token: str) -> int:
         """
         Extrae el user_id de un token de acceso válido.
         

@@ -64,7 +64,7 @@ class RegisterUseCase:
 
         with self.unit_of_work_service:
             usuario_auth= self.auth_user_repository.insertar(objeto_usuario)
-            usuario_insertado = self.usuario_repository.insertar(usuario_auth)
+            usuario_insertado = self.usuario_repository.insertar(Usuario(id_usuario=usuario_auth.id_usuario))
             self._mostrar_errores(usuario_auth, usuario_insertado)
             
 

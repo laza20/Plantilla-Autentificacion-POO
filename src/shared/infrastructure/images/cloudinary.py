@@ -28,10 +28,7 @@ class ImageService:
         Funcion encargada de eniar los datos a la funcion principal de subida de imagenes y actualizar el objeto con la URL optimizada y el public_id.
         - Recibe un objeto que contiene el campo imagen_url con el archivo a subir y el servicio al que pertenece la imagen.
         - Retorna el mismo objeto con los campos imagen_url e imagen_public_id actualizados con
-        """
-        if not imagen:
-            raise ErrorCloudinary()
-        
+        """        
         subir_imagen_resultado = self.subir_imagen(servicio=servicio, imagen=imagen)
         objeto.imagen_url = subir_imagen_resultado["url_optimizada"]
         objeto.imagen_public_id = subir_imagen_resultado["public_id"]
@@ -48,17 +45,20 @@ class ImageService:
         """
         if servicio.lower() not in SERVICIOS_VALIDOS:
             raise DomainError(
-                detail=f"Servicio no válido. Opciones permitidas: {', '.join(SERVICIOS_VALIDOS)}"
+                message=f"Servicio no válido. Opciones permitidas: {', '.join(SERVICIOS_VALIDOS)}"
             )
 
-        extensiones_permitidas = ["jpg", "jpeg", "png", "webp"]
-        file_ext = imagen.filename.split(".")[-1].lower() if "." in imagen.filename else ""
-
-        if imagen.size > MAX_FILE_SIZE:
-            raise LimiteTamañoSuperado()
-
-        if file_ext not in extensiones_permitidas:
+        if not imagen.filename or "." not in imagen.filename:
             raise ExtensionNoPermitida()
+
+        extensiones_permitidas = {"jpg", "jpeg", "png", "webp"}
+        extension = imagen.filename.rsplit(".", 1)[-1].lower()
+
+        if extension not in extensiones_permitidas:
+            raise ExtensionNoPermitida()
+
+        if imagen.size is None or imagen.size > MAX_FILE_SIZE:
+            raise LimiteTamañoSuperado()
 
         try:
             carpeta_destino = f"{self.settings.NOMBRE_APP}/{servicio.lower()}"
