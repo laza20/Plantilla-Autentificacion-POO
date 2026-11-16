@@ -1,7 +1,7 @@
 import pytest
 from src.auth.application.dtos.auth_user_dto import UserModifyDTO
 from io import BytesIO
-from fastapi import UploadFile
+from types import SimpleNamespace
 from src.domain.exceptions.domain import LongitudExcedida
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoModificado, MailNoValido
 from src.test.fixtures.fixture_modificar_usuario import ModificarUsuarioTestEnvironment
@@ -56,7 +56,7 @@ async def test_debe_modificar_una_imagen():
     context = ModificarUsuarioTestEnvironment()
     usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
 
-    imagen = UploadFile(
+    imagen = SimpleNamespace(
         filename="foto.jpg",
         file=BytesIO(b"contenido")
     )

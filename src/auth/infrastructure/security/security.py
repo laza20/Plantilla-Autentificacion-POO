@@ -1,6 +1,4 @@
 from pwdlib import PasswordHash
-from src.config.config import Settings, get_settings
-from fastapi import Depends
 
 pwd_context = PasswordHash.recommended()
 
@@ -20,6 +18,3 @@ class PasswordService:
         """
         return pwd_context.verify(plain, hashed)
 
-
-def get_password_service() -> PasswordService:
-    return PasswordService()

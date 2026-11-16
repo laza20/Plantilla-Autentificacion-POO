@@ -5,9 +5,7 @@ from src.auth.domain.exceptions.tokens import (
     TokenInvalido, TokenResetInactivo, TokenVerificacionInactivo, TokenEliminacionInactivo,
     TokenReactivacionInactivo)
 from src.auth.domain.exceptions.usuarios_exceptions import SinAccessToken
-from jose import JWTError
-from fastapi import Depends
-from src.config.config import get_settings, Settings
+from src.config.config import Settings
 from src.auth.domain.entities.entitie_auth_users import UserTokens
 import hashlib
 import secrets
@@ -232,7 +230,3 @@ class TokenService:
         expire = datetime.now(timezone.utc) + expires_delta
         return int(expire.timestamp())
         
-
-    
-def get_token_service(settings: Settings = Depends(get_settings)) -> TokenService:
-    return TokenService(settings=settings)

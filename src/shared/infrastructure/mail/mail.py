@@ -1,6 +1,5 @@
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from src.config.config import Settings, get_settings
-from fastapi import Depends
 
 class MailService:
     def __init__(
@@ -38,6 +37,3 @@ class MailService:
             subtype="html"
         )
         
-
-def get_mail_service(settings: Settings = Depends(get_settings)) -> MailService:
-    return MailService(settings=settings)

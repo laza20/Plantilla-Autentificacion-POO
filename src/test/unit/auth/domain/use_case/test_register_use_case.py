@@ -5,7 +5,7 @@ from src.auth.application.dtos.auth_user_dto import UserRegisterDTO
 from src.test.fixtures.fixture_register_case import RegisterTestEnvironment
 from src.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura, MailNoValido, MailRepetido
 from io import BytesIO
-from fastapi import UploadFile
+from types import SimpleNamespace
 
 
 @pytest.mark.asyncio
@@ -152,7 +152,7 @@ async def test_debe_registrar_un_usuario_con_imagen():
         email = "test@test.com",
         password = "Password123!"
     )
-    imagen = UploadFile(
+    imagen = SimpleNamespace(
         filename="foto.jpg",
         file=BytesIO(b"contenido")
     )
@@ -174,7 +174,7 @@ async def test_debe_utilizar_el_servicio_de_imagenes_cuando_se_envia_una_imagen(
         email = "test@test.com",
         password = "Password123!"
     )
-    imagen = UploadFile(
+    imagen = SimpleNamespace(
         filename="foto.jpg",
         file=BytesIO(b"contenido")
     )
