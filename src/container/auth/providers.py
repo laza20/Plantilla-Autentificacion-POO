@@ -105,10 +105,8 @@ def get_token_service(
     return TokenService(settings)
 
 
-def get_password_service(
-    settings: Settings = Depends(get_settings)
-) -> PasswordProtocol:
-    return PasswordService(settings)
+def get_password_service() -> PasswordProtocol:
+    return PasswordService()
 
 
 def get_mail_service(
