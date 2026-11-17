@@ -54,6 +54,9 @@ class RecoverPasswordRepository:
         if recover_password is None:
             return False
 
+        if recover_password.expira_en is None:
+            return False
+
         if recover_password.expira_en < tiempo_actual:
             return False
 
