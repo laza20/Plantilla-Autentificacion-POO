@@ -1,8 +1,7 @@
 from src.auth.infrastructure.persistence.postgres.models.models_sesiones import Sesiones as SesionSqlModel
 from src.auth.infrastructure.persistence.postgres.mappers.mapper_sesiones import a_entidad, a_modelo
 from src.auth.domain.entities.entitie_sesiones import Sesion
-from sqlalchemy.orm import Session
-from sqlmodel import delete
+from sqlmodel import delete, Session
 
 
 class SesionRepository:

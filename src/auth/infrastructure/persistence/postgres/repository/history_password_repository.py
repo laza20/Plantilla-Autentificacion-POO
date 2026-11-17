@@ -1,5 +1,5 @@
 from src.auth.infrastructure.persistence.postgres.models.models_history_password import HistoryPassword as HistoryPasswordSqlModel
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 from datetime import datetime
 
 
