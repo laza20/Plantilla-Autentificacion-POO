@@ -1,7 +1,7 @@
 from src.auth.infrastructure.persistence.postgres.models.models_recover_password import RecoverPassword as RecoverPasswordSqlModel
 from src.auth.domain.entities.entitie_recover_password import RecoverPassword
 from src.auth.infrastructure.persistence.postgres.mappers.mapper_recover_password import a_entidad
-from sqlmodel import update, select, Session
+from sqlmodel import update, select, Session, col
 from datetime import datetime
 
 
@@ -14,8 +14,8 @@ class RecoverPasswordRepository:
         statement = (
             update(RecoverPasswordSqlModel)
             .where(
-                RecoverPasswordSqlModel.id_usuario == id_usuario,
-                RecoverPasswordSqlModel.usado == False
+                col(RecoverPasswordSqlModel.id_usuario) == id_usuario,
+                col(RecoverPasswordSqlModel.usado) == False
             )
             .values(usado=True)
         )
