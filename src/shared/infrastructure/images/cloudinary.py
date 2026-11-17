@@ -48,6 +48,9 @@ class ImageService:
                 message=f"Servicio no válido. Opciones permitidas: {', '.join(SERVICIOS_VALIDOS)}"
             )
 
+        if imagen.size is None or imagen.size > MAX_FILE_SIZE:
+            raise LimiteTamañoSuperado()
+
         if not imagen.filename or "." not in imagen.filename:
             raise ExtensionNoPermitida()
 
@@ -56,9 +59,6 @@ class ImageService:
 
         if extension not in extensiones_permitidas:
             raise ExtensionNoPermitida()
-
-        if imagen.size is None or imagen.size > MAX_FILE_SIZE:
-            raise LimiteTamañoSuperado()
 
         try:
             carpeta_destino = f"{self.settings.NOMBRE_APP}/{servicio.lower()}"
