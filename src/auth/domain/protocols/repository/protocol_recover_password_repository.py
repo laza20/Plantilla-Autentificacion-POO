@@ -4,6 +4,17 @@ from src.auth.domain.entities.entitie_recover_password import RecoverPassword
 
 @runtime_checkable
 class RecuperarContraseñaProtocol(Protocol):
+    """
+    Contrato de persistencia de los tokens de recuperación de contraseña.
+
+    Lo consumen los casos de uso de recuperación de contraseña. Cada registro
+    asocia un usuario con el hash de un token de un solo uso y su vencimiento.
+    La implementación concreta vive fuera del dominio y se arma en la composition
+    root (src/container/auth/providers.py).
+
+    No se asume commit al retornar: la confirmación de la transacción no es
+    responsabilidad de estos métodos.
+    """
 
     def insertar_recuperacion_contraseña(
             self,
@@ -11,14 +22,18 @@ class RecuperarContraseñaProtocol(Protocol):
             token_hash:str,
             expira_en:datetime )->bool:
         """
-        Funcion la cual nos permite insertar dentro de la base de datos un registro de tipo recuperacion 
-        de contraseña.
-        la misma recibe los siguientes parametros como obligatorios para el correcto funcionamiento y armado
-        del modelo:
-        - id_usuario: permite asignarle a un registro un usuario determinado.
-        - token_hash: campo el cual permite la verificacion del token, campo central para el funcionamiento 
-        del sistema de recuperacion de controseña.
-        - expira_en: tiempo limite por el cual se puede utilizar el token.
+        Registra un token de recuperación para un usuario.
+
+        El registro queda sin usar. No invalida los tokens previos del usuario:
+        para eso existe invalidar_tokens_anteriores.
+
+        Args:
+            id_usuario: ID del usuario que pidió la recuperación.
+            token_hash: Hash del token enviado al usuario (nunca el token en claro).
+            expira_en: Fecha límite hasta la cual el token puede usarse.
+
+        Returns:
+            True si el registro quedó agregado.
         """
         ...
 
@@ -30,26 +45,52 @@ class RecuperarContraseñaProtocol(Protocol):
             token_hash:str
     )-> RecoverPassword | bool :
         """
-        Permite verificar que un token recibido existe en la base de datos. Lo parametros recibidos nos permiten:
-        - tiempo_actual: Permite verificar que el token sigue siendo valido en tiempo de uso de ejecucion.
-        - token_hash: el token para comparar y verificar que el dato llegado es el que se encuentra en la base de
-        datos.
+        Valida un token de recuperación a partir de su hash.
+
+        El token es válido si existe un registro con ese token_hash, no fue
+        usado y no venció (expira_en >= tiempo_actual).
+
+        Args:
+            tiempo_actual: Instante contra el cual se evalúa el vencimiento.
+            token_hash: Hash del token recibido.
+
+        Returns:
+            El registro RecoverPassword si el token es válido. False en
+            cualquier otro caso (no existe, ya usado, sin fecha de vencimiento
+            o vencido). No levanta excepciones ni distingue el motivo.
         """
         ...
 
 
     def invalidar_tokens_anteriores(self, id_usuario:int)->bool:
         """
-        los tokens no utilizado tienen por defecto el campo usado:false, por ende, si se pide un nuevo token
-        de recuperacion, los token no utilizados cambian su estado a true
+        Marca como usados todos los tokens pendientes de un usuario.
+
+        Se usa al emitir un token nuevo, para que solo el último sea válido.
+        Los tokens ya usados no se tocan.
+
+        Args:
+            id_usuario: ID del usuario cuyos tokens se invalidan.
+
+        Returns:
+            True si invalidó al menos un token; False si no había ninguno
+            pendiente.
         """
         ...
 
     def desactivar_token_utilizado(self, id_usuario: int)->bool:
         """
-        El metodo se encarga de llamar al metodo de invalidar tokens.
-        El metodo realiza una llamada a invalidar_tokens_anteriores, para cumplir este caso,
-        la funcion que cumple este metodo es dar contexto a la secuencia de funcionamiento y 
-        permitir comprender mejor el flujo de contexto.
+        Marca como usados los tokens pendientes del usuario tras consumir el de recuperación.
+
+        Tiene el mismo efecto que invalidar_tokens_anteriores y existe para
+        nombrar el paso final del flujo. Opera sobre todos los tokens
+        pendientes del usuario, no sobre uno puntual.
+
+        Args:
+            id_usuario: ID del usuario cuyos tokens se invalidan.
+
+        Returns:
+            True si invalidó al menos un token; False si no había ninguno
+            pendiente.
         """
         ...

@@ -1,345 +1,98 @@
 from typing import Protocol, runtime_checkable
 from src.auth.domain.entities.entitie_auth_users import AuthUser
-from datetime import datetime, date
+from datetime import datetime
 
 @runtime_checkable
 class AuthUserRepositoryProtocol(Protocol):
     """
-    Contrato para repositorios de usuarios.
-    
-    ¿Qué es?
-    --------
-    Define la interfaz que CUALQUIER sistema de persistencia de usuarios debe cumplir.
-    Puede ser SQL (PostgreSQL, MySQL), NoSQL (MongoDB), Cloud (Firebase), etc.
-    
-    ¿Cómo implementar?
-    ------------------
-    1. Crea una clase que implemente estos cinco métodos
-    2. Cada método debe manejar un aspecto diferente del usuario
-    3. Registra la clase en dependencies.py
-    
-    Ejemplo de implementación (SQLModel):
-    
-    from sqlmodel import Session, select
-    
-    class UserRepository:
-        def __init__(self, session: Session):
-            self.session = session
-        
-        def insertar(self, usuario: AuthUser) -> AuthUser:
-            self.session.add(usuario)
-            self.session.commit()
-            self.session.refresh(usuario)
-            return usuario
-        
-        def obtener_por_id_sin_activar(self, id_usuario: int) -> AuthUser | None:
-            statement = select(AuthUser).where(AuthUser.id_usuario == id_usuario)
-            return self.session.exec(statement).first()
-        
-        # ... resto de métodos
-    
-    Atributos requeridos:
-    --------------------
-    Ninguno. Solo implementa los métodos.
-    
-    Métodos requeridos:
-    -------------------
+    Contrato de persistencia de usuarios de autenticación.
+
+    Lo consumen los casos de uso de auth (registro, verificación de email,
+    login, recuperación de contraseña, baja y reactivación de cuenta). La
+    implementación concreta vive fuera del dominio y se arma en la composition
+    root (src/container/auth/providers.py).
+
+    Estados del usuario (EstadoEntidad): PENDIENTE (registrado, sin verificar),
+    ACTIVO y ELIMINADO (baja lógica). Cada método indica sobre cuáles busca.
+
+    No se asume commit al retornar: la confirmación de la transacción no es
+    responsabilidad de estos métodos.
     """
-    
+
     def insertar(self, usuario: AuthUser) -> AuthUser:
         """
-        Inserta un nuevo usuario en la base de datos.
-        
-        Parámetros:
-        -----------
-        usuario : AuthUser
-            Objeto del usuario a insertar.
-            Debe tener al menos:
-            - email: Dirección de correo (único)
-            - password: Hash de la contraseña
-            - nombre: Nombre del usuario
-            
-            Típicamente NO tiene:
-            - id_usuario: Se genera automáticamente (autoincrement)
-            - is_verified: Se pone False por defecto
-            - estado: Se pone PENDIENTE o similar
-        
-        Retorna:
-        --------
-        AuthUser
-            El mismo usuario pero con:
-            - id_usuario: Asignado por la BD (autoincrement)
-            - is_verified: False (no verificado)
-            - estado: Probablemente PENDIENTE
-            - timestamps: created_at, updated_at si existen
-        
-        Excepciones esperadas:
-        ----------------------
-        IntegrityError (o equivalente)
-            Si el email ya existe (violaría unique constraint)
-        
-        Exception
-            Si hay error de conexión BD, validación, etc.
-        
-        Ejemplo práctico:
-        -----------------
-        # En AuthService.register()
-        usuario = AuthUser(
-            email="juan@example.com",
-            password="$argon2id$v=19$...",  # Hash
-            nombre="Juan"
-        )
-        # usuario.id_usuario = None (aún no existe)
-        
-        usuario_creado = self.auth_user_repository.insertar(usuario)
-        
-        # Ahora:
-        print(usuario_creado.id_usuario)  # 1
-        print(usuario_creado.is_verified)  # False
-        print(usuario_creado.estado)  # PENDIENTE
-        
-        Notas de implementación:
-        -----------------------
-        - El usuario es nuevo (no debe existir)
-        - Email debe ser único (validación BD)
-        - Password debe estar hasheado ANTES de insertar
-        - Los campos id_usuario, is_verified, estado se asignan por defecto
-        - Debe persistir en BD (commit/flush)
-        - Retorna el objeto actualizado con ID asignado
-        - Si el email ya existe, lanza excepción (no silenciosamente)
+        Inserta un usuario nuevo y devuelve la entidad persistida.
+
+        Args:
+            usuario: Entidad a insertar. El password debe llegar ya hasheado.
+
+        Returns:
+            La entidad con los datos persistidos, incluido el id_usuario asignado.
+
+        Raises:
+            MailRepetido: Si ya existe un usuario con ese email, sin importar
+                su estado (PENDIENTE, ACTIVO o ELIMINADO).
         """
         ...
-    
+
     def obtener_por_id_sin_activar(self, id_usuario: int) -> AuthUser | None:
         """
-        Obtiene un usuario por ID SIN importar su estado (incluso si no está verificado).
-        
-        Parámetros:
-        -----------
-        id_usuario : int
-            ID único del usuario en la BD.
-            Ejemplo: 1, 2, 3, ...
-        
-        Retorna:
-        --------
-        AuthUser | None
-            El usuario si existe.
-            None si no existe.
-            
-            Características:
-            - Se retorna incluso si is_verified = False
-            - Se retorna incluso si estado != ACTIVO
-            - Objeto completo con todos los campos
-        
-        Excepciones esperadas:
-        ----------------------
-        Ninguna. Retorna None si no existe (no lanza).
-        
-        Ejemplo práctico:
-        -----------------
-        # En AuthService.verificar_mail()
-        user_id_db = self.token_service.get_user_id_from_access_token(token)
-        # user_id_db = 1
-        
-        usuario = self.auth_user_repository.obtener_por_id_sin_activar(user_id_db)
-        # usuario = AuthUser(id_usuario=1, email="...", is_verified=False, ...)
-        
-        if usuario is None:
-            raise ValueError("Usuario no encontrado")
-        
-        # Ahora lo activas
-        usuario = self.auth_user_repository.activar(usuario)
-        
-        Caso de uso específico:
-        -----------------------
-        Este método es ESPECIAL porque:
-        - El usuario se registró hace poco (is_verified = False)
-        - El usuario aún NO está ACTIVO
-        - Pero necesitas buscarlo para verificar su email
-        - Los métodos obtener_por_email, obtener_por_id buscan solo ACTIVOS
-        
-        Notas de implementación:
-        -----------------------
-        - No filtra por is_verified o estado
-        - Búsqueda por ID único (siempre retorna 0 o 1 resultado)
-        - Si no existe, retorna None (no lanza excepción)
-        - Útil para estados transitorios (verificación pendiente)
+        Busca un usuario por id sin filtrar por estado.
+
+        Sirve para resolver usuarios que todavía no están ACTIVOS (por ejemplo,
+        al verificar el email). obtener_por_id y obtener_por_email, en cambio,
+        solo devuelven usuarios ACTIVOS.
+
+        Args:
+            id_usuario: ID del usuario.
+
+        Returns:
+            El usuario, o None si no existe.
         """
         ...
-    
+
     def activar(self, usuario: AuthUser) -> AuthUser:
         """
-        Activa/verifica un usuario (marca como email verificado y activo).
-        
-        Parámetros:
-        -----------
-        usuario : AuthUser
-            Usuario a activar.
-            Típicamente obtenido de obtener_por_id_sin_activar().
-            
-            Debe tener:
-            - id_usuario: ID válido
-            - is_verified: Actualmente False
-            - estado: Actualmente PENDIENTE o similar
-        
-        Retorna:
-        --------
-        AuthUser
-            El mismo usuario pero MODIFICADO:
-            - is_verified = True
-            - estado = ACTIVO
-            - Cambios persistidos en BD
-        
-        Excepciones esperadas:
-        ----------------------
-        Exception
-            Si hay error al actualizar BD
-        
-        Ejemplo práctico:
-        -----------------
-        # En AuthService.verificar_mail()
-        usuario = self.auth_user_repository.obtener_por_id_sin_activar(user_id)
-        # usuario.is_verified = False
-        # usuario.estado = PENDIENTE
-        
-        usuario_activado = self.auth_user_repository.activar(usuario)
-        
-        # Ahora:
-        print(usuario_activado.is_verified)  # True
-        print(usuario_activado.estado)  # ACTIVO
-        
-        Ciclo de vida del usuario:
-        ---------------------------
-        1. Registro: insertar() → usuario PENDIENTE, no verificado
-        2. Email enviado: Usuario recibe link con token
-        3. Click link: GET /usuarios/verificar/{token}
-        4. Backend: obtener_por_id_sin_activar() + activar()
-        5. Resultado: Usuario ACTIVO, verificado
-        6. Usuario puede hacer login (obtener_por_email solo retorna ACTIVOS)
-        
-        Notas de implementación:
-        -----------------------
-        - Cambios al menos dos campos: is_verified + estado
-        - Debe persistir cambios en BD (commit/flush)
-        - Retorna el objeto actualizado
-        - Solo se llama después de verificar email (no en otros lugares)
-        - Transición irreversible (el usuario no vuelve a PENDIENTE)
+        Marca al usuario como verificado y ACTIVO.
+
+        Cambia estado a EstadoEntidad.ACTIVO e is_verified a True, y devuelve
+        el usuario con el cambio aplicado. El cambio debe quedar reflejado en
+        la persistencia al cerrarse la transacción. Es una transición de un
+        solo sentido: no vuelve a PENDIENTE.
+
+        Args:
+            usuario: Usuario obtenido con obtener_por_id_sin_activar.
+
+        Returns:
+            El mismo usuario, ya activado.
         """
         ...
-    
+
     def obtener_por_email(self, email: str) -> AuthUser | None:
         """
-        Obtiene un usuario ACTIVO por su email.
-        
-        Parámetros:
-        -----------
-        email : str
-            Dirección de correo del usuario.
-            Búsqueda case-sensitive (típicamente).
-            Ejemplo: "juan@example.com"
-        
-        Retorna:
-        --------
-        AuthUser | None
-            El usuario si:
-            - Existe en BD
-            - Email coincide exactamente
-            - is_verified = True
-            - estado = ACTIVO
-            
-            None si no encuentra o no está activo.
-        
-        Excepciones esperadas:
-        ----------------------
-        Ninguna. Retorna None si no existe.
-        
-        Ejemplo práctico:
-        -----------------
-        # En AuthService.login()
-        email = "juan@example.com"
-        password = "MiContraseña123!"
-        
-        usuario_db = self.auth_user_repository.obtener_por_email(email)
-        # usuario_db = AuthUser(...) si existe y está ACTIVO
-        # usuario_db = None si no existe o no está verificado
-        
-        if usuario_db is None:
-            raise LoginError("Usuario o contraseña incorrectos")
-        
-        # Verificar contraseña
-        if not self.password_service.verify_password(password, usuario_db.password):
-            raise LoginError("Usuario o contraseña incorrectos")
-        
-        Diferencia vs obtener_por_id_sin_activar:
-        -------------------------------------------
-        | Método | Búsqueda | Filtra activos | Caso de uso |
-        |--------|----------|----------------|------------|
-        | obtener_por_email | email | SÍ (solo ACTIVOS) | Login |
-        | obtener_por_id_sin_activar | ID | NO | Verificación email |
-        
-        Notas de implementación:
-        -----------------------
-        - Filtro por estado = ACTIVO (NO retorna PENDIENTES)
-        - Filtro por is_verified = True
-        - Email debe ser único (solo 0 o 1 resultado)
-        - Si no existe o no está activo, retorna None
-        - No lanza excepción (retorna None es seguro)
-        - Este método es el que usa login
+        Busca un usuario ACTIVO por email (p. ej. para el login).
+
+        No devuelve usuarios PENDIENTES ni ELIMINADOS.
+
+        Args:
+            email: Email exacto a buscar.
+
+        Returns:
+            El usuario ACTIVO, o None si no existe o no está ACTIVO.
         """
         ...
-    
+
     def obtener_por_id(self, id_usuario: int) -> AuthUser | None:
         """
-        Obtiene un usuario ACTIVO por su ID.
-        
-        Parámetros:
-        -----------
-        id_usuario : int
-            ID único del usuario.
-            Ejemplo: 1, 2, 3, ...
-        
-        Retorna:
-        --------
-        AuthUser | None
-            El usuario si:
-            - Existe en BD
-            - estado = ACTIVO
-            - is_verified = True
-            
-            None si no existe o no está activo.
-        
-        Excepciones esperadas:
-        ----------------------
-        Ninguna. Retorna None si no existe.
-        
-        Ejemplo práctico:
-        -----------------
-        # En un endpoint autenticado
-        @router.get("/usuarios/me")
-        async def get_me(
-            current_user: AuthUser = Depends(get_current_user)
-        ):
-            usuario = auth_service.get_user(current_user)
-            # Internamente: self.auth_user_repository.obtener_por_id(current_user.id_usuario)
-            return usuario
-        
-        Flujo típico:
-        ---------------
-        1. Usuario hace login → obtener_por_email()
-        2. Backend genera tokens
-        3. Usuario usa token en Authorization header
-        4. Backend extrae user_id del token
-        5. Backend llama obtener_por_id(user_id) para obtener datos actuales
-        6. Retorna usuario ACTIVO
-        
-        Notas de implementación:
-        -----------------------
-        - Filtro por id_usuario = valor
-        - Filtro por estado = ACTIVO
-        - Filtro por is_verified = True
-        - Si no existe o no está activo, retorna None
-        - Similar a obtener_por_email pero búsqueda es por ID
-        - Este método se llama en endpoints autenticados para obtener datos del usuario
+        Busca un usuario ACTIVO por id.
+
+        No devuelve usuarios PENDIENTES ni ELIMINADOS.
+
+        Args:
+            id_usuario: ID del usuario.
+
+        Returns:
+            El usuario ACTIVO, o None si no existe o no está ACTIVO.
         """
         ...
 
@@ -348,65 +101,108 @@ class AuthUserRepositoryProtocol(Protocol):
             id_usuario: int, 
             contraseña_nueva: str,
             fecha_actual: datetime) -> bool:
-        """Actualiza el hash de contraseña de un usuario ya verificado.
+        """
+        Actualiza el hash de contraseña de un usuario verificado.
 
-        Usado en el paso final de recuperación de contraseña, tras
-        validar el token de reset.
+        Se usa en el paso final de la recuperación de contraseña. Solo afecta
+        a usuarios con is_verified = True.
 
         Args:
             id_usuario: ID del usuario cuya contraseña se modifica.
-            contraseña_nueva: Hash de la nueva contraseña (ya hasheada).
-            fecha_actual: Timestamp a escribir en updated_at.
+            contraseña_nueva: Hash de la nueva contraseña (nunca en claro).
+            fecha_actual: Valor a guardar en updated_at.
 
         Returns:
-            True si se actualizó un registro, False si no se encontró
-            un usuario verificado con ese id_usuario.
+            True si actualizó un registro; False si no hay un usuario
+            verificado con ese id_usuario.
         """
         ...
 
     def obtener_por_email_sin_activar(self, email: str) -> AuthUser | None:
-        """Busca un usuario pendiente de activación por email.
+        """
+        Busca un usuario PENDIENTE por email.
 
-        Usado, por ejemplo, para reenviar el mail de verificación:
-        solo devuelve resultado si el usuario existe y todavía no
-        completó la activación de cuenta.
+        Sirve, por ejemplo, para reenviar el mail de verificación. No devuelve
+        usuarios ACTIVOS ni ELIMINADOS.
 
         Args:
-            email: Email a buscar.
+            email: Email exacto a buscar.
 
         Returns:
-            El usuario si existe y está en estado pendiente, None en caso contrario.
+            El usuario PENDIENTE, o None si no existe o está en otro estado.
         """
         ...
 
 
     def modificar_usuario(self, usuario: AuthUser) -> AuthUser | None:
-        """Actualiza los datos de un usuario existente.
+        """
+        Sobrescribe los datos persistidos de un usuario existente.
+
+        Escribe todos los campos de la entidad excepto id_usuario, que solo
+        identifica el registro. Una entidad incompleta pisa los valores
+        guardados, por lo que debe llegar completa.
 
         Args:
-            usuario: Usuario con los campos a actualizar. Debe incluir
-                id_usuario para identificar el registro.
+            usuario: Entidad completa, con id_usuario.
 
         Returns:
-            El usuario actualizado, o None si no se encontró el registro.
+            La entidad con los datos aplicados, o None si no existe un registro
+            con ese id_usuario.
         """
         ...
 
     def eliminar_usuario(self, usuario: AuthUser) -> bool | None:
-        """Elimina (soft delete) a un usuario.
+        """
+        Persiste la baja lógica de un usuario.
 
-        No borra el registro físicamente: marca al usuario como eliminado
-        (ej. vía estado o flag), preservando el dato para auditoría.
+        No borra el registro. Escribe los campos de la entidad tal como llegan
+        (incluido el estado), por lo que el consumidor debe marcarla como
+        eliminada (estado ELIMINADO) antes de llamar.
 
         Args:
-            usuario: Usuario a eliminar. Debe incluir id_usuario para
-                identificar el registro.
+            usuario: Entidad ya marcada como eliminada, con id_usuario.
 
         Returns:
-            True si se eliminó el registro, False/None si no se encontró.
+            True si actualizó un registro; False si no existe ese id_usuario.
         """
         ...
 
-    def obtener_usuario_eliminado_por_mail(self, mail_usuario:str)->AuthUser | None: ...
-    def obtener_usuario_eliminado_por_id(self, id_usuario:int)->AuthUser | None: ...
-    def activar_usuario_eliminado(self, id_usuario:int)-> bool | None: ...
+    def obtener_usuario_eliminado_por_mail(self, mail_usuario:str)->AuthUser | None:
+        """
+        Busca un usuario ELIMINADO (baja lógica) por email.
+
+        Args:
+            mail_usuario: Email exacto a buscar.
+
+        Returns:
+            El usuario ELIMINADO, o None si no existe o no está ELIMINADO.
+        """
+        ...
+
+    def obtener_usuario_eliminado_por_id(self, id_usuario:int)->AuthUser | None:
+        """
+        Busca un usuario ELIMINADO (baja lógica) por id.
+
+        Args:
+            id_usuario: ID del usuario.
+
+        Returns:
+            El usuario ELIMINADO, o None si no existe o no está ELIMINADO.
+        """
+        ...
+
+    def activar_usuario_eliminado(self, id_usuario:int)-> bool | None:
+        """
+        Reactiva un usuario dado de baja.
+
+        Pasa el estado de ELIMINADO a ACTIVO y limpia eliminado_en. No modifica
+        is_verified. Solo afecta a registros ELIMINADOS.
+
+        Args:
+            id_usuario: ID del usuario a reactivar.
+
+        Returns:
+            True si reactivó un registro; False si no hay un usuario ELIMINADO
+            con ese id_usuario.
+        """
+        ...
