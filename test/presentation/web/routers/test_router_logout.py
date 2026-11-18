@@ -3,7 +3,7 @@ from test.presentation.web.overrides.override_crear import crear_override
 from test.presentation.web.stub.stub_logout import StubLogoutUseCase
 from src.container.auth.providers import get_logout_service
 from src.config.config import settings
-from src.main import app
+from main import app
 
 
 

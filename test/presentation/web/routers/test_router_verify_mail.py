@@ -1,4 +1,4 @@
-from src.main import app
+from main import app
 from test.presentation.web.overrides.override_crear import crear_override
 from test.presentation.web.stub.stub_verify_mail import StubVerifyMailUseCase
 from src.container.auth.providers import get_verify_mail_use_case

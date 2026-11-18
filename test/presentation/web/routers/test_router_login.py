@@ -6,7 +6,7 @@ from src.auth.domain.entities.entitie_auth_users import UserTokens
 from src.container.auth.providers import get_login_use_case
 from fastapi import status
 from src.config.config import settings
-from src.main import app
+from main import app
 from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError
 from src.domain.exceptions.domain import DomainError
 

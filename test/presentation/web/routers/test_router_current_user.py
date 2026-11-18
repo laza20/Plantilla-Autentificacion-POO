@@ -5,7 +5,7 @@ from src.auth.application.dtos.auth_user_dto import UsuarioCreado
 from src.container.auth.providers import get_obtener_usuario_actual, get_current_user
 from fastapi import status
 from src.config.config import settings
-from src.main import app
+from main import app
 
 
 def test_ver_usuario_correctamente(test_client):

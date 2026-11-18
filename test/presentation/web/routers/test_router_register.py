@@ -1,4 +1,4 @@
-from src.main import app
+from main import app
 from test.presentation.web.overrides.override_crear import crear_override
 from test.presentation.web.stub.stub_register_router import StubRegisterUseCase
 from src.auth.application.dtos.auth_user_dto import UsuarioCreado

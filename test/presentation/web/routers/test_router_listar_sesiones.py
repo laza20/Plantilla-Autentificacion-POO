@@ -6,7 +6,7 @@ from src.auth.domain.entities.entitie_auth_users import AuthUser
 from src.container.auth.providers import get_user_validation_service, get_listar_sesiones_use_case, get_current_user
 from fastapi import status
 from src.config.config import settings
-from src.main import app
+from main import app
 
 
 def test_debe_listar_sesiones(test_client):

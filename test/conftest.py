@@ -3,7 +3,7 @@ import os
 os.environ["RATE_LIMITER_ENABLED"] = "false"
 
 from fastapi.testclient import TestClient
-from src.main import app
+from main import app
 
 import pytest
 
