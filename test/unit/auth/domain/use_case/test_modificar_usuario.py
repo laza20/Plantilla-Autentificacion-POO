@@ -1,0 +1,153 @@
+import pytest
+from src.auth.application.dtos.auth_user_dto import UserModifyDTO
+from io import BytesIO
+from types import SimpleNamespace
+from src.domain.exceptions.domain import LongitudExcedida
+from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoModificado, MailNoValido
+from test.fixtures.fixture_modificar_usuario import ModificarUsuarioTestEnvironment
+from test.factories.factory_usuarios import crear_usuario_de_prueba
+
+@pytest.mark.asyncio
+async def test_debe_verificar_que_se_modifica_el_usuario():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+    modificacion = UserModifyDTO(
+        email = "test@test_nuevo.com"
+    )
+    usuario_modificado = await context.use_case().ejecutar(
+        id_usuario=usuario_creado.id_usuario, usuario=modificacion, imagen= None
+        )
+
+    assert usuario_creado != usuario_modificado
+
+
+@pytest.mark.asyncio
+async def test_un_dto_sin_campos_mantiene_el_usuario():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    usuario_modificado = await context.use_case().ejecutar(
+        id_usuario=usuario_creado.id_usuario,
+        usuario=UserModifyDTO(),
+        imagen=None,
+    )
+
+    assert usuario_modificado.email == usuario_creado.email
+    assert usuario_modificado.id_usuario == usuario_creado.id_usuario
+
+
+@pytest.mark.asyncio
+async def test_debe_modificar_un_mail_correctamente():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+    modificacion = UserModifyDTO(
+        email = "test@test_nuevo.com"
+    )
+    usuario_modificado = await context.use_case().ejecutar(
+        id_usuario=usuario_creado.id_usuario, usuario=modificacion, imagen= None
+        )
+
+    assert usuario_creado.email != usuario_modificado.email
+
+
+
+@pytest.mark.asyncio
+async def test_debe_modificar_una_imagen():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    imagen = SimpleNamespace(
+        filename="foto.jpg",
+        file=BytesIO(b"contenido")
+    )
+
+    usuario_modificado = await context.use_case().ejecutar(
+        id_usuario=usuario_creado.id_usuario, usuario=None, imagen=imagen
+        )
+
+    assert usuario_modificado.imagen_url == context.image_service.imagen_guardada
+    assert imagen == context.image_service.imagen_recibida
+
+
+@pytest.mark.asyncio
+async def test_debe_dar_error_si_no_se_envia_el_id():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    modificacion = UserModifyDTO(
+        email = "test@test_nuevo.com"
+    )
+
+
+    with pytest.raises(UsuarioNoEncontrado):
+        await context.use_case().ejecutar(
+                id_usuario=None, usuario=modificacion, imagen=None
+                )
+
+
+@pytest.mark.asyncio
+async def test_debe_dar_error_si_no_se_encuentra_al_usuario_con_x_id():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    modificacion = UserModifyDTO(
+        email = "test@test_nuevo.com"
+    )
+
+
+    with pytest.raises(UsuarioNoEncontrado):
+        await context.use_case().ejecutar(
+                id_usuario=6, usuario=modificacion, imagen=None
+                )
+
+
+
+@pytest.mark.asyncio
+async def test_debe_dar_error_si_el_mail_a_modificar_no_cumple_las_politicas():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    modificacion = UserModifyDTO(
+        email = "test.com"
+    )
+
+    context.mail_policy.es_valido = False
+
+
+    with pytest.raises(MailNoValido):
+        await context.use_case().ejecutar(
+                id_usuario=usuario_creado.id_usuario, usuario=modificacion, imagen=None
+                )
+
+
+@pytest.mark.asyncio
+async def test_debe_dar_error_si_el_mail_a_modificar_no_cumple_las_politicas():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    modificacion = UserModifyDTO(
+        email = "a" * 300 + "@.com"
+    )
+
+
+    with pytest.raises(LongitudExcedida):
+        await context.use_case().ejecutar(
+                id_usuario=usuario_creado.id_usuario, usuario=modificacion, imagen=None
+                )
+
+
+@pytest.mark.asyncio
+async def test_debe_dar_error_si_no_se_puede_modificar_el_usuario():
+    context = ModificarUsuarioTestEnvironment()
+    usuario_creado = crear_usuario_de_prueba(context.auth_user_repository)
+
+    context.auth_user_repository.accion_realizada = False
+    modificacion = UserModifyDTO(
+        email = "error@mail.com"
+    )
+
+
+    with pytest.raises(UsuarioNoModificado):
+        await context.use_case().ejecutar(
+                id_usuario=usuario_creado.id_usuario, usuario=modificacion, imagen=None
+                )
