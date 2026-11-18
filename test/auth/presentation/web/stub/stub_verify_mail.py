@@ -1,4 +1,4 @@
-from src.auth.domain.entities.entitie_auth_users import UserTokens
+from auth_core.auth.domain.entities.entitie_auth_users import UserTokens
 
 
 class StubVerifyMailUseCase:

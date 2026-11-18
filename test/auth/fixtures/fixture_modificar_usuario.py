@@ -3,7 +3,7 @@ from test.auth.unit.auth.domain.service import (
     stub_unit_of_work
 )
 from test.auth.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
-from src.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
+from auth_core.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
 from test.config.config import TestSettings
 from test.auth.unit.auth.domain.service import stub_mail_policy_service
 

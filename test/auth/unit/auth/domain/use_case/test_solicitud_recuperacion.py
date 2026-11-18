@@ -1,7 +1,7 @@
 from test.auth.fixtures.fixture_solicitud_recuperacion_contraseña import SolicitudRecuperacionContraseñaTestEnvironment
 import pytest
 from test.auth.factories.factory_usuarios import crear_usuario_de_prueba
-from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
+from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
 
 @pytest.mark.asyncio
 async def test_debe_realizar_la_solicitud_de_recuperacion_de_manera_correcta():

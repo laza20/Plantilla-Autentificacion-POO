@@ -1,5 +1,5 @@
 from test.auth.unit.auth.domain.service import stub_token_service
-from src.auth.application.use_cases.refresh_token import RefreshTokenUseCase
+from auth_core.auth.application.use_cases.refresh_token import RefreshTokenUseCase
 
 
 class RefreshTokenTestEnvironment:

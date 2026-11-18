@@ -1,11 +1,11 @@
 import pytest
-from src.auth.domain.entities.entitie_auth_users import AuthUser
+from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
 from test.auth.fixtures.fixture_reactivar_cuenta import ReactivarCuentaTestEnvironment
-from src.auth.domain.exceptions.usuarios_exceptions import (
+from auth_core.auth.domain.exceptions.usuarios_exceptions import (
     UsuarioNoEncontrado, UsuarioNoEliminado, PeriodoReactivacionFinalizado, MailRepetido
     )
-from src.auth.domain.exceptions.tokens import TokenInvalido
-from src.domain.exceptions.domain import ErrorCreacion
+from auth_core.auth.domain.exceptions.tokens import TokenInvalido
+from auth_core.domain.exceptions.domain import ErrorCreacion
 from test.auth.factories.factory_usuarios import crear_usuario_de_prueba
 from datetime import date, timedelta
 

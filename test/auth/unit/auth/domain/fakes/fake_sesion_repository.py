@@ -1,4 +1,4 @@
-from src.auth.domain.entities.entitie_sesiones import Sesion as Sesiones
+from auth_core.auth.domain.entities.entitie_sesiones import Sesion as Sesiones
 from typing import Dict
 from dataclasses import replace
 

@@ -1,6 +1,6 @@
 import pytest
-from src.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura
-from src.auth.domain.services.password_policy import PasswordPolicyService
+from auth_core.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura
+from auth_core.auth.domain.services.password_policy import PasswordPolicyService
 
 
 def test_debe_dar_error_por_contraseña_sin_numeros():

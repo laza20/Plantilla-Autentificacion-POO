@@ -2,11 +2,11 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from src.config.config import Settings
+from auth_core.config.config import Settings
 from alembic import context
 from sqlmodel import SQLModel
 
-from src.auth.infrastructure.persistence.postgres import models
+from auth_core.auth.infrastructure.persistence.postgres import models
 
 config = context.config
 config.set_main_option("sqlalchemy.url", Settings().DATABASE_URL)

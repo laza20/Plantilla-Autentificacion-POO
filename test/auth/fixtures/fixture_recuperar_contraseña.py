@@ -5,7 +5,7 @@ from test.auth.unit.auth.domain.service import (
 from test.auth.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
 from test.auth.unit.auth.domain.fakes.fake_recuperar_contraseña_repository import FakeRecuperarContraseñaRepository
 from test.auth.unit.auth.domain.fakes.fake_history_password_repository import FakeHistoryPasswordRepository
-from src.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
+from auth_core.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
 
 
 class RecuperarContraseñaTestEnvironment:

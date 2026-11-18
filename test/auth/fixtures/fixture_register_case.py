@@ -4,7 +4,7 @@ from test.auth.unit.auth.domain.service import (
 )
 from test.auth.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
 from test.auth.unit.auth.domain.fakes.fake_usuario_repository import FakeUsuarioRepository
-from src.auth.application.use_cases.register import RegisterUseCase
+from auth_core.auth.application.use_cases.register import RegisterUseCase
 from test.config.config import TestSettings
 
 

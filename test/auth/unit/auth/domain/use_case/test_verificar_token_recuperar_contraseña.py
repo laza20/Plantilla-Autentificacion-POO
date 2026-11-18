@@ -1,6 +1,6 @@
 from test.auth.fixtures.fixture_verificar_token_recuperacion_contraseña import VerificarTokenRecuperacionContraseñaTestEnvironment
 from test.auth.factories.factory_create_password_recover import crear_recover_password_de_prueba
-from src.auth.domain.exceptions.tokens import TokenNoVerificado
+from auth_core.auth.domain.exceptions.tokens import TokenNoVerificado
 import pytest
 from datetime import datetime, timezone
 

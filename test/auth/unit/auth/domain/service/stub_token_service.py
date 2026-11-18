@@ -1,5 +1,5 @@
-from src.auth.domain.entities.entitie_auth_users import UserTokens
-from src.auth.domain.exceptions.tokens import TokenInvalido
+from auth_core.auth.domain.entities.entitie_auth_users import UserTokens
+from auth_core.auth.domain.exceptions.tokens import TokenInvalido
 
 
 class StubTokenService:

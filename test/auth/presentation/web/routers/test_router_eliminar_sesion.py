@@ -2,10 +2,10 @@ import pytest
 from test.auth.presentation.web.overrides.override_crear import crear_override
 from test.auth.presentation.web.stub.stub_eliminar_sesion import StubEliminarSesionesUseCase
 from test.auth.presentation.web.stub.stub_current_user import StubCurrentUserUseCase
-from src.auth.domain.entities.entitie_auth_users import AuthUser
-from src.container.auth.providers import get_user_validation_service, get_eliminar_sesiones_use_case, get_current_user
+from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from auth_core.container.auth.providers import get_user_validation_service, get_eliminar_sesiones_use_case, get_current_user
 from fastapi import status
-from src.config.config import settings
+from auth_core.config.config import settings
 from main import app
 
 id_sesion = 1

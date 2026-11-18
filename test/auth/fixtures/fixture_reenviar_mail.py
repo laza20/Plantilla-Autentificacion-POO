@@ -3,7 +3,7 @@ from test.auth.unit.auth.domain.service import (
     stub_token_service
 )
 from test.auth.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
-from src.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
+from auth_core.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
 from test.config.config import TestSettings
 from test.auth.unit.auth.domain.service import stub_mail_policy_service
 

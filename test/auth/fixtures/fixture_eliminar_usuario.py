@@ -4,7 +4,7 @@ from test.auth.unit.auth.domain.service import (
     )
 from test.auth.unit.auth.domain.fakes.fake_sesion_repository import FakeSesionRepository
 from test.auth.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
-from src.auth.application.use_cases.eliminar_usuario.eliminar_usuario import EliminarUsuarioUseCase
+from auth_core.auth.application.use_cases.eliminar_usuario.eliminar_usuario import EliminarUsuarioUseCase
 
 
 

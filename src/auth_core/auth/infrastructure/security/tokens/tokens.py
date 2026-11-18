@@ -1,0 +1,231 @@
+from datetime import datetime, timezone, timedelta
+from jose import jwt
+from typing import Dict
+from auth_core.auth.domain.exceptions.tokens import (
+    TokenInvalido, TokenResetInactivo, TokenVerificacionInactivo, TokenEliminacionInactivo,
+    TokenReactivacionInactivo, SinAccessToken)
+from auth_core.config.config import Settings
+from auth_core.auth.domain.entities.entitie_auth_users import UserTokens
+import hashlib
+import secrets
+
+
+class TokenService:
+    def __init__(self, settings: Settings):
+        self.settings = settings
+
+    def create_user_tokens(self, user_id:int) -> UserTokens:
+
+        return UserTokens(
+            access_token=self.create_access_token(str(user_id)),
+            refresh_token=self.create_refresh_token(str(user_id))
+        )
+
+    def create_access_token(self, user_id: str) -> str:
+        """
+        Funcion encargada de crear un access token para un usuario dado su id.
+        El access token tiene una duración corta y se utiliza para autenticar las solicitudes del usuario.
+        """
+        return self._encode_token(
+            {
+                "sub": str(user_id),
+                "type": "access"
+            },
+            timedelta(minutes=self.settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        )
+
+
+    def create_refresh_token(self, user_id: str) -> str:
+        """
+        Funcion encarcargada de crear un refresh token para un usuario dado su id.
+        El refresh token tiene una duración más larga que el access token y se utiliza para obtener nuevos
+        """
+        return self._encode_token(
+            {
+                "sub": str(user_id),
+                "type": "refresh"
+            },
+            timedelta(days=self.settings.REFRESH_TOKEN_DURATION)
+        )
+
+
+    def decode_token(self, token: str) -> Dict[str, any]:
+        """
+        Funcion encargada de decodificar un token JWT utilizando la clave secreta y el algoritmo especificados en la configuración.
+        - El token se decodifica utilizando la clave secreta y el algoritmo especificados en la configuración.
+        - Si el token es válido, se devuelve el payload decodificado.
+        - Si el token es inválido o ha expirado, se lanza una excepción JWTError.
+        """
+        try:
+            return jwt.decode(token, self.settings.JWT_SECRET_KEY, algorithms=[self.settings.ALGORITHM])
+        except:
+            raise TokenInvalido(
+                "Token inválido o expirado"
+            ) 
+        
+    def get_user_id_from_access_token(self, token:str)->int:
+
+        payload = self.decode_token(token)
+        
+        if payload.get("type") != "access":
+            raise SinAccessToken("Se proporcionó un Refresh Token")
+                    
+        user_id = payload.get("sub")
+        if user_id is None:
+            raise TokenInvalido()
+        
+        return int(user_id)
+        
+    def get_user_id_from_refresh_token(self, token:str)->str:
+        try:
+            payload = self.decode_token(token)
+
+            if payload.get("type") != "refresh":
+                raise TokenInvalido()
+
+            user_id = payload.get("sub")
+            if user_id is None:
+                raise TokenInvalido("Refresh token inválido")
+            
+            return user_id
+
+        except:
+            raise TokenInvalido("Refresh token inválido o expirado")
+
+    def get_current_reset_scope(self, token:str)->str:
+        try:
+            payload = self.decode_token(token)
+
+            if payload.get("type") != "reset":
+                raise TokenInvalido()
+
+            user_id = payload.get("sub")
+            if user_id is None:
+                raise TokenResetInactivo()
+            
+            return user_id
+
+        except:
+            raise TokenInvalido("Reset token inválido o expirado")
+
+    def hash_token(self, token: str) -> str:
+        """
+        Función encargada de generar un hash irreversible a partir de un token en texto plano.
+        - Se utiliza para persistir una representación segura del refresh_token en la base de datos
+        (tabla `sesiones`), evitando guardar el token crudo.
+        - El mismo hash se recalcula a partir del token recibido en la cookie para buscar y eliminar
+        la sesión correspondiente durante el logout.
+        """
+        return hashlib.sha256(token.encode()).hexdigest()
+
+    def generar_token_plano(self)->str:
+        return secrets.token_urlsafe(32)
+
+    def create_reset_token(self, user_id: str) -> str:
+        return self._encode_token(
+            {
+                "sub": str(user_id),
+                "type": "reset"
+            },
+            timedelta(
+                minutes=self.settings.RESET_PASSWORD_TOKEN_EXPIRE_MINUTES
+            )
+        )
+
+    def create_verificacion_token(self, user_id: str) -> str:
+        return self._encode_token(
+            {
+                "sub": str(user_id),
+                "type": "verification"
+            },
+            timedelta(
+                minutes=self.settings.VERIFY_MAIL_RECUPERACION
+            )
+        )
+
+    def create_eliminacion_token(self, user_id: str) -> str:
+        return self._encode_token(
+            {
+                "sub": str(user_id),
+                "type": "eliminacion"
+            },
+            timedelta(
+                minutes=self.settings.ELIMINACION_CUENTA
+            )
+        )
+
+    def create_reactivacion_token(self, user_id: str) -> str:
+        return self._encode_token(
+            {
+                "sub": str(user_id),
+                "type": "reactivacion"
+            },
+            timedelta(
+                minutes=self.settings.REACTIVACION_CUENTA
+            )
+        )
+
+    def get_user_id_from_verificacion_token(self, token: str) -> str:
+        try:
+            payload = self.decode_token(token)
+
+            if payload.get("type") != "verification":
+                raise TokenInvalido()
+
+            user_id = payload.get("sub")
+            if user_id is None:
+                raise TokenVerificacionInactivo()
+            
+            return user_id
+
+        except:
+            raise TokenInvalido("Verification token inválido o expirado")
+
+
+    def get_user_id_from_reactivacion_token(self, token: str) -> str:
+        try:
+            payload = self.decode_token(token)
+
+            if payload.get("type") != "reactivacion":
+                raise TokenInvalido()
+
+            user_id = payload.get("sub")
+            if user_id is None:
+                raise TokenReactivacionInactivo()
+            
+            return int(user_id)
+
+        except:
+            raise TokenInvalido("Verification token inválido o expirado")
+
+    def get_user_id_from_eliminacion_token(self, token: str) -> str:
+        try:
+            payload = self.decode_token(token)
+
+            if payload.get("type") != "eliminacion":
+                raise TokenInvalido()
+
+            user_id = payload.get("sub")
+            if user_id is None:
+                raise TokenEliminacionInactivo()
+            
+            return user_id
+
+        except:
+            raise TokenInvalido("Verification token inválido o expirado")
+
+    def _encode_token(self, payload: Dict[str, any], expires_delta: timedelta) -> str:
+        """
+        Funcion encargada de codificar un token JWT utilizando la clave secreta y el algoritmo especificados en la configuración.
+        - El token se firma utilizando la clave secreta y el algoritmo especificados en la configuración.
+        - El token incluye una fecha de expiración calculada a partir del tiempo actual y el tiempo de expiración proporcionado.
+        """
+        data = payload.copy()
+        data["exp"] = self._obtener_tiempo_expiracion(expires_delta)
+        return jwt.encode(data, self.settings.JWT_SECRET_KEY, algorithm=self.settings.ALGORITHM)
+
+
+    def _obtener_tiempo_expiracion(self, expires_delta:timedelta)->int:
+        expire = datetime.now(timezone.utc) + expires_delta
+        return int(expire.timestamp())
+        

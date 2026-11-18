@@ -1,4 +1,4 @@
-from src.auth.domain.entities.entitie_history_password import HistoryPassword
+from auth_core.auth.domain.entities.entitie_history_password import HistoryPassword
 from datetime import datetime
 from dataclasses import replace
 

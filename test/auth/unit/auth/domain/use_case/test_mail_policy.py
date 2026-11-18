@@ -1,6 +1,6 @@
 import pytest
-from src.auth.domain.exceptions.usuarios_exceptions import MailNoValido
-from src.auth.domain.services.mail_policy import MailPolicyService
+from auth_core.auth.domain.exceptions.usuarios_exceptions import MailNoValido
+from auth_core.auth.domain.services.mail_policy import MailPolicyService
 
 
 def test_debe_dar_error_por_mail_corto():

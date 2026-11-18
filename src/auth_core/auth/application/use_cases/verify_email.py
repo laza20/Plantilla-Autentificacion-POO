@@ -1,0 +1,31 @@
+from auth_core.auth.domain.entities.entitie_auth_users import UserTokens
+import logging
+from auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+
+logger = logging.getLogger(__name__)
+
+class VerifyMailUseCase:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        token_service: TokenProtocol,
+        unit_of_work_service: UnitOfWorkProtocol
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.token_service = token_service
+        self.unit_of_work_service = unit_of_work_service
+
+    def ejecutar(self, token: str)-> UserTokens:
+        """
+        Funcion encargada de verificar el mail del usuario utilizando un token de verificación.
+        El token se decodifica para obtener el ID del usuario, luego se busca el usuario en la base de datos y se activa su cuenta.
+        Si el token es inválido o el usuario no existe, se lanzan excepciones correspondientes
+        """
+        user_id_db = self.token_service.get_user_id_from_verificacion_token(token)
+        usuario = self.auth_user_repository.obtener_por_id_sin_activar(user_id_db)
+        with self.unit_of_work_service:
+            usuario = self.auth_user_repository.activar(usuario)
+
+        return self.token_service.create_user_tokens(usuario.id_usuario)

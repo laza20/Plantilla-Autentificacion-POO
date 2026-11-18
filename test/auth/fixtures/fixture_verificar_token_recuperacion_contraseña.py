@@ -2,7 +2,7 @@ from test.auth.unit.auth.domain.service import (
     stub_token_service
 )
 from test.auth.unit.auth.domain.fakes.fake_recuperar_contraseña_repository import FakeRecuperarContraseñaRepository
-from src.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
+from auth_core.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
 
 class VerificarTokenRecuperacionContraseñaTestEnvironment:
     def __init__(self):

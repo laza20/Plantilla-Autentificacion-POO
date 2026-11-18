@@ -1,0 +1,458 @@
+from auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from auth_core.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
+from auth_core.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from auth_core.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
+from auth_core.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
+from auth_core.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
+from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from auth_core.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
+from auth_core.shared.protocols.protocol_mail_service import MailProtocol
+from auth_core.shared.protocols.protocol_image_service import ImageProtocol
+from auth_core.auth.domain.services.password_policy import PasswordPolicyService
+from auth_core.auth.application.use_cases.register import RegisterUseCase
+from auth_core.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
+from auth_core.auth.application.use_cases.login import LoginUseCase
+from auth_core.auth.application.use_cases.verify_email import VerifyMailUseCase
+from auth_core.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
+from auth_core.auth.application.use_cases.eliminar_usuario.eliminar_usuario import EliminarUsuarioUseCase
+from auth_core.auth.domain.services.user_validation_service import UserValidationService
+from auth_core.auth.application.use_cases.logout import LogoutUseCase
+from auth_core.auth.application.use_cases.refresh_token import RefreshTokenUseCase
+from auth_core.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
+from auth_core.auth.application.use_cases.obtener_usuario_actual import ObtenerUsuarioActualUseCase
+from auth_core.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
+from auth_core.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
+from auth_core.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
+from auth_core.auth.application.use_cases.reactivacion_cuenta.reactivar_cuenta import ReactivarUsuarioUseCase
+from auth_core.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
+from auth_core.auth.domain.services.mail_policy import MailPolicyService
+from auth_core.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from auth_core.auth.domain.protocols.repository.protocol_history_password_repository import HistoryRepositoryProtocol
+from auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from datetime import timedelta
+
+class ContainerEliminarSesiones:
+    def __init__(
+        self,
+        sesion_repository: TokenRepositoryProtocol,
+        unit_of_work_service: UnitOfWorkProtocol
+    ):
+        self.sesion_repository = sesion_repository
+        self.unit_of_work_service = unit_of_work_service
+    @property
+    def eliminar_sesiones_use_case(self) -> EliminarSesionesUseCase:
+        return EliminarSesionesUseCase(
+            sesion_repository=self.sesion_repository,
+            unit_of_work_service=self.unit_of_work_service
+            )
+
+
+class ContainerObternerUsuarioActual:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol
+    ):
+        self.auth_user_repository = auth_user_repository
+    @property
+    def obtener_usuario_actual_use_case(self) -> ObtenerUsuarioActualUseCase:
+        return ObtenerUsuarioActualUseCase(
+            auth_user_repository=self.auth_user_repository
+        )
+
+class ContainerListarSesiones:
+    def __init__(
+        self,
+        sesion_repository: TokenRepositoryProtocol
+    ):
+        self.sesion_repository = sesion_repository
+    @property
+    def listar_sesiones_use_case(self) -> ListarSesionesUseCase:
+        return ListarSesionesUseCase(
+            sesion_repository=self.sesion_repository
+            )
+
+
+class ContainerRegister:
+    def __init__(
+        self,
+        base_de_datos_url: str,
+        nombre_app:str,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        token_service: TokenProtocol,
+        password_service: PasswordProtocol, 
+        mail_service: MailProtocol,        
+        mail_content: AuthMailContentProtocol,
+        image_service: ImageProtocol,
+        password_policy: PasswordPolicyService,
+        mail_policy : MailPolicyService,
+        usuario_repository: UsuarioRepositoryProtocol,
+        unit_of_work_service: UnitOfWorkProtocol,
+    ):
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
+        self.auth_user_repository = auth_user_repository
+        self.token_service = token_service
+        self.password_service = password_service
+        self.mail_service = mail_service
+        self.mail_content = mail_content
+        self.image_service = image_service
+        self.password_policy = password_policy
+        self.mail_policy = mail_policy
+        self.usuario_repository = usuario_repository
+        self.unit_of_work_service = unit_of_work_service
+    @property
+    def register_use_case(self) -> RegisterUseCase:
+
+        return RegisterUseCase(
+            base_de_datos_url=self.base_de_datos_url,
+            nombre_app=self.nombre_app,
+            auth_user_repository=self.auth_user_repository,
+            password_service=self.password_service,
+            password_policy=self.password_policy,
+            mail_service=self.mail_service,
+            mail_content=self.mail_content,
+            image_service=self.image_service,
+            token_service=self.token_service,
+            mail_policy=self.mail_policy,
+            usuario_repository=self.usuario_repository,
+            unit_of_work_service=self.unit_of_work_service
+        )
+
+        
+class ContainerLogin:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        token_service: TokenProtocol,
+        password_service: PasswordProtocol,
+        user_validation_service: UserValidationService,
+        sesion_repository: TokenRepositoryProtocol,
+        unit_of_work_service: UnitOfWorkProtocol
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.token_service = token_service
+        self.password_service = password_service
+        self.user_validation_service = user_validation_service
+        self.sesion_repository = sesion_repository
+        self.unit_of_work_service = unit_of_work_service
+    @property
+    def login_use_case(self) -> LoginUseCase:
+
+        return LoginUseCase(
+            auth_user_repository=self.auth_user_repository,
+            token_service=self.token_service,
+            password_service=self.password_service,
+            user_validation_service = self.user_validation_service,
+            sesion_repository = self.sesion_repository,
+            unit_of_work_service=self.unit_of_work_service
+        )
+
+class ContainerVerifyMail:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        token_service: TokenProtocol,
+        unit_of_work_service: UnitOfWorkProtocol
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.token_service = token_service
+        self.unit_of_work_service = unit_of_work_service
+    @property
+    def verify_mail_use_case(self) -> VerifyMailUseCase:
+
+        return VerifyMailUseCase(
+            auth_user_repository=self.auth_user_repository,
+            token_service=self.token_service,
+            unit_of_work_service=self.unit_of_work_service
+        )
+    
+
+class ContainerLogout:
+    def __init__(
+        self,
+        token_service: TokenProtocol,
+        sesion_repository: TokenRepositoryProtocol,
+        unit_of_work_service: UnitOfWorkProtocol
+    ):
+        self.token_service = token_service
+        self.sesion_repository = sesion_repository
+        self.unit_of_work_service = unit_of_work_service
+    @property
+    def logout_use_case(self) -> LogoutUseCase:
+        return LogoutUseCase(
+            token_service=self.token_service,
+            sesion_repository=self.sesion_repository,
+            unit_of_work_service=self.unit_of_work_service
+        )
+    
+class ContainerRefreshToken:
+    def __init__(
+        self,
+        token_service: TokenProtocol
+    ):
+        self.token_service = token_service
+    @property
+    def refresh_token_use_case(self) -> RefreshTokenUseCase:
+        return RefreshTokenUseCase(
+            token_service = self.token_service
+        )
+
+class ContainerSolicitudRecuperacion:
+    def __init__(
+        self,
+        recuperar_contraseña_repository: RecuperarContraseñaProtocol,
+        unit_of_work_service: UnitOfWorkProtocol,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        mail_service: MailProtocol,
+        mail_content: AuthMailContentProtocol,
+        token_service: TokenProtocol,
+        base_de_datos_url: str,
+        nombre_app:str,
+        verificar_mail_recuperacion:timedelta
+    ):
+
+        self.recuperar_contraseña_repository = recuperar_contraseña_repository
+        self.unit_of_work_service = unit_of_work_service
+        self.auth_user_repository = auth_user_repository
+        self.mail_service = mail_service
+        self.mail_content = mail_content
+        self.token_service = token_service
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
+        self.verificar_mail_recuperacion = verificar_mail_recuperacion
+
+    @property
+    def solicitud_recuperacion_use_case(self) -> SolicitudRecuperacionUseCase:
+
+        return SolicitudRecuperacionUseCase(
+            recuperar_contraseña_repository = self.recuperar_contraseña_repository,
+            unit_of_work_service = self.unit_of_work_service,
+            auth_user_repository = self.auth_user_repository,
+            mail_service = self.mail_service, 
+            mail_content = self.mail_content,
+            token_service = self.token_service,
+            base_de_datos_url=self.base_de_datos_url,
+            nombre_app=self.nombre_app,
+            verificar_mail_recuperacion=self.verificar_mail_recuperacion
+        )
+
+
+class ContainerVerificarTokenRecuperacion:
+    def __init__(
+        self,
+        recuperar_contraseña_repository: RecuperarContraseñaProtocol,
+        token_service: TokenProtocol,
+    ):
+        self.recuperar_contraseña_repository = recuperar_contraseña_repository
+        self.token_service = token_service
+
+    @property
+    def verificar_token_recuperacion_use_case(self) -> VerificarTokenUseCase:
+        return VerificarTokenUseCase(
+            recuperar_contraseña_repository = self.recuperar_contraseña_repository,
+            token_service = self.token_service
+        )
+
+
+class ContainerRecuperarContraseña:
+    def __init__(
+            self,
+            recuperar_contraseña_repository: RecuperarContraseñaProtocol,
+            unit_of_work_service: UnitOfWorkProtocol,
+            password_service: PasswordProtocol,
+            history_contraseña_repository: HistoryRepositoryProtocol,
+            password_policy : PasswordPolicyService,
+            auth_user_repository: AuthUserRepositoryProtocol
+        ):
+            self.recuperar_contraseña_repository = recuperar_contraseña_repository
+            self.unit_of_work_service = unit_of_work_service
+            self.password_service = password_service
+            self.history_contraseña_repository = history_contraseña_repository
+            self.password_policy = password_policy
+            self.auth_user_repository = auth_user_repository
+    @property
+    def recuperar_contraseña_use_case(self) -> RecuperarContraseñaUseCase:
+        return RecuperarContraseñaUseCase(
+            recuperar_contraseña_repository = self.recuperar_contraseña_repository,
+            unit_of_work_service = self.unit_of_work_service,
+            password_service = self.password_service,
+            history_contraseña_repository = self.history_contraseña_repository,
+            password_policy = self.password_policy,
+            auth_user_repository = self.auth_user_repository
+        )
+
+
+class ContainerReenviarMailUseCase:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        mail_service: MailProtocol,
+        mail_content: AuthMailContentProtocol,
+        token_service: TokenProtocol,
+        mail_policy : MailPolicyService,
+        base_de_datos_url: str,
+        nombre_app:str
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.mail_service = mail_service
+        self.mail_content = mail_content
+        self.token_service = token_service
+        self.mail_policy = mail_policy
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
+    @property
+    def reenviar_mail_use_case(self) -> ReenviarMailUseCase:
+        return ReenviarMailUseCase(
+            auth_user_repository = self.auth_user_repository,
+            mail_service = self.mail_service,
+            mail_content = self.mail_content,
+            token_service = self.token_service,
+            mail_policy = self.mail_policy,
+            base_de_datos_url=self.base_de_datos_url,
+            nombre_app=self.nombre_app
+        )
+
+
+
+
+class ContainerModificarUsuario:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        mail_service: MailProtocol,
+        mail_content: AuthMailContentProtocol,
+        image_service: ImageProtocol,
+        token_service: TokenProtocol,
+        mail_policy : MailPolicyService,
+        base_de_datos_url: str,
+        nombre_app:str,
+        unit_of_work_service: UnitOfWorkProtocol,
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.mail_service = mail_service
+        self.mail_content = mail_content
+        self.image_service = image_service
+        self.token_service = token_service
+        self.mail_policy = mail_policy
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
+        self.unit_of_work_service = unit_of_work_service
+    @property
+    def modificar_usuario_use_case(self) -> ModificarUsuarioUseCase:
+
+        return ModificarUsuarioUseCase(
+            auth_user_repository=self.auth_user_repository,
+            mail_service=self.mail_service,
+            mail_content=self.mail_content,
+            image_service=self.image_service,
+            token_service=self.token_service,
+            mail_policy=self.mail_policy,
+            base_de_datos_url=self.base_de_datos_url,
+            nombre_app=self.nombre_app,
+            unit_of_work_service=self.unit_of_work_service
+        )
+
+
+class ContainerSolicitudEliminacionUsuario:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        mail_service: MailProtocol,
+        mail_content: AuthMailContentProtocol,
+        token_service: TokenProtocol,
+        base_de_datos_url: str,
+        nombre_app:str,
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.mail_service = mail_service
+        self.mail_content = mail_content
+        self.token_service = token_service
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
+    @property
+    def solicitud_eliminacion_usuario_use_case(self) -> SolicitudEliminacionUsuarioUseCase:
+
+        return SolicitudEliminacionUsuarioUseCase(
+            auth_user_repository=self.auth_user_repository,
+            mail_service=self.mail_service,
+            mail_content=self.mail_content,
+            token_service=self.token_service,
+            base_de_datos_url=self.base_de_datos_url,
+            nombre_app=self.nombre_app
+        )
+
+
+class ContainerEliminarUsuario:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        token_service: TokenProtocol,
+        unit_of_work_service: UnitOfWorkProtocol,
+        sesion_repository: TokenRepositoryProtocol
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.token_service = token_service
+        self.unit_of_work_service = unit_of_work_service
+        self.sesion_repository = sesion_repository
+    @property
+    def eliminar_usuario_use_case(self) -> EliminarUsuarioUseCase:
+
+        return EliminarUsuarioUseCase(
+            auth_user_repository=self.auth_user_repository,
+            token_service=self.token_service,
+            unit_of_work_service = self.unit_of_work_service, 
+            sesion_repository=self.sesion_repository
+        )
+
+
+class ContainerSolicitudReactivacionCuentaUseCase:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        mail_service: MailProtocol,
+        mail_content: AuthMailContentProtocol,
+        token_service: TokenProtocol,
+        mail_policy : MailPolicyService,
+        base_de_datos_url: str,
+        nombre_app:str
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.mail_service = mail_service
+        self.mail_content = mail_content
+        self.token_service = token_service
+        self.mail_policy = mail_policy
+        self.base_de_datos_url = base_de_datos_url
+        self.nombre_app = nombre_app
+    @property
+    def solicitud_reactivacion_cuenta_use_case(self) -> EnviarMailReactivacionUseCase:
+        return EnviarMailReactivacionUseCase(
+            auth_user_repository = self.auth_user_repository,
+            mail_service = self.mail_service,
+            mail_content = self.mail_content,
+            token_service = self.token_service,
+            mail_policy = self.mail_policy,
+            base_de_datos_url = self.base_de_datos_url,
+            nombre_app = self.nombre_app
+        )
+
+
+class ContainerReactivarUsuarioUseCase:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        token_service: TokenProtocol,
+        ventana_reactivacion: timedelta,
+        unit_of_work_service: UnitOfWorkProtocol
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.token_service = token_service
+        self.ventana_reactivacion = ventana_reactivacion
+        self.unit_of_work_service= unit_of_work_service
+    @property
+    def reactivar_usuario_use_case(self) -> ReactivarUsuarioUseCase:
+        return ReactivarUsuarioUseCase(
+            auth_user_repository = self.auth_user_repository,
+            token_service = self.token_service,
+            ventana_reactivacion=self.ventana_reactivacion,
+            unit_of_work_service = self.unit_of_work_service
+        )

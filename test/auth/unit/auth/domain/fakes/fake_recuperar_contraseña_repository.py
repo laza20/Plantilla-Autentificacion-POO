@@ -1,4 +1,4 @@
-from src.auth.domain.entities.entitie_recover_password import RecoverPassword
+from auth_core.auth.domain.entities.entitie_recover_password import RecoverPassword
 from datetime import datetime
 from dataclasses import replace
 

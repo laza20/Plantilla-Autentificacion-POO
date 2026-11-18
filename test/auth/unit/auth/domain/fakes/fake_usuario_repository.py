@@ -1,4 +1,4 @@
-from src.auth.infrastructure.persistence.postgres.models.models_usuario import Usuario
+from auth_core.auth.infrastructure.persistence.postgres.models.models_usuario import Usuario
 from typing import Dict
 from dataclasses import replace
 

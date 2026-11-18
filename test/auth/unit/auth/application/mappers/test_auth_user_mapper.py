@@ -1,6 +1,6 @@
 from dataclasses import asdict
-from src.auth.application.mappers.auth_users import a_usuario_creado
-from src.auth.domain.entities.entitie_auth_users import AuthUser
+from auth_core.auth.application.mappers.auth_users import a_usuario_creado
+from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
 
 
 def test_a_usuario_creado_copia_los_campos_publicos():

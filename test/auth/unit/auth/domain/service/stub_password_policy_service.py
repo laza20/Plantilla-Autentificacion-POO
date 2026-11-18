@@ -1,4 +1,4 @@
-from src.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura
+from auth_core.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura
 
 class StubPasswordPolicy:
     def __init__(self):

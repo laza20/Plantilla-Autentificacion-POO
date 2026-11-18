@@ -1,0 +1,32 @@
+from auth_core.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from datetime import datetime, timezone
+from auth_core.auth.domain.exceptions.tokens import TokenNoVerificado
+
+
+
+class VerificarTokenUseCase:
+    def __init__(
+        self,
+        recuperar_contraseña_repository: RecuperarContraseñaProtocol,
+        token_service: TokenProtocol
+        ):
+        self.recuperar_contraseña_repository = recuperar_contraseña_repository
+        self.token_service = token_service
+
+
+
+    def ejecutar(self, token:str):
+        fecha_actual = datetime.now(timezone.utc) 
+        token_hasheado = self.token_service.hash_token(token)
+
+        token_verificado = self.recuperar_contraseña_repository.verificar_token(
+            tiempo_actual=fecha_actual, token_hash=token_hasheado
+            )
+
+        if not token_verificado:
+            raise TokenNoVerificado()
+
+        nuevo_token = self.token_service.create_reset_token(token_verificado.id_usuario)
+
+        return nuevo_token

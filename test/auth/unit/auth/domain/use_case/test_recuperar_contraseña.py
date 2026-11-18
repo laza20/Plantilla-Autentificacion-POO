@@ -1,9 +1,9 @@
 from test.auth.fixtures.fixture_recuperar_contraseña import RecuperarContraseñaTestEnvironment
 from test.auth.factories.factory_create_password_recover import crear_recover_password_de_prueba
 from test.auth.factories.factory_usuarios import crear_usuario_de_prueba
-from src.auth.domain.exceptions.tokens import TokenNoDesactivado
-from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoModificado, UsuarioNoEncontrado
-from src.domain.exceptions.domain import ErrorCreacion
+from auth_core.auth.domain.exceptions.tokens import TokenNoDesactivado
+from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoModificado, UsuarioNoEncontrado
+from auth_core.domain.exceptions.domain import ErrorCreacion
 import pytest
 from datetime import datetime, timezone
 

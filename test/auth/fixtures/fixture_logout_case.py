@@ -1,4 +1,4 @@
-from src.auth.application.use_cases.logout import LogoutUseCase
+from auth_core.auth.application.use_cases.logout import LogoutUseCase
 from test.auth.unit.auth.domain.service import stub_token_service
 from test.auth.unit.auth.domain.service import (stub_unit_of_work)
 from test.auth.unit.auth.domain.fakes import fake_sesion_repository

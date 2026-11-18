@@ -1,5 +1,5 @@
-from src.auth.domain.entities.entitie_auth_users import AuthUser
-from src.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
+from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from auth_core.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
 
 class StubImageService:
     def __init__(self):

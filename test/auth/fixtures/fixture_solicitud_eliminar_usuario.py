@@ -1,7 +1,7 @@
 from test.auth.unit.auth.domain.service import stub_auth_mail_content, stub_mail_service
 from test.auth.unit.auth.domain.service import (stub_token_service)
 from test.auth.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
-from src.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
+from auth_core.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
 from test.config.config import TestSettings
 from test.auth.unit.auth.domain.service import (stub_mail_policy_service)
 

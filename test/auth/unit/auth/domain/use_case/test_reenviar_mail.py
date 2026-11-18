@@ -1,4 +1,4 @@
-from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
+from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
 from test.auth.factories.factory_usuarios import crear_usuario_de_prueba
 from test.auth.fixtures.fixture_reenviar_mail import ReenviarMailTestEnvironment
 import pytest

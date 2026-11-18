@@ -1,0 +1,71 @@
+from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from auth_core.auth.application.dtos.auth_user_dto import LoginResponse, UsuarioLogeado
+from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError
+from auth_core.domain.exceptions.domain import DomainError
+import logging
+from auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from auth_core.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
+from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from auth_core.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from auth_core.auth.domain.services.user_validation_service import UserValidationService
+
+
+logger = logging.getLogger(__name__)
+
+class LoginUseCase:
+    def __init__(
+        self,
+        auth_user_repository: AuthUserRepositoryProtocol,
+        password_service: PasswordProtocol,
+        token_service: TokenProtocol,
+        user_validation_service: UserValidationService,
+        sesion_repository: TokenRepositoryProtocol,
+        unit_of_work_service: UnitOfWorkProtocol
+    ):
+        self.auth_user_repository = auth_user_repository
+        self.password_service = password_service
+        self.token_service = token_service
+        self.user_validation_service = user_validation_service
+        self.sesion_repository = sesion_repository
+        self.unit_of_work_service = unit_of_work_service
+
+    def ejecutar(self, email: str, password: str, ip:str, user_agent:str)-> LoginResponse:
+        try:
+            usuario_db = self.user_validation_service.obtener_usuario_existente(email)
+                
+            if not self.password_service.verify_password(password, usuario_db.password):
+                raise LoginError("Usuario o contraseña incorrectos")
+            
+            login_response = self._emitir_tokens_usuario(usuario_db)
+            hashed_token = self.token_service.hash_token(login_response.tokens.refresh_token)
+            with self.unit_of_work_service:
+                self.sesion_repository.insertar_sesion(
+                    hash_token=hashed_token,
+                    id_usuario=usuario_db.id_usuario,
+                    ip=ip,
+                    user_agent=user_agent
+                )
+            return login_response
+        
+        except (UsuarioError, DomainError):
+            raise
+        except Exception as e:
+            logger.exception("Error crítico en service")
+            raise UsuarioError("Error al inicial sesion") from e
+
+    def _emitir_tokens_usuario(self, usuario:AuthUser)-> LoginResponse:
+            
+            tokens = self.token_service.create_user_tokens(usuario.id_usuario)
+            usuario_publico = self._retornar_usuario_publico(usuario)
+
+            return LoginResponse(
+                tokens=tokens,
+                usuario=usuario_publico
+            )
+
+    def _retornar_usuario_publico(self, usuario:AuthUser)-> UsuarioLogeado:
+        return UsuarioLogeado(
+            email= usuario.email,
+            imagen_url= usuario.imagen_url
+        )

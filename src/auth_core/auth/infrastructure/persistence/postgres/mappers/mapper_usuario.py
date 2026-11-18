@@ -1,0 +1,14 @@
+from auth_core.auth.domain.entities.entitie_usuario import Usuario
+from auth_core.auth.infrastructure.persistence.postgres.models.models_usuario import Usuario as UsuarioSqlModel
+
+
+def a_entidad(modelo: UsuarioSqlModel) -> Usuario:
+    return Usuario(
+        id_usuario=modelo.id_usuario
+    )
+
+
+def a_modelo(entidad: Usuario) -> UsuarioSqlModel:
+    return UsuarioSqlModel(
+        id_usuario=entidad.id_usuario
+    )

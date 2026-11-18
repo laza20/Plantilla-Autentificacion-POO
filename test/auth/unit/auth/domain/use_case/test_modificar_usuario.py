@@ -1,9 +1,9 @@
 import pytest
-from src.auth.application.dtos.auth_user_dto import UserModifyDTO
+from auth_core.auth.application.dtos.auth_user_dto import UserModifyDTO
 from io import BytesIO
 from types import SimpleNamespace
-from src.domain.exceptions.domain import LongitudExcedida
-from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoModificado, MailNoValido
+from auth_core.domain.exceptions.domain import LongitudExcedida
+from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioNoModificado, MailNoValido
 from test.auth.fixtures.fixture_modificar_usuario import ModificarUsuarioTestEnvironment
 from test.auth.factories.factory_usuarios import crear_usuario_de_prueba
 

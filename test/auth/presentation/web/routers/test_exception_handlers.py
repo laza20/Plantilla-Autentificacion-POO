@@ -1,12 +1,12 @@
-from src.auth.presentation.web.exception_handlers import HTTP_STATUS_BY_EXCEPTION, obtener_status_code
-from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError
-from src.domain.exceptions.domain import DomainError
+from auth_core.auth.presentation.web.exception_handlers import HTTP_STATUS_BY_EXCEPTION, obtener_status_code
+from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioError
+from auth_core.domain.exceptions.domain import DomainError
 
 
 
 def obtener_subclases(clase):
     for sub in clase.__subclasses__():
-        if sub.__module__.startswith("src.") and ".test." not in sub.__module__:
+        if sub.__module__.startswith("auth_core.") and ".test." not in sub.__module__:
             yield sub
         yield from obtener_subclases(sub)
 

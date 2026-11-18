@@ -2,9 +2,9 @@ from main import app
 from test.auth.presentation.web.overrides.override_crear import crear_override
 from test.auth.presentation.web.stub.stub_solicitud_recuperacion import StubSolicitudRecuperacionUseCase
 from fastapi import status
-from src.container.auth.providers import get_solicitud_recuperacion_contraseña_use_case
-from src.config.config import settings
-from src.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
+from auth_core.container.auth.providers import get_solicitud_recuperacion_contraseña_use_case
+from auth_core.config.config import settings
+from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
 import pytest
 
 def test_solicitud_recuperacion_correctamente(test_client):

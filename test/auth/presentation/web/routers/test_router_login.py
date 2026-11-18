@@ -1,14 +1,14 @@
 import pytest
 from test.auth.presentation.web.overrides.override_crear import crear_override
 from test.auth.presentation.web.stub.stub_login import StubLoginUseCase
-from src.auth.application.dtos.auth_user_dto import LoginResponse, UsuarioLogeado
-from src.auth.domain.entities.entitie_auth_users import UserTokens
-from src.container.auth.providers import get_login_use_case
+from auth_core.auth.application.dtos.auth_user_dto import LoginResponse, UsuarioLogeado
+from auth_core.auth.domain.entities.entitie_auth_users import UserTokens
+from auth_core.container.auth.providers import get_login_use_case
 from fastapi import status
-from src.config.config import settings
+from auth_core.config.config import settings
 from main import app
-from src.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError
-from src.domain.exceptions.domain import DomainError
+from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError
+from auth_core.domain.exceptions.domain import DomainError
 
 def test_logear_usuario_correctamente(test_client):
     usuario = UsuarioLogeado(

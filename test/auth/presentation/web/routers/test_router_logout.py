@@ -1,8 +1,8 @@
 import pytest
 from test.auth.presentation.web.overrides.override_crear import crear_override
 from test.auth.presentation.web.stub.stub_logout import StubLogoutUseCase
-from src.container.auth.providers import get_logout_service
-from src.config.config import settings
+from auth_core.container.auth.providers import get_logout_service
+from auth_core.config.config import settings
 from main import app
 
 

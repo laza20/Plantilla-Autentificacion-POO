@@ -1,0 +1,420 @@
+from fastapi import Depends
+from sqlmodel import Session
+from fastapi import Request
+from auth_core.auth.domain.services.mail_policy import MailPolicyService
+from datetime import timedelta
+from auth_core.database.repository.unit_of_work import UnitOfWork
+from auth_core.auth.domain.services.password_policy import PasswordPolicyService
+from auth_core.database.client import get_session
+from auth_core.auth.domain.services.user_validation_service import UserValidationService
+from auth_core.config.config import Settings, get_settings
+
+#Contenedores
+from auth_core.container.auth.auth_container import (
+    ContainerRegister, ContainerLogin, 
+    ContainerVerifyMail, ContainerLogout,
+    ContainerRefreshToken, ContainerListarSesiones, ContainerEliminarSesiones,
+    ContainerSolicitudRecuperacion, ContainerVerificarTokenRecuperacion, ContainerRecuperarContraseña,
+    ContainerReenviarMailUseCase, ContainerModificarUsuario, ContainerSolicitudEliminacionUsuario,
+    ContainerEliminarUsuario, ContainerSolicitudReactivacionCuentaUseCase, ContainerReactivarUsuarioUseCase,
+    ContainerObternerUsuarioActual)
+
+#Presentacion
+from auth_core.auth.presentation.web.cookies.cookies import CookiesService
+from auth_core.auth.presentation.web.guards import AuthDependencies
+
+#Infrastructure
+from auth_core.auth.infrastructure.security.tokens.tokens import TokenService
+from auth_core.auth.infrastructure.security.security import PasswordService
+from auth_core.shared.infrastructure.mail.mail import MailService
+from auth_core.shared.infrastructure.images.cloudinary import ImageService
+from auth_core.auth.infrastructure.persistence.postgres.repository.usuario_repository import UserRepository
+from auth_core.auth.infrastructure.persistence.postgres.repository.recover_password_repository import RecoverPasswordRepository
+from auth_core.auth.infrastructure.persistence.postgres.repository.history_password_repository import HistoryPasswordRepository
+from auth_core.shared.infrastructure.mail.template_renderer import TemplateRenderer
+from auth_core.auth.infrastructure.mail.auth_mail_content import AuthMailContent, TEMPLATES_DIR
+from auth_core.auth.infrastructure.persistence.postgres.repository.auth_user_repository import AuthUserRepository
+from auth_core.auth.infrastructure.persistence.postgres.repository.sesion_repository import SesionRepository
+
+#Protocols
+from auth_core.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
+from auth_core.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from auth_core.auth.domain.protocols.repository.protocol_history_password_repository import HistoryRepositoryProtocol
+from auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from auth_core.shared.protocols.protocol_mail_service import MailProtocol
+from auth_core.shared.protocols.protocol_image_service import ImageProtocol
+from auth_core.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from auth_core.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
+from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from auth_core.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
+
+#Casos de uso
+from auth_core.auth.application.use_cases.register import RegisterUseCase
+from auth_core.auth.application.use_cases.login import LoginUseCase
+from auth_core.auth.application.use_cases.verify_email import VerifyMailUseCase
+from auth_core.auth.application.use_cases.logout import LogoutUseCase
+from auth_core.auth.application.use_cases.refresh_token import RefreshTokenUseCase
+from auth_core.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
+from auth_core.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
+from auth_core.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
+from auth_core.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
+from auth_core.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
+from auth_core.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
+from auth_core.auth.application.use_cases.reactivacion_cuenta.reactivar_cuenta import ReactivarUsuarioUseCase
+from auth_core.auth.application.use_cases.obtener_usuario_actual import ObtenerUsuarioActualUseCase
+from auth_core.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
+from auth_core.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
+from auth_core.auth.application.use_cases.eliminar_usuario.eliminar_usuario import EliminarUsuarioUseCase
+from auth_core.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
+
+renderer = TemplateRenderer(template_dir=TEMPLATES_DIR)
+auth_mail_content = AuthMailContent(renderer=renderer)
+
+def get_history_password_repository(session: Session = Depends(get_session)) -> HistoryRepositoryProtocol:
+    return HistoryPasswordRepository(session)
+
+def get_recuperar_contraseña_repository(session: Session = Depends(get_session)) -> RecuperarContraseñaProtocol:
+    return RecoverPasswordRepository(session)
+
+def get_unit_of_work(session: Session = Depends(get_session)) -> UnitOfWorkProtocol:
+    return UnitOfWork(session)
+
+def get_user_repository(session: Session = Depends(get_session)) -> UsuarioRepositoryProtocol:
+    return UserRepository(session)
+
+def get_auth_user_repository(session: Session = Depends(get_session)) -> AuthUserRepositoryProtocol:
+    return AuthUserRepository(session)
+
+def get_user_validation_service(
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository)
+) -> UserValidationService:
+    return UserValidationService(
+        auth_user_repository=auth_user_repository
+    )
+
+def get_cookies_service(settings: Settings = Depends(get_settings)) -> CookiesService:
+    return CookiesService(settings=settings)
+
+def get_sesion_repository(session: Session = Depends(get_session)) -> TokenRepositoryProtocol:
+    return SesionRepository(session)
+
+def get_token_service(
+    settings: Settings = Depends(get_settings)
+) -> TokenProtocol:
+    return TokenService(settings)
+
+
+def get_password_service() -> PasswordProtocol:
+    return PasswordService()
+
+
+def get_mail_service(
+    settings: Settings = Depends(get_settings)
+) -> MailProtocol:
+    return MailService(settings)
+
+
+def get_image_service(
+    settings: Settings = Depends(get_settings)
+) -> ImageProtocol:
+    return ImageService(settings)
+
+def get_password_policy(settings: Settings = Depends(get_settings)) -> PasswordPolicyService:
+    return PasswordPolicyService()
+
+def get_mail_policy(settings: Settings = Depends(get_settings)) -> MailPolicyService:
+    return MailPolicyService()
+
+def get_auth_mail_content() -> AuthMailContent:
+    return auth_mail_content
+
+def get_register_use_case(
+    settings: Settings = Depends(get_settings),
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+    token_service: TokenProtocol = Depends(get_token_service),
+    password_service: PasswordProtocol = Depends(get_password_service),
+    password_policy: PasswordPolicyService = Depends(get_password_policy),
+    mail_content: AuthMailContentProtocol = Depends(get_auth_mail_content),
+    mail_service: MailProtocol = Depends(get_mail_service),
+    image_service: ImageProtocol = Depends(get_image_service),
+    mail_policy : MailPolicyService = Depends(get_mail_policy),
+    usuario_repository: UsuarioRepositoryProtocol = Depends(get_user_repository),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
+) -> RegisterUseCase:
+
+    return ContainerRegister(
+        base_de_datos_url=settings.BASE_URL,
+        nombre_app=settings.NOMBRE_APP,
+        auth_user_repository=auth_user_repository,
+        token_service=token_service,
+        password_service=password_service,
+        password_policy=password_policy,
+        mail_service=mail_service,
+        mail_content=mail_content,
+        image_service=image_service,
+        mail_policy=mail_policy,
+        usuario_repository=usuario_repository,
+        unit_of_work_service=unit_of_work_service
+    ).register_use_case
+
+
+def get_login_use_case(
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+    token_service: TokenProtocol = Depends(get_token_service),
+    password_service: PasswordProtocol = Depends(get_password_service),
+    user_validation_service: UserValidationService = Depends(get_user_validation_service),
+    sesion_repository: TokenRepositoryProtocol = Depends(get_sesion_repository),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
+) -> LoginUseCase:
+
+    return ContainerLogin(
+        auth_user_repository=auth_user_repository,
+        token_service=token_service,
+        password_service=password_service,
+        user_validation_service=user_validation_service,
+        sesion_repository=sesion_repository,
+        unit_of_work_service = unit_of_work_service
+    ).login_use_case
+
+
+def get_verify_mail_use_case(
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+    token_service: TokenProtocol = Depends(get_token_service),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
+) -> VerifyMailUseCase:
+    return ContainerVerifyMail(
+        auth_user_repository=auth_user_repository,
+        token_service=token_service,
+        unit_of_work_service = unit_of_work_service
+    ).verify_mail_use_case
+
+def get_logout_service(
+    token_service: TokenProtocol = Depends(get_token_service),
+    sesion_repository: TokenRepositoryProtocol = Depends(get_sesion_repository),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work)
+)-> LogoutUseCase:
+    return ContainerLogout(
+        token_service=token_service,
+        sesion_repository=sesion_repository,
+        unit_of_work_service=unit_of_work_service
+        ).logout_use_case
+
+
+def get_refresh_token_service(
+    token_service: TokenProtocol = Depends(get_token_service)
+)-> RefreshTokenUseCase:
+    return ContainerRefreshToken(
+        token_service=token_service
+        ).refresh_token_use_case
+
+
+def get_listar_sesiones_use_case(
+    sesion_repository: TokenRepositoryProtocol = Depends(get_sesion_repository)
+) -> ListarSesionesUseCase:
+    return ContainerListarSesiones(sesion_repository=sesion_repository).listar_sesiones_use_case
+
+def get_eliminar_sesiones_use_case(
+    sesion_repository: TokenRepositoryProtocol = Depends(get_sesion_repository),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work)
+) -> EliminarSesionesUseCase:
+    return ContainerEliminarSesiones(
+        sesion_repository=sesion_repository,
+        unit_of_work_service=unit_of_work_service
+    ).eliminar_sesiones_use_case
+
+def get_solicitud_recuperacion_contraseña_use_case(
+    recuperar_contraseña_repository: RecuperarContraseñaProtocol = Depends(get_recuperar_contraseña_repository),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+    mail_service: MailProtocol = Depends(get_mail_service),
+    mail_content: AuthMailContentProtocol = Depends(get_auth_mail_content),
+    token_service: TokenProtocol = Depends(get_token_service),
+    settings: Settings = Depends(get_settings)
+) -> SolicitudRecuperacionUseCase:
+    return ContainerSolicitudRecuperacion(
+        recuperar_contraseña_repository = recuperar_contraseña_repository,
+        unit_of_work_service = unit_of_work_service,
+        auth_user_repository=auth_user_repository,
+        mail_service = mail_service,
+        mail_content = mail_content,
+        token_service=token_service,
+        base_de_datos_url=settings.BASE_URL,
+        nombre_app=settings.NOMBRE_APP,
+        verificar_mail_recuperacion=timedelta(minutes=settings.VERIFY_MAIL_RECUPERACION)
+    ).solicitud_recuperacion_use_case
+
+
+def get_verificar_token_recuperacion_contraseña_use_case(
+    recuperar_contraseña_repository: RecuperarContraseñaProtocol = Depends(get_recuperar_contraseña_repository),
+    token_service: TokenProtocol = Depends(get_token_service)
+) -> VerificarTokenUseCase:
+    return ContainerVerificarTokenRecuperacion(
+        recuperar_contraseña_repository = recuperar_contraseña_repository,
+        token_service=token_service,
+    ).verificar_token_recuperacion_use_case
+
+
+def get_recuperar_contraseña_use_case(
+        recuperar_contraseña_repository: RecuperarContraseñaProtocol = Depends(get_recuperar_contraseña_repository),
+        unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
+        password_service: PasswordProtocol = Depends(get_password_service),
+        history_contraseña_repository: HistoryRepositoryProtocol = Depends(get_history_password_repository),
+        password_policy : PasswordPolicyService = Depends(get_password_policy),
+        auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+) -> RecuperarContraseñaUseCase:
+    return ContainerRecuperarContraseña(
+            recuperar_contraseña_repository = recuperar_contraseña_repository,
+            unit_of_work_service = unit_of_work_service,
+            password_service = password_service,
+            history_contraseña_repository = history_contraseña_repository,
+            password_policy = password_policy,
+            auth_user_repository = auth_user_repository
+    ).recuperar_contraseña_use_case
+
+
+def get_reenviar_mail_use_case(
+        auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+        mail_service: MailProtocol = Depends(get_mail_service),
+        mail_content: AuthMailContentProtocol = Depends(get_auth_mail_content),
+        token_service: TokenProtocol = Depends(get_token_service),
+        mail_policy : MailPolicyService = Depends(get_mail_policy),
+        settings: Settings = Depends(get_settings)
+) -> ReenviarMailUseCase:
+    return ContainerReenviarMailUseCase(
+            auth_user_repository = auth_user_repository,
+            mail_service = mail_service,
+            mail_content = mail_content,
+            token_service = token_service,
+            mail_policy = mail_policy,
+            base_de_datos_url=settings.BASE_URL,
+            nombre_app=settings.NOMBRE_APP,
+    ).reenviar_mail_use_case
+
+def get_modificar_usuario_use_case(
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+    mail_service: MailProtocol = Depends(get_mail_service),
+    mail_content: AuthMailContentProtocol = Depends(get_auth_mail_content),
+    image_service: ImageProtocol = Depends(get_image_service),
+    token_service: TokenProtocol = Depends(get_token_service),
+    mail_policy : MailPolicyService = Depends(get_mail_policy),
+    settings: Settings = Depends(get_settings),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
+) -> ModificarUsuarioUseCase:
+
+    return ContainerModificarUsuario(
+        auth_user_repository=auth_user_repository,
+        mail_service=mail_service,
+        mail_content=mail_content,
+        image_service=image_service,
+        token_service=token_service,
+        mail_policy=mail_policy,
+        base_de_datos_url=settings.BASE_URL,
+        nombre_app=settings.NOMBRE_APP,
+        unit_of_work_service=unit_of_work_service
+    ).modificar_usuario_use_case
+
+
+def get_solicitud_eliminacion_usuario_use_case(
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+    mail_service: MailProtocol = Depends(get_mail_service),
+    mail_content: AuthMailContentProtocol = Depends(get_auth_mail_content),
+    token_service: TokenProtocol = Depends(get_token_service),
+    settings: Settings = Depends(get_settings)
+) -> SolicitudEliminacionUsuarioUseCase:
+    return ContainerSolicitudEliminacionUsuario(
+        auth_user_repository=auth_user_repository,
+        mail_service=mail_service,
+        mail_content=mail_content,
+        token_service=token_service,
+        base_de_datos_url=settings.BASE_URL,
+        nombre_app=settings.NOMBRE_APP
+    ).solicitud_eliminacion_usuario_use_case
+
+
+def get_eliminar_usuario_use_case(
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+    token_service: TokenProtocol = Depends(get_token_service),
+    unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work),
+    sesion_repository: TokenRepositoryProtocol = Depends(get_sesion_repository)
+) -> EliminarUsuarioUseCase:
+    return ContainerEliminarUsuario(
+        auth_user_repository=auth_user_repository,
+        token_service=token_service,
+        unit_of_work_service=unit_of_work_service,
+        sesion_repository=sesion_repository
+    ).eliminar_usuario_use_case
+
+
+def get_solicitud_reactivacion_cuenta_use_case(
+        auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+        mail_service: MailProtocol = Depends(get_mail_service),
+        mail_content: AuthMailContentProtocol = Depends(get_auth_mail_content),
+        token_service: TokenProtocol = Depends(get_token_service),
+        mail_policy : MailPolicyService = Depends(get_mail_policy),
+        settings: Settings = Depends(get_settings)
+) -> EnviarMailReactivacionUseCase:
+    return ContainerSolicitudReactivacionCuentaUseCase(
+            auth_user_repository = auth_user_repository,
+            mail_service = mail_service,
+            mail_content = mail_content,
+            token_service = token_service,
+            mail_policy = mail_policy,
+            base_de_datos_url=settings.BASE_URL,
+            nombre_app=settings.NOMBRE_APP
+    ).solicitud_reactivacion_cuenta_use_case
+
+def get_reactivar_cuenta_use_case(
+        auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository),
+        token_service: TokenProtocol = Depends(get_token_service),
+        settings: Settings = Depends(get_settings),
+        unit_of_work_service: UnitOfWorkProtocol = Depends(get_unit_of_work)
+) -> ReactivarUsuarioUseCase:
+    return ContainerReactivarUsuarioUseCase(
+            auth_user_repository = auth_user_repository,
+            token_service = token_service,
+            ventana_reactivacion=timedelta(days=settings.REACTIVACION_CUENTA),
+            unit_of_work_service = unit_of_work_service
+    ).reactivar_usuario_use_case
+
+
+def get_obtener_usuario_actual(
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository)
+) -> ObtenerUsuarioActualUseCase:
+    return ContainerObternerUsuarioActual(
+        auth_user_repository=auth_user_repository
+    ).obtener_usuario_actual_use_case
+
+def get_auth_dependencies(
+    token_service: TokenService = Depends(get_token_service),
+    auth_user_repository: AuthUserRepositoryProtocol = Depends(get_auth_user_repository)
+) -> AuthDependencies:
+    """Factory para inyectar AuthDependencies en endpoints."""
+    return AuthDependencies(
+        token_service=token_service,
+        auth_user_repository=auth_user_repository
+    )
+
+
+async def get_current_user(
+    request: Request,
+    auth_deps: AuthDependencies = Depends(get_auth_dependencies)
+):
+    """Dependencia que retorna el usuario actual."""
+    return await auth_deps.get_current_user(request)
+
+
+async def get_admin_user(
+    request: Request,
+    auth_deps: AuthDependencies = Depends(get_auth_dependencies)
+):
+    """Dependencia que retorna el usuario actual si es admin."""
+    return await auth_deps.get_admin_user(request)
+
+
+async def get_premium_user(
+    request: Request,
+    auth_deps: AuthDependencies = Depends(get_auth_dependencies)
+):
+    """Dependencia que retorna el usuario actual si es premium."""
+    return await auth_deps.get_premium_user(request)
