@@ -1,439 +1,273 @@
 from typing import Protocol, runtime_checkable
 from auth_core.auth.domain.entities.entitie_auth_users import UserTokens
 
+
 @runtime_checkable
 class TokenProtocol(Protocol):
     """
-    Contrato para servicios de autenticación mediante tokens.
-    
-    ¿Qué es?
-    --------
-    Define la interfaz que CUALQUIER servicio de tokens debe cumplir.
-    Puede ser JWT, OAuth2, SessionTokens, API Keys, etc.
-    
-    ¿Cómo implementar?
-    ------------------
-    1. Crea una clase que implemente estos cuatro métodos
-    2. Asegúrate de cumplir exactamente las firmas
-    3. Registra la clase en dependencies.py
-    
-    Nota: Los métodos privados (como _encode_token) NO son parte del Protocol.
-          Cada implementación puede tener sus propios helpers internos.
-    
-    Ejemplo de implementación (JWT):
-    
-    class TokenService:
-        def __init__(self):
-        
-        def create_access_token(self, user_id: str) -> str:
-            # Crea JWT con duración corta
-            return self._encode_token({...}, timedelta(minutes=15))
-        
-        def create_refresh_token(self, user_id: str) -> str:
-            # Crea JWT con duración larga
-            return self._encode_token({...}, timedelta(days=7))
-        
-        def get_user_id_from_access_token(self, token: str) -> str:
-            # Decodifica JWT y extrae user_id
-            payload = self.decode_token(token)
-            return payload.get("sub")
-        
-        def get_user_id_from_refresh_token(self, token: str) -> str:
-            # Decodifica JWT y extrae user_id
-            payload = self.decode_token(token)
-            return payload.get("sub")
-    
-    Atributos requeridos:
-    --------------------
-    Ninguno. Solo implementa los métodos.
-    
-    Métodos requeridos:
-    -------------------
+    Contrato para servicios de tokens de autenticación.
+
+    Define la interfaz que cualquier servicio de tokens debe cumplir (JWT, etc.).
+    Cubre los tokens de sesión (access / refresh) y los tokens de scope único
+    para flujos puntuales (reset, verificación, eliminación, reactivación).
+
+    Cómo implementar:
+        1. Crear una clase con los métodos de este contrato, respetando las firmas.
+        2. Registrarla en dependencies.py.
+
+    Los métodos privados (ej. _encode_token) no forman parte del contrato:
+    cada implementación puede tener sus propios helpers.
+
+    Convenciones (implementación JWT):
+        - El user_id viaja en el claim "sub".
+        - El claim "type" identifica el scope del token ("access", "refresh",
+          "reset", "verification", "eliminacion", "reactivacion").
+        - Un token solo es válido en el flujo de su propio scope.
+        - Los métodos get_* son stateless: no consultan la BD.
+        - Token inválido, expirado o de otro scope -> TokenInvalido.
+
+    Atributos requeridos: ninguno.
     """
-    def create_user_tokens(self, user_id:int) -> UserTokens:
+
+    def create_user_tokens(self, user_id: int) -> UserTokens:
+        """
+        Crea el par de tokens de sesión de un usuario.
+
+        Args:
+            user_id: ID del usuario.
+
+        Returns:
+            UserTokens con access_token y refresh_token.
+        """
         ...
-    
+
     def create_access_token(self, user_id: str) -> str:
         """
-        Genera un token de acceso de corta duración para autenticar solicitudes.
-        
-        Parámetros:
-        -----------
-        user_id : str
-            ID único del usuario en tu sistema.
-            Típicamente: str(usuario.id_usuario)
-            
-            Nota: Se serializa en el token para que pueda recuperarse después.
-        
-        Retorna:
-        --------
-        str
-            Token de acceso en formato cadena.
-            
-            Ejemplos por algoritmo:
-            
-            JWT:     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwidHlwZSI6ImFjY2VzcyJ9...."
-            OAuth2:  "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
-            Session: "sess_abc123xyz789"
-        
-        Características del token:
-        --------------------------
-        - Contiene el user_id codificado (recuperable con get_user_id_from_access_token)
-        - Duración CORTA (típicamente 15-30 minutos)
-        - Se envía en requests posteriores en header Authorization
-        - Expiración automática (no requiere logout)
-        - No modificable por el cliente (firmado/encriptado)
-        
-        Excepciones esperadas:
-        ----------------------
-        Exception (genérica)
-            Si hay error durante la generación (credenciales inválidas, etc.)
-        
-        Ejemplo práctico:
-        -----------------
-        # En AuthService.register()
-        token = self.token_service.create_access_token(
-            user_id=str(usuario_creado.id_usuario)
-        )
-        # token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-        
-        # Se usa para enviar email de verificación
-        url_verificacion = f"ejemplo.url/verificar/{token}"
-        
+        Crea un token de acceso de corta duración.
+
+        Args:
+            user_id: ID del usuario (típicamente str(usuario.id_usuario)).
+
+        Returns:
+            Token firmado con scope "access".
+            - Duración corta (configurable, ej. 15 minutos).
+            - Se envía en cada request autenticado.
+            - No requiere logout: expira solo.
+
         Ciclo de vida:
-        ---------------
-        1. Usuario se registra → create_access_token()
-        2. Token se envía en email/respuesta
-        3. Usuario usa token en requests (Authorization: Bearer <token>)
-        4. Servidor valida token con get_user_id_from_access_token()
-        5. Token expira (no se puede usar después)
-        6. Usuario usa refresh_token para obtener nuevo access_token
-        
-        Notas de implementación:
-        -----------------------
-        - El access token es de corta duración (no puede ser indefinido)
-        - Debe contener user_id de forma codificada/encriptada
-        - El cliente recibe el token y lo almacena (típicamente en memoria)
-        - El cliente envía el token en cada request autenticado
-        - El servidor NUNCA almacena el token (stateless)
+            1. Login -> se emite junto al refresh token.
+            2. El cliente lo envía en cada request.
+            3. El servidor lo valida con get_user_id_from_access_token().
+            4. Al expirar, el cliente usa el refresh token para obtener uno nuevo.
         """
         ...
-    
+
     def create_refresh_token(self, user_id: str) -> str:
         """
-        Genera un token de larga duración para obtener nuevos access tokens.
-        
-        Parámetros:
-        -----------
-        user_id : str
-            ID único del usuario.
-            Típicamente: str(usuario.id_usuario)
-        
-        Retorna:
-        --------
-        str
-            Token de refresco en formato cadena.
-            Similar a access_token pero con duración más larga.
-        
-        Características del token:
-        --------------------------
-        - Contiene el user_id codificado
-        - Duración LARGA (típicamente 7-30 días)
-        - Se almacena en cookie HttpOnly (seguro contra XSS)
-        - No se usa directamente, solo para obtener nuevos access_tokens
-        - Expiración automática
-        
-        Ejemplo práctico:
-        -----------------
-        # En AuthService.login() o register()
-        tokens = UserTokens(
-            access_token=self.token_service.create_access_token(str(usuario.id_usuario)),
-            refresh_token=self.token_service.create_refresh_token(str(usuario.id_usuario))
-        )
-        
-        # tokens.access_token: Corta duración, para requests
-        # tokens.refresh_token: Larga duración, almacenada en cookie
-        
-        Ciclo de vida:
-        ---------------
-        1. Usuario login → Se generan access_token + refresh_token
-        2. Ambos se retornan al cliente
-        3. Cliente usa access_token para requests autenticados
-        4. Cuando access_token expira (15min), cliente usa refresh_token
-        5. Servidor valida refresh_token
-        6. Si es válido, genera nuevo access_token (sin logout)
-        7. Si es inválido, usuario debe hacer login nuevamente
-        
-        Notas de implementación:
-        -----------------------
-        - Duración MUCHO más larga que access_token
-        - Típicamente se almacena en cookie HttpOnly
-        - El cliente NO lo debe usar directamente (no en Authorization header)
-        - Solo se usa en endpoint /refresh para obtener nuevo access_token
-        - Protege contra expiración frecuente de access_tokens
+        Crea un token de refresco de larga duración.
+
+        Args:
+            user_id: ID del usuario (típicamente str(usuario.id_usuario)).
+
+        Returns:
+            Token firmado con scope "refresh".
+            - Duración larga (configurable, ej. 7 días).
+            - Se guarda en cookie HttpOnly.
+            - Solo se usa en el endpoint de refresh para obtener un nuevo access token.
+            - Su hash (ver hash_token) se persiste en la tabla de sesiones.
         """
         ...
-    
+
     def get_user_id_from_access_token(self, token: str) -> int:
         """
-        Extrae el user_id de un token de acceso válido.
-        
-        Parámetros:
-        -----------
-        token : str
-            Token de acceso generado por create_access_token().
-            Ejemplo: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-            
-            Nota: Debe ser un token válido y no expirado.
-        
-        Retorna:
-        --------
-        str
-            ID del usuario extraído del token.
-            Ejemplo: "123"
-            
-            Nota: Retorna string, aunque el ID sea numerico.
-                  El cliente debe convertir si es necesario: int(user_id)
-        
-        Excepciones esperadas:
-        ----------------------
-        TokenInvalido
-            Si el token no es válido (formato incorrecto)
-        
-        TokenExpirado
-            Si el token ha expirado
-        
-        Exception (genérica)
-            Si hay error al decodificar/validar
-        
-        Ejemplo práctico:
-        -----------------
-        # En un endpoint que requiere autenticación
-        @router.get("/usuarios/me")
-        async def get_me(
-            token: str = Depends(get_token_from_header),
-            auth_service: AuthService = Depends(get_auth_service)
-        ):
+        Valida un access token y devuelve el user_id.
+
+        Args:
+            token: Token generado por create_access_token().
+
+        Returns:
+            ID del usuario como int.
+
+        Raises:
+            SinAccessToken: si el token es válido pero no es de scope "access"
+                (ej. se envió un refresh token).
+            TokenInvalido: si el token está malformado, expiró, o no contiene "sub".
+
+        Ejemplo en un endpoint protegido:
             try:
-                user_id = auth_service.token_service.get_user_id_from_access_token(token)
-                # user_id = "123"
-                
-                usuario = auth_service.get_user(AuthUser(id_usuario=int(user_id)))
-                return usuario
-            
+                user_id = token_service.get_user_id_from_access_token(token)
             except TokenInvalido:
-                raise HTTPException(status_code=401, detail="Token inválido")
-            except TokenExpirado:
-                raise HTTPException(status_code=401, detail="Token expirado")
-        
-        Flujo en verificación de email:
-        --------------------------------
-        # En AuthService.verificar_mail()
-        user_id_db = self.token_service.get_user_id_from_access_token(token)
-        # user_id_db = "123"
-        
-        usuario = self.auth_user_repository.obtener_por_id_sin_activar(int(user_id_db))
-        usuario = self.auth_user_repository.activar(usuario)
-        
-        Notas de implementación:
-        -----------------------
-        - Debe decodificar/validar el token
-        - Extraer el claim "sub" (subject = user_id)
-        - Validar que el token no ha expirado
-        - Validar que es de tipo "access" (no refresh)
-        - Si algo falla, lanza TokenInvalido o TokenExpirado
-        - El método es stateless (no consulta BD)
+                raise HTTPException(status_code=401, detail="Token inválido o expirado")
         """
         ...
-    
+
     def get_user_id_from_refresh_token(self, token: str) -> str:
         """
-        Extrae el user_id de un token de refresco válido.
-        
-        Parámetros:
-        -----------
-        token : str
-            Token de refresco generado por create_refresh_token().
-            Típicamente viene de una cookie HttpOnly.
-            Ejemplo: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-        
-        Retorna:
-        --------
-        str
-            ID del usuario extraído del token.
-            Ejemplo: "123"
-        
-        Excepciones esperadas:
-        ----------------------
-        TokenInvalido
-            Si el token no es válido
-        
-        TokenExpirado
-            Si el token ha expirado (usuario debe hacer login nuevamente)
-        
-        Exception (genérica)
-            Si hay error al decodificar
-        
-        Ejemplo práctico:
-        -----------------
-        # En endpoint POST /refresh
-        @router.post("/refresh")
-        async def refresh_access_token(
-            refresh_token: str = Cookie(...),
-            auth_service: AuthService = Depends(get_auth_service)
-        ):
-            try:
-                user_id = auth_service.token_service.get_user_id_from_refresh_token(refresh_token)
-                # user_id = "123"
-                
-                # Generar nuevo access_token
-                new_access_token = auth_service.token_service.create_access_token(user_id)
-                
-                return {"access_token": new_access_token}
-            
-            except TokenExpirado:
-                # El refresh_token expiró, usuario debe hacer login
-                raise HTTPException(status_code=401, detail="Sesión expirada")
-            except TokenInvalido:
-                raise HTTPException(status_code=401, detail="Token inválido")
-        
-        Flujo en AuthService.refreshed_token():
-        ----------------------------------------
-        # En AuthService.refreshed_token()
-        user_id = self.token_service.get_user_id_from_refresh_token(refresh_token)
-        # user_id = "123"
-        
-        new_access_token = self.token_service.create_access_token(user_id)
-        self.cookies.set_access_cookie(response, new_access_token)
-        # Nuevo access_token guardado en cookie
-        
-        Diferencia vs get_user_id_from_access_token:
-        -----------------------------------------------
-        | Aspecto | Access Token | Refresh Token |
-        |---------|--------------|---------------|
-        | Duración | Corta (15min) | Larga (7 días) |
-        | Uso | Requests autenticados | Solo para refrescar |
-        | Ubicación | Authorization header | Cookie HttpOnly |
-        | Expiración | Frecuente | Rara |
-        
-        Notas de implementación:
-        -----------------------
-        - Muy similar a get_user_id_from_access_token
-        - Posiblemente valida que tipo = "refresh" (en algunos sistemas)
-        - Duración más larga (no expira tan rápido)
-        - Si expira, usuario debe hacer login nuevamente
-        - El método es stateless (no consulta BD)
+        Valida un refresh token y devuelve el user_id.
+
+        Args:
+            token: Token generado por create_refresh_token(),
+                normalmente leído de la cookie HttpOnly.
+
+        Returns:
+            ID del usuario como str (valor del claim "sub").
+
+        Raises:
+            TokenInvalido: si el token está malformado, expiró, no es de scope
+                "refresh" o no contiene "sub". Ante esto el usuario debe
+                iniciar sesión nuevamente.
+
+        Ejemplo en AuthService.refreshed_token():
+            user_id = self.token_service.get_user_id_from_refresh_token(refresh_token)
+            nuevo_access = self.token_service.create_access_token(user_id)
         """
         ...
 
     def hash_token(self, token: str) -> str:
         """
-        Función encargada de generar un hash irreversible a partir de un token en texto plano.
-        - Se utiliza para persistir una representación segura del refresh_token en la base de datos
-        (tabla `sesiones`), evitando guardar el token crudo.
-        - El mismo hash se recalcula a partir del token recibido en la cookie para buscar y eliminar
-        la sesión correspondiente durante el logout.
+        Genera un hash irreversible y determinístico de un token en texto plano.
+
+        Args:
+            token: Token en texto plano (ej. refresh token).
+
+        Returns:
+            Hash del token, apto para persistir.
+
+        Uso:
+            - Guardar una representación segura del refresh token en la tabla
+              de sesiones, sin almacenar el token crudo.
+            - Recalcular el hash del token recibido en la cookie para buscar
+              y eliminar la sesión correspondiente (ej. en el logout).
+            - Al ser determinístico, el mismo token siempre produce el mismo hash.
         """
         ...
 
-
     def generar_token_plano(self) -> str:
-        """Genera un token opaco criptográficamente seguro (no JWT).
+        """
+        Genera un token opaco criptográficamente seguro (no JWT).
 
-        Usado para flujos que requieren un valor plano para enviar por mail
-        y guardar hasheado en BD (ej. recuperación de contraseña), a diferencia
-        de los tokens JWT autocontenidos de este mismo servicio.
+        Pensado para flujos que envían un valor plano por correo y guardan
+        solo su hash en la BD (ej. recuperación de contraseña), a diferencia
+        de los JWT autocontenidos del resto del servicio.
 
         Returns:
-            Token URL-safe de 32 bytes de entropía.
+            Token URL-safe con 32 bytes de entropía.
         """
+        ...
 
     def create_reset_token(self, user_id: str) -> str:
-        """Crea un JWT de scope 'reset' para el flujo de recuperación de contraseña.
+        """
+        Crea un JWT de scope "reset" para el cambio de contraseña.
 
-        El token lleva el user_id en 'sub' y expira según
-        RESET_PASSWORD_TOKEN_EXPIRE_MINUTES. Se emite tras verificar el token
-        plano de recuperación (endpoint 2) y habilita únicamente el cambio
-        de contraseña (endpoint 3).
+        Se emite tras verificar el token plano de recuperación y habilita
+        únicamente el último paso del flujo (cambiar la contraseña).
 
         Args:
-            user_id: ID del usuario para el que se emite el token.
+            user_id: ID del usuario que recupera su contraseña.
 
         Returns:
-            JWT firmado.
+            JWT firmado, con expiración RESET_PASSWORD_TOKEN_EXPIRE_MINUTES.
         """
+        ...
 
     def get_current_reset_scope(self, token: str) -> str:
-        """Decodifica y valida un JWT de scope 'reset', devolviendo el user_id.
+        """
+        Valida un JWT de scope "reset" y devuelve el user_id.
 
         Args:
-            token: JWT emitido por create_reset_token.
+            token: JWT emitido por create_reset_token().
 
         Returns:
-            user_id extraído del claim 'sub'.
+            ID del usuario (claim "sub").
 
         Raises:
-            TokenInvalido: si el token es inválido, expiró, o el claim 'type'
-                no es 'reset'.
-            TokenResetInactivo: si el payload no contiene 'sub'.
+            TokenInvalido: si el token es inválido, expiró, no es de scope
+                "reset" o no contiene "sub".
         """
+        ...
 
     def create_verificacion_token(self, user_id: str) -> str:
-        """Crea un JWT de scope 'verification' para activar la cuenta del usuario.
+        """
+        Crea un JWT de scope "verification" para activar una cuenta.
 
-        El token lleva el user_id en 'sub' y expira según
-        VERIFY_MAIL_RECUPERACION. Se envía por mail al registrarse (o al
-        reenviar el mail de activación).
+        Se envía por correo al registrarse o al reenviar el mail de activación.
 
         Args:
             user_id: ID del usuario a verificar.
 
         Returns:
-            JWT firmado.
+            JWT firmado, con expiración VERIFY_MAIL_RECUPERACION.
         """
+        ...
 
     def get_user_id_from_verificacion_token(self, token: str) -> str:
-        """Decodifica y valida un JWT de scope 'verification', devolviendo el user_id.
+        """
+        Valida un JWT de scope "verification" y devuelve el user_id.
 
         Args:
-            token: JWT emitido por create_verificacion_token.
+            token: JWT emitido por create_verificacion_token().
 
         Returns:
-            user_id extraído del claim 'sub'.
+            ID del usuario (claim "sub").
 
         Raises:
-            TokenInvalido: si el token es inválido, expiró, o el claim 'type'
-                no es 'verification'.
-            TokenVerificacionInactivo: si el payload no contiene 'sub'.
+            TokenInvalido: si el token es inválido, expiró, no es de scope
+                "verification" o no contiene "sub".
         """
-
-    def get_user_id_from_eliminacion_token(self, token: str) -> str:
-        """Decodifica y valida un JWT de scope 'eliminacion', devolviendo el user_id.
-
-        Args:
-            token: JWT emitido por create_eliminacion_token.
-
-        Returns:
-            user_id extraído del claim 'sub'.
-
-        Raises:
-            TokenInvalido: si el token es inválido, expiró, o el claim 'type'
-                no es 'eliminacion'.
-            TokenEliminacionInactivo: si el payload no contiene 'sub'.
-        """
+        ...
 
     def create_eliminacion_token(self, user_id: str) -> str:
-        """Crea un JWT de scope 'eliminacion' para confirmar la baja de la cuenta.
-
-        El token lleva el user_id en 'sub' y expira según
-        ELIMINACION_CUENTA.
+        """
+        Crea un JWT de scope "eliminacion" para confirmar la baja de la cuenta.
 
         Args:
-            user_id: ID del usuario a eliminar.
+            user_id: ID del usuario a dar de baja.
 
         Returns:
-            JWT firmado.
+            JWT firmado, con expiración ELIMINACION_CUENTA.
         """
+        ...
 
-    def get_user_id_from_reactivacion_token(self, token: str) -> str:...
-    def create_reactivacion_token(self, user_id: str) -> str:...
+    def get_user_id_from_eliminacion_token(self, token: str) -> str:
+        """
+        Valida un JWT de scope "eliminacion" y devuelve el user_id.
+
+        Args:
+            token: JWT emitido por create_eliminacion_token().
+
+        Returns:
+            ID del usuario (claim "sub").
+
+        Raises:
+            TokenInvalido: si el token es inválido, expiró, no es de scope
+                "eliminacion" o no contiene "sub".
+        """
+        ...
+
+    def create_reactivacion_token(self, user_id: str) -> str:
+        """
+        Crea un JWT de scope "reactivacion" para reactivar una cuenta dada de baja.
+
+        Args:
+            user_id: ID del usuario a reactivar.
+
+        Returns:
+            JWT firmado, con expiración REACTIVACION_CUENTA.
+        """
+        ...
+
+    def get_user_id_from_reactivacion_token(self, token: str) -> str:
+        """
+        Valida un JWT de scope "reactivacion" y devuelve el user_id.
+
+        Args:
+            token: JWT emitido por create_reactivacion_token().
+
+        Returns:
+            ID del usuario (claim "sub").
+
+        Raises:
+            TokenInvalido: si el token es inválido, expiró, no es de scope
+                "reactivacion" o no contiene "sub".
+        """
+        ...
