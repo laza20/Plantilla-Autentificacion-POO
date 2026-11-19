@@ -1,14 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-import os
 
-BASE_DIR = os.path.dirname(
-    os.path.dirname(
-        os.path.dirname(
-            os.path.dirname(os.path.abspath(__file__))
-        )
-    )
-)
-ENV_PATH = os.path.join(BASE_DIR, ".env")
 
 class Settings(BaseSettings):
     #General settings
@@ -50,7 +41,7 @@ class Settings(BaseSettings):
     RATE_LIMITER_ENABLED: bool = True
 
     model_config = SettingsConfigDict(
-        env_file=ENV_PATH, 
+        env_file=".env", 
         env_file_encoding="utf-8",
         extra="ignore"
     )
