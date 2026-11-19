@@ -1,8 +1,15 @@
-# Auth Con POO SOLID — Plantilla de Autenticación FastAPI (Clean Architecture + SOLID)
+# auth-core — Núcleo de Autenticación FastAPI (Clean Architecture + SOLID)
+
+> **Versión del paquete:** 1.4.0 · **Python:** >= 3.11 · **Nombre del paquete:** `auth-core` · **Import:** `auth_core`
 
 ## 1. Introducción y Objetivo General
 
-Este repositorio es una **plantilla (boilerplate) de autenticación, autorización y ciclo de vida de cuenta** construida con **FastAPI** y **PostgreSQL**, diseñada explícitamente para ser **reutilizada entre múltiples proyectos/clientes**, en lugar de ser una solución de un solo uso.
+Este repositorio es un **núcleo de autenticación, autorización y ciclo de vida de cuenta** construido con **FastAPI** y **PostgreSQL**, diseñado explícitamente para ser **reutilizado entre múltiples proyectos/clientes**, en lugar de ser una solución de un solo uso.
+
+Desde la versión 1.4.0 el núcleo puede usarse de **dos formas**:
+
+1. **Como paquete instalable con `pip`** (`auth-core`): el proyecto cliente lo declara como dependencia y lo importa como `auth_core.*`, igual que cualquier librería. El código del núcleo queda en `site-packages` y no aparece dentro del proyecto cliente.
+2. **Como plantilla de partida (uso híbrido)**: se clona el repositorio para copiar *una sola vez* los archivos de arranque (`main.py` de ejemplo, `alembic.ini`, `env.py`, `.env.example`, `.gitignore`) al proyecto nuevo. El núcleo igualmente se **instala**, no se copia (ver Sección 8.3).
 
 El objetivo técnico central es demostrar cómo se puede construir un módulo de autenticación **completo** — registro, verificación por correo, login, gestión de sesiones multi-dispositivo, recuperación de contraseña, modificación de perfil, eliminación de cuenta (soft delete) y reactivación — **sin acoplar la lógica de negocio al framework ni a proveedores externos concretos**. Esto se logra aplicando **Clean Architecture**, los principios **SOLID** y, en particular, el **Principio de Inversión de Dependencias (DIP)** implementado mediante `typing.Protocol` de Python (contratos estructurales en lugar de herencia de `ABC`).
 
@@ -12,9 +19,10 @@ En términos prácticos:
 - Cambiar de proveedor implica crear una clase que cumpla el protocolo correspondiente y modificar **una sola función** en el contenedor de dependencias.
 - Toda operación que modifica más de una tabla se ejecuta dentro de una **Unidad de Trabajo** (`UnitOfWorkProtocol`) con commit/rollback atómico.
 - **El esquema de base de datos lo gestiona exclusivamente Alembic**: la aplicación no crea tablas al arrancar.
-- El repositorio incluye una **guía de uso paso a paso** (`guia de uso/guia-plantilla-auth.html`) y un `.env` de ejemplo para poner en marcha la plantilla en un proyecto nuevo (ver Sección 8).
 
 Esta plantilla cubre el ciclo de vida completo de una cuenta: **alta → verificación → uso → recuperación de contraseña → baja (reversible) → reactivación**.
+
+> **Estado del release (no es parte de la documentación funcional):** al momento de esta actualización el cambio de lectura del `.env` estaba sin commitear y el tag `v1.4.0` existía solo en local, apuntando a un commit anterior a ese cambio. Pendiente: commit, mover el tag, merge a `main`, push y probar la instalación desde GitHub. Hasta entonces, la línea de instalación de la Sección 8.2 está marcada **A VERIFICAR**.
 
 ---
 
@@ -22,6 +30,7 @@ Esta plantilla cubre el ciclo de vida completo de una cuenta: **alta → verific
 
 ### Características principales
 
+- **Distribución como paquete instalable** (`pyproject.toml`, setuptools, layout `src/`): un único paquete de primer nivel, `auth_core`, con las plantillas HTML incluidas.
 - Registro de usuarios con **imagen de perfil opcional** vía `multipart/form-data`.
 - **Verificación de cuenta por correo** con plantilla HTML (Jinja2) y token JWT de scope propio (`type: "verification"`).
 - **Reenvío del correo de verificación** para cuentas `PENDIENTE`.
@@ -35,37 +44,38 @@ Esta plantilla cubre el ciclo de vida completo de una cuenta: **alta → verific
 - **Eliminación de cuenta (soft delete)** con confirmación por correo y revocación de todas las sesiones.
 - **Reactivación de cuenta** dentro de una ventana configurable, confirmada por correo.
 - **Rate limiting por endpoint** con `slowapi` (activable/desactivable con `RATE_LIMITER_ENABLED`).
-- **Migraciones con Alembic** (migración inicial `crear tablas de auth` incluida).
+- **Migraciones con Alembic** (migración inicial `crear tablas de auth` incluida; viven en el proyecto, no en el paquete).
 - **Hashing Argon2** (`pwdlib`), políticas de contraseña y de mail como servicios de dominio.
 - **Subida de imágenes a Cloudinary** con validación de tamaño y extensión.
-- **Manejo de errores centralizado** (`DomainError` → respuesta HTTP vía `exception_handler` global).
+- **Manejo de errores centralizado** (`DomainError` → respuesta HTTP vía `exception_handler` global y el mapa `HTTP_STATUS_BY_EXCEPTION`).
 - **Guards** (`get_current_user`, `get_admin_user`, `get_premium_user`) para proteger endpoints.
 - **DI 100% vía FastAPI `Depends`**.
-- **Suite de tests** (unitarios con fakes/stubs y tests de routers con overrides) — ver Sección 4.1.
+- **Suite de tests** (171 tests: unitarios con fakes/stubs y tests de routers con overrides) — ver Sección 4.1.
 
-### Stack tecnológico (`requirements.txt`)
+### Dependencias
+
+Las dependencias del paquete se declaran en `pyproject.toml` con **rangos mínimos** (`>=`). `requirements.txt` se mantiene en el repositorio con versiones fijadas (útil para reproducir el entorno de desarrollo).
 
 | Categoría | Tecnología | Rol |
 |---|---|---|
-| Framework web | `fastapi==0.136.1` | Enrutamiento, validación, DI |
-| Servidor ASGI | `uvicorn==0.46.0` | Servidor de desarrollo/producción |
-| ORM / Modelado | `sqlmodel==0.0.38` + `SQLAlchemy==2.0.49` | Modelos tipados |
-| Driver PostgreSQL | `psycopg2-binary==2.9.12` | Conexión a PostgreSQL |
-| Migraciones | `alembic==1.18.4` | Creación y evolución del esquema |
-| JWT | `python-jose==3.5.0` | Tokens de sesión y de scope (verificación, reset, eliminación, reactivación) |
+| Framework web | `fastapi` | Enrutamiento, validación, DI |
+| ORM / Modelado | `sqlmodel` + `SQLAlchemy` | Modelos tipados |
+| Driver PostgreSQL | `psycopg2-binary` | Conexión a PostgreSQL |
+| Migraciones | `alembic` | Creación y evolución del esquema |
+| JWT | `python-jose` (+ `cryptography`) | Tokens de sesión y de scope (verificación, reset, eliminación, reactivación) |
 | Tokens opacos | `secrets` + `hashlib` (stdlib) | Token plano de recuperación, hasheado con SHA-256 |
-| Hashing de contraseñas | `pwdlib==0.3.0` + `argon2-cffi==25.1.0` | Argon2 |
-| Correo | `fastapi-mail==1.6.4` + `aiosmtplib==5.1.1` | Envío SMTP asíncrono |
-| Plantillas | `Jinja2==3.1.6` | Renderizado de las 4 plantillas HTML vía `TemplateRenderer` |
-| Imágenes | `cloudinary==1.44.2` | Almacenamiento de imágenes |
-| Rate limiting | `slowapi==0.1.10` + `limits==5.8.0` | Límites de peticiones por endpoint |
-| Configuración | `pydantic-settings==2.14.1` + `python-dotenv==1.2.2` | Lectura y validación del `.env` |
-| Validación | `pydantic==2.13.4` + `email-validator==2.3.0` | DTOs y `EmailStr` |
-| Multipart | `python-multipart==0.0.28` | `Form()` y `UploadFile` |
-| Testing | `pytest==9.1.1`, `pytest-asyncio==1.4.0`, `pytest-cov==7.1.0` | Tests unitarios y de routers |
-| Herramientas | `sqlacodegen==4.0.3`, `sentry-sdk==2.59.0` | Declaradas en `requirements.txt`; no se usan en el código actual |
+| Hashing de contraseñas | `pwdlib` + `argon2-cffi` | Argon2 |
+| Correo | `fastapi-mail` + `aiosmtplib` | Envío SMTP asíncrono |
+| Plantillas | `Jinja2` (dependencia de `fastapi-mail`) | Renderizado de las 4 plantillas HTML vía `TemplateRenderer` |
+| Imágenes | `cloudinary` | Almacenamiento de imágenes |
+| Rate limiting | `slowapi` | Límites de peticiones por endpoint |
+| Configuración | `pydantic-settings` + `python-dotenv` | Lectura y validación del `.env` |
+| Validación | `pydantic` + `email-validator` | DTOs y `EmailStr` |
+| Multipart | `python-multipart` | `Form()` y `UploadFile` |
+| Extra `dev` | `coverage`, `httpx`, `mypy`, `pytest`, `pytest-asyncio`, `pytest-cov`, `uvicorn` | Tests y servidor de desarrollo |
 
-**Lenguaje:** Python 3.10+ (uniones `str | None`, `typing.Protocol`).
+- El servidor ASGI (`uvicorn`) **no** es dependencia del paquete: está en el extra `dev`. Un proyecto cliente debe declararlo en su propio `requirements.txt`.
+- `requirements.txt` aún lista `sentry-sdk` y `sqlacodegen`, que no se usan en el código y no están en `pyproject.toml`.
 
 ---
 
@@ -73,25 +83,25 @@ Esta plantilla cubre el ciclo de vida completo de una cuenta: **alta → verific
 
 ### 3.1 Patrón arquitectónico
 
-Variante de **Clean Architecture** (cercana a Hexagonal / Ports & Adapters):
+Variante de **Clean Architecture** (cercana a Hexagonal / Ports & Adapters). Todo el núcleo vive en `src/auth_core/`:
 
-1. **Dominio** (`src/auth/domain/`): Protocolos como "puertos", servicios de política y excepciones.
-2. **Aplicación** (`src/auth/application/`): **16 Casos de Uso** organizados por sub-dominio, que reciben sus dependencias como protocolos por constructor.
-3. **Infraestructura** (`src/auth/infrastructure/`): modelos, repositorios PostgreSQL, `TokenService`, `PasswordService`, `AuthMailContent`, plantillas HTML.
-4. **Presentación** (`src/auth/presentation/web/`): routers, guards, cookies y metadata de la request.
-5. **Composición** (`src/container/`): Composition Root con **16 clases `Container*`** y las factories `get_*` de `providers.py`.
+1. **Dominio** (`auth_core/auth/domain/`): entidades (dataclasses), Protocolos como "puertos", servicios de política y excepciones.
+2. **Aplicación** (`auth_core/auth/application/`): **17 Casos de Uso** organizados por sub-dominio, DTOs y mappers; reciben sus dependencias como protocolos por constructor.
+3. **Infraestructura** (`auth_core/auth/infrastructure/`): modelos SQLModel, mappers modelo↔entidad, repositorios PostgreSQL, `TokenService`, `PasswordService`, `AuthMailContent`, plantillas HTML.
+4. **Presentación** (`auth_core/auth/presentation/web/`): routers, guards, cookies, utilidades de formularios y metadata de la request, mapa de excepciones → HTTP.
+5. **Composición** (`auth_core/container/`): Composition Root con **17 clases `Container*`** y las factories `get_*` de `providers.py`.
 6. **Transversales** (fuera de `auth/`, reutilizables por futuros módulos):
-   - `src/database/`: engine y sesión (`client.py`), `EstadoEntidad`, `UnitOfWorkProtocol` y su implementación `UnitOfWork`.
-   - `src/shared/`: `ImageProtocol`/`MailProtocol`, `ImageService` (Cloudinary), `MailService` (FastAPI-Mail), `TemplateRenderer` (Jinja2) y el `limiter` de `slowapi`.
-   - `src/domain/exceptions/domain.py`: `DomainError` y excepciones genéricas.
-   - `src/config/config.py`: `Settings`.
+   - `auth_core/database/`: engine y sesión (`client.py`), `EstadoEntidad`, `UnitOfWorkProtocol` y su implementación `UnitOfWork`.
+   - `auth_core/shared/`: `ImageProtocol`/`TipadoImagenProtocol`/`MailProtocol`, `ImageService` (Cloudinary), `MailService` (FastAPI-Mail), `TemplateRenderer` (Jinja2) y el `limiter` de `slowapi`.
+   - `auth_core/domain/exceptions/domain.py`: `DomainError` y excepciones genéricas.
+   - `auth_core/config/config.py`: `Settings`.
 
 ### 3.2 Responsabilidad de cada capa
 
 | Capa | Carpeta | Responsabilidad | ¿Conoce FastAPI? | ¿Conoce infraestructura concreta? |
 |---|---|---|---|---|
-| **Dominio** | `auth/domain/` | Contratos (Protocols), políticas, excepciones | Parcialmente (ver 3.3) | Solo modelos/DTOs (ver 3.3) |
-| **Aplicación** | `auth/application/` | Orquesta casos de uso sobre protocolos y `UnitOfWorkProtocol` | Parcialmente (`UploadFile`) | Modelos/DTOs, `AuthMailContent` y `Settings`; nunca repositorios ni servicios concretos |
+| **Dominio** | `auth/domain/` | Entidades, contratos (Protocols), políticas, excepciones | No | No |
+| **Aplicación** | `auth/application/` | Orquesta casos de uso sobre protocolos y `UnitOfWorkProtocol`; DTOs y mappers | No | No (solo protocolos) |
 | **Infraestructura** | `auth/infrastructure/`, `shared/infrastructure/`, `database/repository/` | Implementaciones concretas | Sí | Sí |
 | **Presentación** | `auth/presentation/web/` | Endpoints, cookies, guards | Sí | No directamente |
 | **Composición** | `container/` | Ensambla implementaciones para satisfacer los protocolos | Sí (`Depends`) | Sí |
@@ -104,133 +114,115 @@ Infraestructura  →  Dominio  (implementa los Protocols)
 Composición (container)  →  conoce TODAS las capas
 ```
 
-Matices honestos sobre el cumplimiento de la regla:
-
-- **Repositorios y servicios**: la capa de Aplicación nunca importa un repositorio ni un servicio concreto (`AuthUserRepository`, `TokenService`, `PasswordService`, `MailService`, `ImageService`); solo protocolos.
-- **Modelos y DTOs**: los protocolos de dominio y los Casos de Uso importan modelos SQLModel (`AuthUser`, `Sesiones`, `UserTokens`, `LoginResponse`…) desde `infrastructure/persistence/`. Es una fuga aceptada de la plantilla: los modelos hacen de entidad y de DTO a la vez.
-- **Otras fugas puntuales**: `AuthMailContent` (infraestructura) es inyectado por tipo concreto en los Casos de Uso que envían correos; `Settings` se importa desde `infrastructure/security/security.py` en algunos casos de uso; `domain/exceptions/*.py` importa `fastapi.status`, e `ImageProtocol` usa `fastapi.UploadFile`.
+- **Repositorios y servicios**: la capa de Aplicación nunca importa un repositorio ni un servicio concreto; solo protocolos (incluido `AuthMailContentProtocol` para el contenido de los correos y `TipadoImagenProtocol` para las imágenes, sin dependencia de `fastapi`).
+- **Entidades y modelos separados**: el dominio trabaja con **entidades dataclass** (`AuthUser`, `Sesion`, `RecoverPassword`, `HistoryPassword`, `Usuario`); los modelos SQLModel viven solo en infraestructura y se traducen con los mappers de `persistence/postgres/mappers/`.
+- **Matices pendientes**: ver Sección 14.3 (algunos métodos de `AuthUserRepository` devuelven el modelo SQLModel en lugar de la entidad).
 
 ---
 
 ## 4. Estructura de Carpetas y Directorios
 
+El núcleo es el único paquete de primer nivel. **Dentro de `auth_core/` la estructura interna no cambió**; lo que cambió es dónde vive todo lo demás.
+
 ```
 .
-├── .gitattributes                            # Fuerza EOL=LF en *.py, *.ini, *.mako
-├── .gitignore
-├── alembic.ini
-├── pytest.ini                                # pythonpath = . ; testpaths = src/test
-├── README.md
-├── requirements.txt
-│
-├── alembic/                                  # Migraciones
+├── pyproject.toml                            # Metadatos del paquete auth-core 1.4.0, dependencias y package-data
+├── main.py                                   # App FastAPI de EJEMPLO (fuera del paquete)
+├── alembic.ini                               # (fuera del paquete)
+├── alembic/                                  # (fuera del paquete) Migraciones
 │   ├── env.py                                # target_metadata = SQLModel.metadata; URL desde Settings().DATABASE_URL
 │   ├── script.py.mako
 │   ├── README
 │   └── versions/
 │       └── 0767bfec6564_crear_tablas_de_auth.py   # Migración inicial (5 tablas + ENUM estado_entidad)
-│
-├── guia de uso/                              # Documentación operativa para proyectos nuevos
+├── pytest.ini                                # pythonpath = . ; testpaths = test
+├── requirements.txt
+├── guia de uso/                              # (fuera del paquete)
 │   ├── env_example.txt                       # Plantilla del .env
-│   └── guia-plantilla-auth.html              # Guía paso a paso (clonar, vincular, entorno, BD, Alembic, servidor)
+│   └── guia-plantilla-auth.html              # Guía paso a paso
+├── .gitattributes
+├── .gitignore
+├── README.md
 │
-└── src/
-    ├── main.py                               # App FastAPI, router, rate limiter y exception handler global (NO crea tablas)
-    │
-    ├── config/
-    │   └── config.py                         # Settings (pydantic-settings) — lee y valida el .env
-    │
-    ├── container/                            # Composition Root
-    │   ├── auth_container.py                 # 16 clases "Container*" — una por caso de uso
-    │   └── providers.py                      # Factories get_* usadas como Depends()
-    │
-    ├── database/
-    │   ├── client.py                         # engine de SQLModel + get_session()
-    │   ├── enums/estado_entidad.py           # EstadoEntidad
-    │   ├── protocols/protocol_unit_of_work.py  # UnitOfWorkProtocol
-    │   └── repository/unit_of_work.py        # UnitOfWork (commit/rollback sobre Session)
-    │
-    ├── domain/exceptions/domain.py           # DomainError + excepciones genéricas
-    │
-    ├── shared/                               # Servicios reutilizables entre módulos
-    │   ├── protocols/
-    │   │   ├── protocol_image_service.py     # ImageProtocol
-    │   │   └── protocol_mail_service.py      # MailProtocol
-    │   └── infrastructure/
-    │       ├── images/
-    │       │   ├── cloudinary_config.py
-    │       │   └── cloudinary.py             # ImageService
-    │       ├── mail/
-    │       │   ├── mail.py                   # MailService (FastAPI-Mail)
-    │       │   └── template_renderer.py      # TemplateRenderer (Jinja2)
-    │       └── security/rate_limiter/limiter.py   # Limiter de slowapi
-    │
-    ├── auth/
-    │   ├── domain/
-    │   │   ├── protocols/
-    │   │   │   ├── repository/
-    │   │   │   │   ├── protocol_auth_user_repository.py
-    │   │   │   │   ├── protocol_user_repository.py
-    │   │   │   │   ├── protocol_sesion_repository.py
-    │   │   │   │   ├── protocol_recover_password_repository.py
-    │   │   │   │   └── protocol_history_password_repository.py
-    │   │   │   └── service/
-    │   │   │       ├── protocol_token_service.py
-    │   │   │       ├── protocol_password_service.py
-    │   │   │       └── protocol_request_metadata.py
-    │   │   ├── services/                     # password_policy, mail_policy, user_validation_service
-    │   │   └── exceptions/                   # tokens.py, usuarios_exceptions.py
-    │   │
-    │   ├── application/
-    │   │   ├── dtos.py                       # parse_usuario_form, parse_modificar_usuario_form
-    │   │   └── use_cases/
-    │   │       ├── register.py, login.py, logout.py, refresh_token.py
-    │   │       ├── verify_email.py, reenviar_mail.py, modificar_usuario.py
-    │   │       ├── sesiones/                 # listar_sesiones.py, eliminar_sesiones.py
-    │   │       ├── recover_password/         # solicitud_recuperacion.py, verificar_token.py, recuperar_contraseña.py
-    │   │       ├── eliminar_usuario/         # solicitud_eliminar_usuario.py, eliminar_usuario.py
-    │   │       └── reactivacion_cuenta/      # solicitud_reactivacion_cuenta.py, reactivar_cuenta.py
-    │   │
-    │   ├── infrastructure/
-    │   │   ├── mail/auth_mail_content.py     # AuthMailContent: renderiza las 4 plantillas
-    │   │   ├── persistence/postgres/
-    │   │   │   ├── models/                   # auth_users, usuario, sesiones, recover_password, history_password
-    │   │   │   ├── repository/               # un repositorio por tabla
-    │   │   │   └── schemas/schemas_recepcion.py
-    │   │   ├── security/
-    │   │   │   ├── security.py               # PasswordService (Argon2)
-    │   │   │   └── tokens/tokens.py          # TokenService (JWT + token opaco)
-    │   │   └── templates/                    # verificacion, recuperacion_contraseña, eliminar_cuenta, reactivar_cuenta (.html)
-    │   │
-    │   └── presentation/web/
-    │       ├── routers.py                    # 17 endpoints
-    │       ├── guards.py                     # AuthDependencies
-    │       ├── cookies/cookies.py            # CookiesService
-    │       └── utils/request_metadata.py     # RequestMetadata
-    │
-    └── test/                                 # Suite de tests (ver 4.1)
-        ├── conftest.py                       # RATE_LIMITER_ENABLED=false, test_client, limpieza de overrides
-        ├── config/config.py                  # TestSettings
-        ├── factories/                        # usuarios, sesiones, recover_password
-        ├── fixtures/                         # *TestEnvironment por caso de uso
-        ├── integration/                      # Reservado (placeholders vacíos)
-        ├── presentation/web/                 # overrides/, stub/, routers/
-        └── unit/auth/domain/                 # fakes/, service/ (stubs), use_case/
+├── src/
+│   └── auth_core/                            # ← ÚNICO paquete de primer nivel
+│       ├── __init__.py
+│       ├── auth/
+│       │   ├── domain/
+│       │   │   ├── entities/                 # entitie_auth_users, _sesiones, _recover_password, _history_password, _usuario
+│       │   │   ├── exceptions/               # tokens.py, usuarios_exceptions.py
+│       │   │   ├── protocols/
+│       │   │   │   ├── repository/           # auth_user, user, sesion, recover_password, history_password
+│       │   │   │   └── service/              # token, password, request_metadata, auth_mail_content
+│       │   │   └── services/                 # mail_policy, password_policy, user_validation_service
+│       │   ├── application/
+│       │   │   ├── dtos/                     # auth_user_dto, sesiones_dto
+│       │   │   ├── mappers/                  # auth_users, sesiones
+│       │   │   └── use_cases/
+│       │   │       ├── register.py, login.py, logout.py, refresh_token.py
+│       │   │       ├── verify_email.py, reenviar_mail.py, modificar_usuario.py, obtener_usuario_actual.py
+│       │   │       ├── sesiones/             # listar_sesiones.py, eliminar_sesiones.py
+│       │   │       ├── recover_password/     # solicitud_recuperacion.py, verificar_token.py, recuperar_contraseña.py
+│       │   │       ├── eliminar_usuario/     # solicitud_eliminar_usuario.py, eliminar_usuario.py
+│       │   │       └── reactivacion_cuenta/  # solicitud_reactivacion_cuenta.py, reactivar_cuenta.py
+│       │   ├── infrastructure/
+│       │   │   ├── mail/auth_mail_content.py # AuthMailContent: renderiza las 4 plantillas
+│       │   │   ├── persistence/postgres/
+│       │   │   │   ├── mappers/              # modelo SQLModel <-> entidad
+│       │   │   │   ├── models/               # auth_users, usuario, sesiones, recover_password, history_password
+│       │   │   │   ├── repository/           # un repositorio por tabla
+│       │   │   │   └── schemas/schemas_recepcion.py
+│       │   │   ├── security/
+│       │   │   │   ├── security.py           # PasswordService (Argon2)
+│       │   │   │   └── tokens/tokens.py      # TokenService (JWT + token opaco)
+│       │   │   └── templates/                # verificacion, recuperacion_contraseña, eliminar_cuenta, reactivar_cuenta (.html)
+│       │   └── presentation/web/
+│       │       ├── routers.py                # 17 endpoints
+│       │       ├── guards.py                 # AuthDependencies
+│       │       ├── exception_handlers.py     # HTTP_STATUS_BY_EXCEPTION + obtener_status_code
+│       │       ├── cookies/cookies.py        # CookiesService
+│       │       └── utils/                    # forms.py, request_metadata.py
+│       ├── config/config.py                  # Settings (pydantic-settings)
+│       ├── container/auth/                   # auth_container.py (17 Container*), providers.py (factories get_*)
+│       ├── database/
+│       │   ├── client.py                     # engine de SQLModel + get_session()
+│       │   ├── enums/estado_entidad.py
+│       │   ├── protocols/protocol_unit_of_work.py
+│       │   └── repository/unit_of_work.py
+│       ├── domain/exceptions/domain.py       # DomainError + excepciones genéricas
+│       └── shared/
+│           ├── protocols/                    # protocol_image_service, protocol_imagen_tipado, protocol_mail_service
+│           └── infrastructure/
+│               ├── images/                   # cloudinary_config.py, cloudinary.py (ImageService)
+│               ├── mail/                     # mail.py (MailService), template_renderer.py
+│               └── security/rate_limiter/limiter.py
+│
+└── test/                                     # (fuera del paquete) Suite de tests (ver 4.1)
 ```
 
-### 4.1 La carpeta `test/`
+### 4.1 Qué queda dentro y fuera del paquete
 
-- `unit/auth/domain/fakes/` — implementaciones **en memoria** de cada protocolo de repositorio.
-- `unit/auth/domain/service/` — **stubs** de servicios (token, password, mail, `AuthMailContent`, imagen, políticas, unit of work, cookies).
-- `unit/auth/domain/use_case/` — un archivo de test por caso de uso, más tests de `PasswordPolicyService` y `MailPolicyService`.
-- `fixtures/` — clases `*TestEnvironment` que arman el grafo de dependencias fake/stub.
-- `factories/` — funciones que insertan datos de prueba (usuarios, sesiones, tokens de recuperación).
-- `config/config.py` — `TestSettings` mínimo para los casos de uso que reciben `Settings`.
-- `presentation/web/` — tests de routers con `TestClient` y `app.dependency_overrides` mediante `crear_override(stub_class, resultado=..., excepcion=...)`.
-- `conftest.py` — desactiva el rate limiter (`RATE_LIMITER_ENABLED=false`) antes de importar la app y limpia los overrides tras cada test.
+| Dentro de `auth_core` (se instala) | Fuera del paquete (raíz del repo) |
+|---|---|
+| `auth/`, `config/`, `container/`, `database/`, `domain/`, `shared/` | `pyproject.toml`, `main.py` (ejemplo), `alembic/` y `alembic.ini` |
+| Las 4 plantillas `.html` (`package-data`) | `test/`, `guia de uso/`, `.gitignore`, `README.md` |
+
+### 4.2 La carpeta `test/`
+
+La carpeta está en la raíz del repo, fuera del paquete, y **no se incluye en el wheel**.
+
+- `auth/unit/auth/domain/fakes/` — implementaciones **en memoria** de cada protocolo de repositorio.
+- `auth/unit/auth/domain/service/` — **stubs** de servicios (token, password, mail, `AuthMailContent`, imagen, políticas, unit of work, cookies).
+- `auth/unit/auth/domain/use_case/` — un archivo de test por caso de uso, más tests de `PasswordPolicyService` y `MailPolicyService`.
+- `auth/unit/auth/application/mappers/` — tests del mapper `a_usuario_creado`.
+- `auth/fixtures/` — clases `*TestEnvironment` que arman el grafo de dependencias fake/stub.
+- `auth/factories/` — funciones que insertan datos de prueba (usuarios, sesiones, tokens de recuperación).
+- `config/config.py` — `TestSettings` mínimo para los casos de uso que reciben valores de configuración.
+- `auth/presentation/web/` — tests de routers con `TestClient` y `app.dependency_overrides` mediante `crear_override(stub_class, resultado=..., excepcion=...)`, y `test_exception_handlers.py`, que verifica que toda subclase de `DomainError` tenga status HTTP explícito.
+- `auth/conftest.py` — desactiva el rate limiter (`RATE_LIMITER_ENABLED=false`) antes de importar la app y limpia los overrides tras cada test.
 - `integration/` — reservado para tests contra BD real (archivos placeholder vacíos).
 
-Los tests unitarios y de routers **no necesitan PostgreSQL, Cloudinary ni SMTP**, ni crean tablas: el esquema lo crea únicamente Alembic.
+Los tests unitarios y de routers **no crean tablas**: el esquema lo crea únicamente Alembic. Los tests importan `main` desde la raíz, por lo que `pytest` debe ejecutarse desde la raíz del proyecto (`pytest.ini` define `pythonpath = .`).
 
 ---
 
@@ -240,7 +232,7 @@ Los tests unitarios y de routers **no necesitan PostgreSQL, Cloudinary ni SMTP**
 
 1. `POST /{NOMBRE_APP}/usuarios/login` con `username` (email) y `password` en `application/x-www-form-urlencoded`.
 2. El decorador `@limiter.limit("3/minute")` evalúa el límite de la IP antes de ejecutar el endpoint.
-3. FastAPI resuelve `Depends(get_login_use_case)` → cadena de `providers.py`: `get_auth_user_repository()`, `get_token_service()`, `get_password_service()`, `get_sesion_repository()`, `get_unit_of_work()`, `get_user_validation_service()`.
+3. FastAPI resuelve `Depends(get_login_use_case)` → cadena de `container/auth/providers.py`: `get_auth_user_repository()`, `get_token_service()`, `get_password_service()`, `get_sesion_repository()`, `get_unit_of_work()`, `get_user_validation_service()`.
 4. `ContainerLogin(...).login_use_case` construye `LoginUseCase`.
 5. El router extrae IP y User-Agent con `RequestMetadata` y llama a `login_use_case.ejecutar(...)`.
 6. Dentro del caso de uso:
@@ -249,7 +241,7 @@ Los tests unitarios y de routers **no necesitan PostgreSQL, Cloudinary ni SMTP**
    c. `TokenProtocol.create_user_tokens(user_id)` y `hash_token(refresh_token)`.
    d. Dentro de `UnitOfWorkProtocol`, `insertar_sesion(hash, id_usuario, ip, user_agent)`.
 7. El router adjunta los tokens como cookies `HttpOnly` con `CookiesService.set_auth_cookies` y devuelve `LoginResponse`.
-8. Cualquier `DomainError` es traducida por el handler global de `main.py`; los excesos de rate limit por el handler de `slowapi`.
+8. Cualquier `DomainError` es traducida por el handler global de `main.py` (el status sale de `obtener_status_code`); los excesos de rate limit, por el handler de `slowapi`.
 
 ### 5.2 Diagrama textual
 
@@ -257,17 +249,17 @@ Los tests unitarios y de routers **no necesitan PostgreSQL, Cloudinary ni SMTP**
 Cliente HTTP
     │  POST /{NOMBRE_APP}/usuarios/login
     ▼
-presentation/web/routers.py :: logearse()      ← @limiter.limit("3/minute")
+auth_core/auth/presentation/web/routers.py :: logearse()   ← @limiter.limit("3/minute")
     │  Depends(get_login_use_case) + RequestMetadata(request)
     ▼
-container/providers.py :: get_login_use_case
+auth_core/container/auth/providers.py :: get_login_use_case
     ├─ AuthUserRepository / SesionRepository / UnitOfWork   (sobre la misma Session)
     ├─ TokenService (TokenProtocol) / PasswordService (PasswordProtocol)
     └─ UserValidationService
     ▼
-container/auth_container.py :: ContainerLogin.login_use_case → LoginUseCase(...)
+auth_core/container/auth/auth_container.py :: ContainerLogin.login_use_case → LoginUseCase(...)
     ▼
-application/use_cases/login.py :: LoginUseCase        ← Capa de Aplicación
+auth_core/auth/application/use_cases/login.py :: LoginUseCase    ← Capa de Aplicación
     ▼
 PostgreSQL
     ▼
@@ -282,7 +274,7 @@ DomainError en cualquier capa → main.py :: domain_error_handler → JSON {"det
 
 ### 6.1 Protocolos
 
-| Protocolo | Ubicación | Implementación concreta |
+| Protocolo | Ubicación (dentro de `auth_core/`) | Implementación concreta |
 |---|---|---|
 | `AuthUserRepositoryProtocol` | `auth/domain/protocols/repository/` | `AuthUserRepository` |
 | `UsuarioRepositoryProtocol` | idem | `UserRepository` (tabla `usuario`) |
@@ -291,20 +283,20 @@ DomainError en cualquier capa → main.py :: domain_error_handler → JSON {"det
 | `HistoryRepositoryProtocol` | idem | `HistoryPasswordRepository` |
 | `TokenProtocol` | `auth/domain/protocols/service/` | `TokenService` (JWT + token opaco) |
 | `PasswordProtocol` | idem | `PasswordService` (Argon2) |
+| `AuthMailContentProtocol` | idem | `AuthMailContent` |
 | `RequestMetadataProtocol` | idem | `RequestMetadata` |
 | `UnitOfWorkProtocol` | `database/protocols/` | `UnitOfWork` (`database/repository/`) |
 | `MailProtocol` (`enviar_mail`, async) | `shared/protocols/` | `MailService` |
 | `ImageProtocol` (`insertar_imagen`) | `shared/protocols/` | `ImageService` (Cloudinary) |
+| `TipadoImagenProtocol` (`filename`, `size`, `file`) | `shared/protocols/` | Cualquier objeto con esos atributos (p. ej. `UploadFile`) |
 
 `TokenProtocol` es el más grande: el sistema emite **seis tipos de JWT** distinguidos por el claim `type` (`access`, `refresh`, `verification`, `reset`, `eliminacion`, `reactivacion`), cada uno con su método de creación/decodificación y su excepción de "token inactivo".
-
-> El docstring de `MailProtocol` aún menciona `generar_correo_verificacion`, pero ese método ya no forma parte del contrato: la generación del HTML pasó a `AuthMailContent` (ver 6.5). El protocolo solo exige `enviar_mail`.
 
 ### 6.2 Dominio — Servicios
 
 - **`PasswordPolicyService.validar`**: ≥ 8 caracteres, mayúscula, minúscula, dígito y carácter especial → `ContraseñaNoSegura` (400).
 - **`MailPolicyService.validar`**: un único `@`, punto posterior con separación y ≥ 6 caracteres → `MailNoValido` (400). Usado por registro, modificación, reenvío y solicitud de reactivación.
-- **`UserValidationService`**: `obtener_usuario_existente(email)` (login) y `get_user(current_user)` (perfil).
+- **`UserValidationService`**: `obtener_usuario_existente(email)` (usado en el login).
 
 ### 6.3 Aplicación — Casos de Uso
 
@@ -315,6 +307,7 @@ DomainError en cualquier capa → main.py :: domain_error_handler → JSON {"det
 
 **Sesión y perfil**
 - `LoginUseCase`, `LogoutUseCase` (elimina la sesión por hash del refresh token), `RefreshTokenUseCase` (emite nuevo access token).
+- `ObtenerUsuarioActualUseCase`: devuelve el `UsuarioCreado` del usuario autenticado.
 - `ModificarUsuarioUseCase`: email y/o imagen; si cambia el email revalida, pasa a `PENDIENTE` y reenvía la verificación.
 
 **Sesiones multi-dispositivo**
@@ -331,20 +324,21 @@ DomainError en cualquier capa → main.py :: domain_error_handler → JSON {"det
 
 ### 6.4 Excepciones
 
-`DomainError` (`src/domain/exceptions/domain.py`) es la base de toda excepción de negocio, con `message` y `status_code`.
+`DomainError` (`auth_core/domain/exceptions/domain.py`) es la base de toda excepción de negocio y expone `message`. **El status HTTP no vive en la excepción**: lo resuelve `HTTP_STATUS_BY_EXCEPTION` en `presentation/web/exception_handlers.py`, recorriendo el MRO de la excepción (una subclase sin entrada propia hereda el status de su padre). `main.py` lo aplica en el handler global.
 
-- **`domain/exceptions/domain.py`** (genéricas): `SinCargas` (409), `LongitudExcedida` (422), `LimiteTamañoSuperado` (413), `ExtensionNoPermitida` (400), `ErrorCloudinary` (500), `ErrorCreacion` (409), `ErrorEliminacion` (409).
-- **`auth/domain/exceptions/tokens.py`**: `TokenException` → `TokenExpirado`, `VerificacionExpirada` (403), `TokenNoDesactivado`, `TokenNoVerificado` (409), `TokenInvalido`, `TokenResetInactivo`, `TokenVerificacionInactivo`, `TokenReactivacionInactivo`, `TokenEliminacionInactivo`, `VerificacionInvalida` (401).
-- **`auth/domain/exceptions/usuarios_exceptions.py`**: `UsuarioError` (400) → `LoginError`, `ContraseñaNoSegura`, `MailNoValido`, `UsuarioActivo` (400), `UsuarioNoModificado`, `UsuarioNoEliminado`, `PeriodoReactivacionFinalizado`, `MailRepetido`, `UsuarioNoEncontrado`, `UsuariosNoEncontrados`, `AvatarError` (409), `NoAutenticado`, `SinAccessToken`, `SinRefreshToken` (401), `TiempoInterrupcionInicioSesion` (403), `UsuarioInactivo` (423); más `ResultadoInvalido` (409) como subclase directa de `DomainError`.
+- **`domain/exceptions/domain.py`** (genéricas): `SinCargas` (409), `LongitudExcedida` (422), `LimiteTamañoSuperado` (413), `ExtensionNoPermitida` (400), `ErrorCloudinary` (500), `ErrorCreacion` (409), `ErrorEliminacion` (409); `DomainError` base: 500.
+- **`auth/domain/exceptions/tokens.py`**: `TokenException` (400 por defecto) → `TokenExpirado`, `VerificacionExpirada` (403); `TokenNoDesactivado`, `TokenNoVerificado` (409); `TokenInvalido`, `TokenResetInactivo`, `TokenVerificacionInactivo`, `TokenReactivacionInactivo`, `TokenEliminacionInactivo`, `VerificacionInvalida`, `SinAccessToken`, `SinRefreshToken`, `SinResetToken` (401).
+- **`auth/domain/exceptions/usuarios_exceptions.py`**: `UsuarioError` (400 por defecto) → `LoginError` (401), `NoAutenticado` (401), `ContraseñaNoSegura`, `MailNoValido`, `UsuarioActivo` (400), `UsuarioNoModificado`, `UsuarioNoEliminado`, `PeriodoReactivacionFinalizado`, `MailRepetido`, `UsuarioNoEncontrado`, `UsuariosNoEncontrados` (409).
 
-Los routers no necesitan `try/except`: el handler global traduce todo `DomainError`. (El único router que captura explícitamente, `verificar_mail`, lo hace de forma redundante y además remapea el código a 400.)
+Los routers no necesitan `try/except`: el handler global traduce todo `DomainError`. El test `test_exception_handlers.py` falla si aparece una excepción de dominio nueva sin status explícito.
 
 ### 6.5 Infraestructura
 
-| Archivo | Clase / Función | Rol |
+| Archivo (dentro de `auth_core/`) | Clase / Función | Rol |
 |---|---|---|
-| `auth/infrastructure/persistence/postgres/models/*.py` | `AuthUser`, `Usuario`, `Sesiones`, `RecoverPassword`, `HistoryPassword` + DTOs | Modelos de tabla y proyecciones |
-| `.../repository/*.py` | `AuthUserRepository`, `UserRepository`, `SesionRepository`, `RecoverPasswordRepository`, `HistoryPasswordRepository` | Implementaciones de los protocolos de repositorio |
+| `auth/infrastructure/persistence/postgres/models/*.py` | `AuthUser`, `Usuario`, `Sesiones`, `RecoverPassword`, `HistoryPassword` | Modelos de tabla SQLModel |
+| `.../postgres/mappers/*.py` | `a_entidad` / `a_modelo` | Traducción modelo ↔ entidad de dominio |
+| `.../postgres/repository/*.py` | `AuthUserRepository`, `UserRepository`, `SesionRepository`, `RecoverPasswordRepository`, `HistoryPasswordRepository` | Implementaciones de los protocolos de repositorio |
 | `database/repository/unit_of_work.py` | `UnitOfWork` | `commit()` al salir del `with` sin excepción, `rollback()` si se propaga una |
 | `auth/infrastructure/security/security.py` | `PasswordService` | Argon2 |
 | `auth/infrastructure/security/tokens/tokens.py` | `TokenService` | Seis tipos de JWT + token opaco y hash SHA-256 |
@@ -353,20 +347,24 @@ Los routers no necesitan `try/except`: el handler global traduce todo `DomainErr
 | `shared/infrastructure/mail/template_renderer.py` | `TemplateRenderer` | Wrapper de `jinja2.Environment` sobre un directorio de plantillas |
 | `shared/infrastructure/images/cloudinary.py` | `ImageService` | Valida tamaño (≤ 5 MB) y extensión (`jpg/jpeg/png/webp`) y sube a Cloudinary |
 | `shared/infrastructure/security/rate_limiter/limiter.py` | `limiter` | `slowapi.Limiter` por IP, habilitado según `RATE_LIMITER_ENABLED` |
-| `auth/infrastructure/templates/*.html` | — | Cuatro plantillas (tema oscuro, CSS embebido) |
+| `auth/infrastructure/templates/*.html` | — | Cuatro plantillas (tema oscuro, CSS embebido), empaquetadas en el wheel |
+
+`TEMPLATES_DIR` se calcula en `auth_mail_content.py` relativo al propio archivo, por lo que las plantillas se encuentran tanto en desarrollo como con el paquete instalado.
 
 ### 6.6 Presentación
 
 - **`CookiesService`**: `httponly=True` siempre; `secure`/`samesite` según `is_prod`. `set_auth_cookies` (access 15 min, refresh 7 días, hardcodeados), `set_access_cookie`, `delete_auth_cookies` y `set_reset_cookie` (con `path` restringido a `PATCH /modificar/password` y `max_age` derivado de `RESET_PASSWORD_TOKEN_EXPIRE_MINUTES`).
 - **`RequestMetadata`**: IP desde `X-Forwarded-For` (o `request.client.host`) y User-Agent.
-- **`AuthDependencies`**: `get_current_user` (valida `type == "access"`); `get_admin_user`/`get_premium_user` lanzan `NotImplementedError` hasta que exista el campo `role`.
+- **`AuthDependencies`**: `get_current_user` devuelve un `UsuarioCreado` (valida `type == "access"`); `get_admin_user`/`get_premium_user` lanzan `NotImplementedError` hasta que exista el campo `role`.
 - **`routers.py`**: 17 endpoints delgados. El prefijo `/{NOMBRE_APP}/usuarios` se construye con el singleton `settings`.
 
 ---
 
 ## 7. Configuración y Variables de Entorno
 
-`src/config/config.py` (`pydantic_settings.BaseSettings`) carga el `.env` de la raíz del proyecto y valida tipos al arrancar. **Punto de partida recomendado:** `guia de uso/env_example.txt` (copiarlo a `.env`).
+`auth_core/config/config.py` (`pydantic_settings.BaseSettings`) lee el **`.env` del directorio de trabajo** (`env_file=".env"`) y valida tipos al arrancar. **Punto de partida recomendado:** `guia de uso/env_example.txt` (copiarlo a `.env` en la raíz del proyecto).
+
+> **Importante:** como el `.env` se busca en el directorio de trabajo, `uvicorn`, `pytest` y `alembic` deben ejecutarse **desde la raíz del proyecto**, donde está el `.env`. Las constantes `BASE_DIR` y `ENV_PATH` fueron eliminadas.
 
 | Variable | Tipo | Obligatoria | Consumidor | Propósito |
 |---|---|---|---|---|
@@ -392,45 +390,73 @@ Los routers no necesitan `try/except`: el handler global traduce todo `DomainErr
 
 ---
 
-## 8. Guía de Instalación, Configuración y Ejecución
+## 8. Instalación, Uso como Paquete y Ejecución
 
-Guía completa (con solución a errores frecuentes en Windows/PowerShell): **`guia de uso/guia-plantilla-auth.html`**. Resumen:
+Hay tres escenarios. En todos, `uvicorn`, `pytest` y `alembic` se ejecutan desde la raíz del proyecto.
+
+### 8.1 Desarrollo del núcleo (este repositorio)
 
 ```bash
-# 1. Clonar (y, si querés historial propio, borrar .git y hacer git init)
-git clone <url-del-repositorio> MiNuevoProyecto
-cd MiNuevoProyecto
+git clone <url-del-repositorio> auth-core
+cd auth-core
 
-# 2. (Opcional) apuntar a tu nuevo repositorio remoto
-git remote set-url origin <URL-NUEVO-REPO>
-
-# 3. Entorno virtual + dependencias
 python -m venv venv
 source venv/bin/activate          # Windows: .\venv\Scripts\Activate.ps1
-pip install -r requirements.txt
 
-# 4. Variables de entorno
-cp "guia de uso/env_example.txt" .env      # Windows: Copy-Item ".\guia de uso\env_example.txt" ".env"
-#    Editar .env: DATABASE_URL, JWT_SECRET_KEY (python -c "import secrets; print(secrets.token_hex(32))"),
-#    credenciales SMTP, Cloudinary, NOMBRE_APP, BASE_URL...
+pip install -e .                  # instala auth-core en modo editable dentro del venv
+pip install -e ".[dev]"           # opcional: pytest, httpx, uvicorn, mypy, etc.
 
-# 5. Crear una base PostgreSQL vacía
-psql -U postgres -c "CREATE DATABASE mi_nuevo_proyecto_db;"
+cp "guia de uso/env_example.txt" .env     # Windows: Copy-Item ".\guia de uso\env_example.txt" ".env"
+# Editar .env (DATABASE_URL, JWT_SECRET_KEY, SMTP, Cloudinary, NOMBRE_APP, BASE_URL...)
 
-# 6. (Opcional) Ejecutar los tests — no tocan la base de datos
-pytest
+pytest -q                         # 171 passed — no tocan la base de datos
 
-# 7. Crear el esquema con Alembic (obligatorio antes de levantar el servidor)
-alembic upgrade head
+psql -U postgres -c "CREATE DATABASE mi_base;"
+alembic upgrade head              # obligatorio antes de levantar el servidor
 alembic current                   # debe mostrar 0767bfec6564 (head)
 
-# 8. Levantar el servidor
-uvicorn src.main:app --reload
+uvicorn main:app --reload         # main.py de ejemplo está en la raíz
 ```
 
 - Documentación interactiva: `http://localhost:8000/docs` (Swagger) y `/redoc`.
-- **La aplicación no crea tablas al arrancar.** Si al usar un endpoint aparece un error del tipo "la relación … no existe", faltó ejecutar `alembic upgrade head`.
-- Si `alembic upgrade head` falla con `DuplicateObject … estado_entidad`, la base no estaba vacía (ver el paso 4.2 de la guía de uso).
+- **La aplicación no crea tablas al arrancar.** Si aparece un error del tipo "la relación … no existe", faltó `alembic upgrade head`.
+- Si `alembic upgrade head` falla con `DuplicateObject … estado_entidad`, la base no estaba vacía.
+- Los cambios al núcleo se hacen **en este repositorio** y salen con un tag nuevo (ver 8.2).
+
+### 8.2 Uso como instalable en un proyecto cliente
+
+En el `requirements.txt` del proyecto cliente:
+
+```
+auth-core @ git+https://github.com/laza20/Plantilla-Autentificacion-POO.git@v1.4.0
+```
+
+> **A VERIFICAR:** la instalación desde el tag publicado en GitHub todavía no fue probada (el tag `v1.4.0` existía solo en local al momento de escribir esto). Tampoco consta si el repositorio es privado; **A VERIFICAR**. Si lo es, hacen falta credenciales de GitHub (token o `git+ssh`).
+
+Qué ocurre y qué aporta cada parte:
+
+- Lo instalado queda en `site-packages`: no aparecen archivos del núcleo dentro del proyecto cliente (igual que `fastapi`).
+- El proyecto cliente **aporta**: su `main.py`, su `.env`, su `alembic.ini` y `alembic/env.py`, y sus propios modelos y routers.
+- **Las migraciones de las tablas de auth NO viajan en el paquete.** El `env.py` del cliente debe importar los modelos desde `auth_core.auth.infrastructure.persistence.postgres.models` y usar `autogenerate` para generar la migración de esas tablas junto con las propias.
+- El `main.py` del cliente puede partir del ejemplo de este repo: incluye el router de `auth_core.auth.presentation.web.routers`, registra el `limiter` y el handler de `RateLimitExceeded`, y el handler global de `DomainError`.
+- El proyecto cliente debe declarar su propio servidor ASGI (`uvicorn`), que no es dependencia de `auth-core`.
+
+**No editar el núcleo dentro del proyecto cliente**: un `pip install --upgrade` lo pisa. Si hace falta un cambio, va al repositorio de la plantilla y sale con un tag nuevo.
+
+**Actualizar la versión instalada:**
+
+1. Cambiar el tag en el `requirements.txt` del cliente (por ejemplo `@v1.4.1`).
+2. Correr `pip install --upgrade -r requirements.txt`.
+
+**Publicar una versión nueva del núcleo:** subir la versión en `pyproject.toml` **en el mismo commit que el tag**.
+
+### 8.3 Uso híbrido (opcional)
+
+Se puede clonar el repositorio solo para tomar los archivos de arranque y copiarlos **una sola vez** al proyecto nuevo:
+
+- `main.py` de ejemplo, `alembic.ini`, `alembic/env.py`, `.env.example` (a partir de `guia de uso/env_example.txt`) y `.gitignore`.
+
+El núcleo se **instala**, no se copia. Tener el núcleo copiado **y** además instalado genera dos copias y confusión sobre cuál se importa.
 
 ---
 
@@ -461,7 +487,7 @@ El token de recuperación del paso 1 **no** es JWT: es opaco (`secrets.token_url
 ### 9.5 Recuperación de contraseña
 1. `POST /solicitud/recuperacion` → token opaco + correo.
 2. `GET /recuperar/password/{token}` → valida hash y vigencia, fija la cookie `reset_token`.
-3. `PATCH /modificar/password` → con la cookie presente, cambia la contraseña en una única transacción (historial + actualización + desactivación del token).
+3. `PATCH /modificar/password` → con la cookie presente (si falta, `SinResetToken`, 401), cambia la contraseña en una única transacción (historial + actualización + desactivación del token).
 
 ### 9.6 Modificación de perfil
 `PUT /modificar/usuario` (autenticado). Si cambia el email, la cuenta vuelve a `PENDIENTE` y se reenvía la verificación.
@@ -470,13 +496,13 @@ El token de recuperación del paso 1 **no** es JWT: es opaco (`secrets.token_url
 `DELETE /eliminar/usuario` (autenticado) envía el correo; `GET /eliminar/cuenta/{token}` marca `ELIMINADO`, revoca **todas** las sesiones y borra las cookies.
 
 ### 9.8 Reactivación
-`GET /solicitud/reactivacion/cuenta` (recibe el email en el body — ver Sección 14) y `GET /reactivar/cuenta/{token}`.
+`GET /solicitud/reactivacion/cuenta` (recibe el email en el body — ver Sección 14.3) y `GET /reactivar/cuenta/{token}`.
 
 ### 9.9 Cookies
-`httponly=True` siempre; `secure`/`samesite` según `is_prod`. `max_age` de access/refresh hardcodeado (ver Sección 14).
+`httponly=True` siempre; `secure`/`samesite` según `is_prod`. `max_age` de access/refresh hardcodeado (ver Sección 14.3).
 
 ### 9.10 Refresh y Logout
-`POST /Refresh/Token` emite un nuevo access token. `POST /Logout` elimina la sesión en BD (vía hash) y borra las cookies, por lo que un refresh token robado no puede reutilizarse (el access token ya emitido vive hasta su expiración natural).
+`POST /Refresh/Token` emite un nuevo access token (si falta la cookie, `SinRefreshToken`, 401). `POST /Logout` elimina la sesión en BD (vía hash) y borra las cookies; también responde 401 si falta la cookie `refresh_token`. Un refresh token robado no puede reutilizarse tras el logout (el access token ya emitido vive hasta su expiración natural).
 
 ### 9.11 Rate limiting
 
@@ -486,26 +512,27 @@ Cada endpoint (salvo `GET /user/current`) tiene un límite por IP con `slowapi`:
 |---|---|
 | `POST /login`, `POST /Refresh/Token`, `DELETE /eliminar_sesion/{id}` | 3/minuto |
 | `GET /listar_sesiones` | 5/minuto |
-| `PATCH /modificar/password` | 1/hora |
 | `PUT /modificar/usuario` | 2/hora |
+| `PATCH /modificar/password` | 3/hora |
 | `POST /registrar`, `GET /verificar/{token}`, `POST /Logout`, `POST /solicitud/recuperacion`, `GET /recuperar/password/{token}`, `POST /reenviar/mail`, `DELETE /eliminar/usuario`, `GET /eliminar/cuenta/{token}`, `GET /solicitud/reactivacion/cuenta`, `GET /reactivar/cuenta/{token}` | 5/hora |
 
-La clave es `get_remote_address` (IP directa del cliente). Detrás de un proxy o load balancer, todas las peticiones pueden compartir la misma IP a menos que se configure el reenvío de IP real (ver Sección 14). Con `RATE_LIMITER_ENABLED=false` el limitador se desactiva.
+La clave es `get_remote_address` (IP directa del cliente). Detrás de un proxy o load balancer, todas las peticiones pueden compartir la misma IP a menos que se configure el reenvío de IP real (ver Sección 14.3). Con `RATE_LIMITER_ENABLED=false` el limitador se desactiva.
 
 ### 9.12 Guards
-`get_current_user` está cableado en los endpoints autenticados. `get_admin_user`/`get_premium_user` son placeholders (`NotImplementedError`) hasta agregar `role`/`is_premium` a `AuthUser`.
+`get_current_user` está cableado en los endpoints autenticados y devuelve un `UsuarioCreado`. `get_admin_user`/`get_premium_user` son placeholders (`NotImplementedError`) hasta agregar `role`/`is_premium`.
 
 ---
 
 ## 10. Persistencia, Modelos y Migraciones
 
 ### 10.1 Motor de base de datos
-`database/client.py` crea el engine SQLModel/SQLAlchemy desde `settings.DATABASE_URL`; `get_session()` entrega una sesión por petición.
+`auth_core/database/client.py` crea el engine SQLModel/SQLAlchemy desde `settings.DATABASE_URL`; `get_session()` entrega una sesión por petición.
 
 ### 10.2 Migraciones con Alembic
 
-- **Alembic es el único responsable del esquema.** `main.py` importa los modelos (`from ...postgres.models import *`) pero **no** ejecuta `create_all`.
-- `alembic/env.py` toma la URL desde `Settings().DATABASE_URL` (sobrescribe `sqlalchemy.url` de `alembic.ini`), importa los modelos y usa `SQLModel.metadata` como `target_metadata`.
+- **Alembic es el único responsable del esquema.** `main.py` importa los modelos pero **no** ejecuta `create_all`.
+- `alembic/env.py` toma la URL desde `Settings().DATABASE_URL` (sobrescribe `sqlalchemy.url` de `alembic.ini`), importa los modelos desde `auth_core.auth.infrastructure.persistence.postgres.models` y usa `SQLModel.metadata` como `target_metadata`.
+- `alembic/` y `alembic.ini` **están fuera del paquete**: no viajan con `pip install`. Un proyecto cliente tiene su propio `alembic/` (ver 8.2).
 - Migración inicial: `0767bfec6564_crear_tablas_de_auth.py` — crea el ENUM `estado_entidad` y las tablas `auth_users`, `history_password`, `recover_password`, `sesiones` y `usuario`, con sus índices y claves foráneas.
 
 Flujo ante cualquier cambio de modelo (ver 12.7):
@@ -516,7 +543,7 @@ alembic revision --autogenerate -m "descripcion del cambio"
 alembic upgrade head
 ```
 
-> Requisito del autogenerate: los modelos de tabla deben importarse en `env.py` (hoy vía `from src.auth.infrastructure.persistence.postgres import models`, cuyo `__init__.py` exporta los cinco modelos). Un modelo nuevo debe agregarse a ese `__init__.py`, o Alembic no lo detectará.
+> Requisito del autogenerate: los modelos de tabla deben importarse en `env.py` (vía `from auth_core.auth.infrastructure.persistence.postgres import models`, cuyo `__init__.py` exporta los cinco modelos). Un modelo nuevo debe agregarse a ese `__init__.py`, o Alembic no lo detectará.
 
 ### 10.3 Modelo de datos
 
@@ -537,10 +564,13 @@ class EstadoEntidad(str, Enum):
     PENDIENTE = 'pendiente'
 ```
 
-El enum vive en `database/enums/` (transversal a futuras entidades).
+El enum vive en `auth_core/database/enums/` (transversal a futuras entidades).
 
-### 10.4 DTOs relevantes
-`UsuarioCreado`, `UserRegisterDTO`, `UserModifyDTO`, `AuthUserEmailValidation`, `UserTokens`, `UsuarioLogeado`, `LoginResponse`, `SesionesVisual`, `ListaSesiones`, `SolicitudRecuperacionRequest`, `SolicitudReactivacionRequest`, `ModificarPassword`. `AuthUserNoImage` no tiene referencias activas.
+### 10.4 Entidades y DTOs
+- **Entidades de dominio** (`auth/domain/entities/`): `AuthUser`, `UserTokens`, `Sesion`, `RecoverPassword`, `HistoryPassword`, `Usuario`.
+- **DTOs de aplicación** (`auth/application/dtos/`): `UsuarioCreado`, `UsuarioLogeado`, `LoginResponse`, `UserRegisterDTO`, `UserModifyDTO`, `SesionVisual`, `ListaSesiones`.
+- **Schemas de recepción** (`persistence/postgres/schemas/`): `SolicitudRecuperacionRequest`, `SolicitudReactivacionRequest`, `ModificarPassword`.
+- **Mappers** (`application/mappers/`): `a_usuario_creado`, `a_sesion_visual`.
 
 ### 10.5 Repositorios
 `AuthUserRepository` filtra por `estado == ACTIVO` en `obtener_por_email`/`obtener_por_id`, no filtra en `obtener_por_id_sin_activar`, y expone el par inverso para reactivación (`obtener_usuario_eliminado_por_mail/id`). `SesionRepository.eliminar_todas_las_sesiones_de_un_usuario` usa un `delete()` en bloque.
@@ -550,42 +580,45 @@ El enum vive en `database/enums/` (transversal a futuras entidades).
 ## 11. Integración de Servicios Externos
 
 ### 11.1 Cloudinary
-`ImageService.subir_imagen()` valida servicio (`SERVICIOS_VALIDOS`), tamaño (`MAX_FILE_SIZE = 5 MB`) y extensión, y sube a `{NOMBRE_APP}/{servicio}`.
+`ImageService.subir_imagen()` valida servicio (`SERVICIOS_VALIDOS`), tamaño (`MAX_FILE_SIZE = 5 MB`; un `size` en `None` también se rechaza con `LimiteTamañoSuperado`) y extensión (un `filename` en `None` o sin extensión da `ExtensionNoPermitida`), y sube a `{NOMBRE_APP}/{servicio}`. El contrato `TipadoImagenProtocol` no depende de `fastapi`.
 
 ### 11.2 Correo (FastAPI-Mail + Jinja2)
 El envío y la generación del contenido están **separados**:
 - `MailService` (`shared/`) solo envía (`enviar_mail`).
-- `AuthMailContent` (`auth/infrastructure/mail/`) genera el HTML de las cuatro plantillas usando `TemplateRenderer`, y los casos de uso reciben ambos por inyección.
+- `AuthMailContent` (`auth/infrastructure/mail/`) genera el HTML de las cuatro plantillas usando `TemplateRenderer`; los casos de uso lo reciben por `AuthMailContentProtocol`.
 - Las plantillas comparten el mismo sistema visual (violeta para verificación/recuperación/reactivación, rojo para eliminación).
 
 ---
 
 ## 12. Guía del Desarrollador: Cómo extender la plantilla
 
+> Los cambios al núcleo se hacen en **este repositorio** y se publican con un tag nuevo; no se editan dentro de un proyecto cliente.
+
 ### 12.1 Agregar un endpoint
 Crear el Caso de Uso, exponerlo en `routers.py` con `Depends`, sin lógica de negocio en el endpoint, y asignarle un `@limiter.limit(...)` acorde a su sensibilidad.
 
 ### 12.2 Agregar un Caso de Uso
-1. Ubicarlo en el subpaquete semántico correspondiente.
+1. Ubicarlo en el subpaquete semántico correspondiente de `auth_core/auth/application/use_cases/`.
 2. El constructor recibe solo Protocolos y servicios de dominio.
 3. Si toca más de una tabla, envolverlo en `with self.unit_of_work_service:`.
-4. Crear `ContainerMiCasoDeUso` en `auth_container.py` y `get_mi_caso_de_uso` en `providers.py`.
+4. Crear `ContainerMiCasoDeUso` en `container/auth/auth_container.py` y `get_mi_caso_de_uso` en `container/auth/providers.py`.
 5. Inyectarlo en el router.
-6. Agregar su `*TestEnvironment` en `test/fixtures/`, y sus fakes/stubs si hay protocolos nuevos.
+6. Agregar su `*TestEnvironment` en `test/auth/fixtures/`, y sus fakes/stubs si hay protocolos nuevos.
+7. Importar siempre con el prefijo `auth_core.` (nunca `src.`).
 
 ### 12.3 Agregar una entidad/modelo
-Definir el modelo en `infrastructure/persistence/postgres/models/`, **exportarlo en su `__init__.py`**, definir DTOs propios y generar la migración (12.7).
+Definir la entidad en `auth/domain/entities/`, el modelo en `infrastructure/persistence/postgres/models/` (**exportarlo en su `__init__.py`**), su mapper y los DTOs propios, y generar la migración (12.7).
 
 ### 12.4 Cambiar de proveedor
-Localizar el `Protocol`, crear la nueva clase cumpliendo su firma y modificar una sola factory en `container/providers.py`.
+Localizar el `Protocol`, crear la nueva clase cumpliendo su firma y modificar una sola factory en `container/auth/providers.py`.
 
 ### 12.5 Autorización por roles
-1. Agregar `role`/`is_premium` a `AuthUser` **y generar la migración**.
-2. Reemplazar el cuerpo de `get_admin_user`/`get_premium_user` en `guards.py`.
+1. Agregar `role`/`is_premium` a `AuthUser` (entidad y modelo) **y generar la migración**.
+2. Agregar el campo a `UsuarioCreado` y reemplazar el cuerpo de `get_admin_user`/`get_premium_user` en `guards.py`.
 3. Proteger endpoints con `Depends(get_admin_user)` o `Depends(get_premium_user)`.
 
 ### 12.6 Extender el ciclo de vida de la cuenta
-Replicar el patrón "solicitud por correo → confirmación con token de scope propio → efecto en `estado`": métodos `create_<scope>_token`/`get_user_id_from_<scope>_token` en `TokenProtocol`/`TokenService`, dos Casos de Uso (solicitud + confirmación) y una plantilla en `templates/` con su generador en `AuthMailContent`. Candidato natural: `EstadoEntidad.SUSPENDIDO`.
+Replicar el patrón "solicitud por correo → confirmación con token de scope propio → efecto en `estado`": métodos `create_<scope>_token`/`get_user_id_from_<scope>_token` en `TokenProtocol`/`TokenService`, dos Casos de Uso (solicitud + confirmación) y una plantilla en `templates/` con su generador en `AuthMailContent`/`AuthMailContentProtocol`. Candidato natural: `EstadoEntidad.SUSPENDIDO`. Una plantilla nueva debe quedar cubierta por el `package-data` de `pyproject.toml` (hoy `auth/infrastructure/templates/*.html`).
 
 ### 12.7 Cambiar el esquema (migraciones)
 1. Modificar o crear el modelo (y exportarlo en `models/__init__.py`).
@@ -593,7 +626,13 @@ Replicar el patrón "solicitud por correo → confirmación con token de scope p
 3. Revisar el archivo generado en `alembic/versions/`.
 4. `alembic upgrade head`.
 
-Un modelo modificado no se refleja en la base hasta generar y aplicar la migración. Modificar una tabla existente probablemente implique actualizar también los DTOs y modelos de recepción (no de tabla) asociados, y sus validaciones.
+Un modelo modificado no se refleja en la base hasta generar y aplicar la migración.
+
+### 12.8 Publicar una versión nueva
+1. Subir `version` en `pyproject.toml`.
+2. Commit y tag en **el mismo commit** (el tag debe apuntar al commit que contiene esa versión).
+3. Push de la rama y del tag.
+4. En los proyectos cliente, cambiar el tag en `requirements.txt` y correr `pip install --upgrade -r requirements.txt` (ver 8.2).
 
 ---
 
@@ -601,7 +640,7 @@ Un modelo modificado no se refleja en la base hasta generar y aplicar la migraci
 
 ### 13.1 SOLID
 - **SRP**: un Caso de Uso por flujo; `CookiesService` solo cookies; `AuthMailContent` solo contenido de correo; `MailService` solo transporte.
-- **OCP**: nuevas excepciones o proveedores sin tocar casos de uso ni el handler global.
+- **OCP**: nuevas excepciones o proveedores sin tocar casos de uso; una excepción nueva solo requiere su entrada en `HTTP_STATUS_BY_EXCEPTION` (el test lo exige).
 - **LSP**: fakes y stubs de test sustituyen a las implementaciones reales.
 - **ISP**: protocolos angostos (`HistoryRepositoryProtocol`, `RecuperarContraseñaProtocol`, `UnitOfWorkProtocol`).
 - **DIP**: los Casos de Uso dependen de abstracciones:
@@ -620,46 +659,52 @@ class RecuperarContraseñaUseCase:
 ```
 
 ### 13.2 Otros patrones
-Repository, Unit of Work, Dependency Injection (`Depends`), Composition Root, DTO, Global Exception Handler, Test Doubles estructurales (Fakes/Stubs), y **Migraciones versionadas** (Alembic).
+Repository, Unit of Work, Dependency Injection (`Depends`), Composition Root, DTO, Mapper, Global Exception Handler, Test Doubles estructurales (Fakes/Stubs), **Migraciones versionadas** (Alembic) y **distribución como paquete versionado** (tags + `pyproject.toml`).
 
 ---
 
-## 14. Resumen y Conclusiones Técnicas
+## 14. Notas de Versión, Resumen y Pendientes
 
-### 14.1 Evaluación
-El proyecto conserva la separación de capas y suma en esta iteración una mejora estructural: la **gestión del esquema pasa íntegramente a Alembic** (la app ya no crea tablas al arrancar), se extraen las piezas reutilizables a `src/database/` y `src/shared/`, y se incorpora documentación operativa (`guia de uso/`) que permite poner en marcha la plantilla en un proyecto nuevo sin conocimiento previo del repositorio.
+### 14.1 Notas de versión 1.4.0
 
-### 14.2 Escalabilidad como plantilla
-El molde "solicitud por correo → token de scope propio → confirmación → efecto en `estado`" está probado en cuatro flujos. Con `shared/` y `database/` desacoplados de `auth/`, un segundo módulo de negocio puede reutilizar el limitador, el envío de correo, la subida de imágenes, la Unidad de Trabajo y el enum de estados.
+**Cambios que rompen compatibilidad respecto de la estructura anterior**
 
-### 14.3 Áreas de mejora detectadas
+- **Imports:** todo pasó de `src.algo` a `auth_core.algo` (por ejemplo, `from auth_core.container.auth.providers import ...`). Incluye `main.py`, los tests, `alembic/env.py` y los `patch()` de los tests.
+- **`.env`:** `Settings` lo lee del **directorio de trabajo** (`env_file=".env"`). Se eliminaron `BASE_DIR` y `ENV_PATH`. `uvicorn`, `pytest` y `alembic` se ejecutan desde la raíz del proyecto.
+- **`main.py` y `test/`** quedaron fuera del paquete, en la raíz del repo.
+- **Comando de arranque:** `uvicorn main:app --reload` (antes `uvicorn src.main:app`).
 
-**Resueltas desde la auditoría anterior**
-1. Colisión de `TokenInvalido` entre módulos de excepciones.
-2. Token de verificación con scope propio, independiente del access token.
-3. Alembic sin configurar: ahora hay `alembic.ini`, `alembic/env.py` y migración inicial.
-4. `create_all` en `main.py`: eliminado; el esquema depende solo de Alembic.
+**Cambios de comportamiento previos a esta rama (changelog 1.3.0 → 1.4.0)**
 
-**Pendientes**
-1. **`max_age` de las cookies `access_token`/`refresh_token` sigue hardcodeado** (`15 * 60` y `7 * 24 * 60 * 60`) en vez de derivarse de `ACCESS_TOKEN_EXPIRE_MINUTES`/`REFRESH_TOKEN_DURATION`; `set_reset_cookie` ya aplica el patrón correcto.
-2. **Doble unidad para `REACTIVACION_CUENTA`**: minutos para el JWT de reactivación, días para la ventana post-baja. Con `30`, el enlace expira en 30 minutos pero la cuenta es reactivable 30 días. Separar en dos variables.
-3. **`EXPIRACION_MAIL_RECUPERACION` no es consumida** por ningún módulo.
-4. **`VERIFY_MAIL_RECUPERACION` gobierna dos flujos** (verificación de mail y recuperación de contraseña).
-5. **`ImageService.subir_imagen()` construye `DomainError(detail=...)`**, pero `DomainError.__init__` espera `message`: esa rama lanzaría `TypeError`. Corregir a `DomainError(message=...)`.
-6. **`GET /solicitud/reactivacion/cuenta` recibe un body**; debería ser `POST`, como `POST /solicitud/recuperacion`.
-7. **Plantillas con datos que no se renderizan**: `recuperacion_contraseña.html`, `eliminar_cuenta.html` y `reactivar_cuenta.html` usan `{{ tiempo_expiracion }}`, pero `AuthMailContent` no lo pasa (se muestra vacío). Además `verificacion.html` fija "24 horas" mientras el token expira según `VERIFY_MAIL_RECUPERACION` (30 minutos en el `.env` de ejemplo).
-8. **Rate limiter detrás de proxy**: `get_remote_address` usa la IP directa; tras un load balancer todas las peticiones pueden compartir cuota. `RequestMetadata` sí considera `X-Forwarded-For`, por lo que ambas lógicas son inconsistentes.
-9. **`cloudinary.py` crea una instancia `app = FastAPI(...)` sin uso** e importa símbolos no utilizados (`Query`, `HTTPException`, `File`…).
-10. **Guards `get_admin_user`/`get_premium_user`** siguen como placeholder.
-11. **Factories duplicadas** (`get_password_service`, `get_token_service`, `get_mail_service`, `get_image_service`) en `infrastructure/` y en `container/providers.py`; solo las últimas se usan.
-12. **Fugas de la regla de dependencia** (Sección 3.3): modelos de infraestructura importados desde dominio/aplicación, `AuthMailContent` y `Settings` inyectados por tipo concreto, `fastapi.status`/`UploadFile` en el dominio.
-13. **Docstring de `MailProtocol` desactualizado** (menciona `generar_correo_verificacion`, que ya no forma parte del contrato).
-14. **Dependencias sin uso**: `sentry-sdk` y `sqlacodegen` están en `requirements.txt` sin referencias en el código.
-15. **Typo heredado `HisoryPasswordNoTable`** (falta una "t"), sin impacto funcional.
-16. **Access tokens no revocables de inmediato**: al eliminar la cuenta o cambiar la contraseña se revocan sesiones (refresh), pero un access token ya emitido vive hasta su expiración natural (comportamiento esperado en JWT *stateless*).
-17. **`guia de uso/env_example.txt`**: la línea final `RATE_LIMITER_ENABLED: True` usa `:` en lugar de `=`, por lo que `python-dotenv` la descarta y el limitador queda en su valor por defecto.
-18. **Inconsistencias en la guía HTML**: menciona `SECRET_KEY` (la variable real es `JWT_SECRET_KEY`) y el comando `uvicorn app.main:app` (el punto de entrada real es `src.main:app`).
-19. **Tests de integración** (`test/integration/`): solo hay placeholders vacíos.
+- `POST /Logout` y `PATCH /modificar/password` responden **401** si falta la cookie (`refresh_token` y `reset_token`, respectivamente).
+- `SinAccessToken` y `SinRefreshToken` pasaron a ser `TokenException`, y existe `SinResetToken` (401).
+- `get_current_user` devuelve `UsuarioCreado` en lugar de `AuthUser`.
+- Las validaciones de imagen manejan `filename` y `size` en `None` (`ExtensionNoPermitida` y `LimiteTamañoSuperado`).
+- `verificar_token` devuelve `False` si `expira_en` es `NULL`.
+- Contrato de imágenes `TipadoImagenProtocol`, sin dependencia de `fastapi`.
+
+**Verificaciones realizadas sobre el paquete**
+
+- El wheel `auth_core-1.4.0` compila e instala en un venv limpio; `top_level.txt` contiene solo `auth_core`.
+- Los 4 `.html` viajan en el wheel y `TEMPLATES_DIR` los encuentra con el paquete instalado.
+- Desde un directorio sin `src/`, `import auth_core.auth.application.use_cases.register` funciona.
+- Desde un directorio con un `.env` ajeno, el paquete instalado lee ese `.env`.
+- Entorno de desarrollo: 171 tests pasan, `import main` no da error y `uvicorn main:app` arranca y cierra sin errores.
+
+### 14.2 Evaluación y escalabilidad como plantilla
+
+El proyecto conserva la separación de capas y ahora se distribuye como paquete versionado: un proyecto cliente instala el núcleo, lo actualiza cambiando un tag y aporta solo sus propios `main.py`, `.env`, migraciones, modelos y routers. El molde "solicitud por correo → token de scope propio → confirmación → efecto en `estado`" está probado en cuatro flujos. Con `shared/` y `database/` desacoplados de `auth/`, un segundo módulo de negocio puede reutilizar el limitador, el envío de correo, la subida de imágenes, la Unidad de Trabajo y el enum de estados.
+
+### 14.3 Limitaciones / pendientes
+
+**Resueltos respecto de la versión anterior del README**
+- `DomainError(detail=...)` en `ImageService`: ahora usa `message=`.
+- Instancia `FastAPI(...)` sin uso en `cloudinary.py`: eliminada.
+- Fugas de la regla de dependencia: el dominio usa entidades dataclass; `AuthMailContent` entra por protocolo; `Settings` ya no se importa en los casos de uso; las excepciones ya no importan `fastapi.status` ni `ImageProtocol` usa `UploadFile`.
+- Status HTTP fuera de la excepción: ahora vive en `HTTP_STATUS_BY_EXCEPTION`.
+
+
 
 ### 14.4 Conclusión general
-La plantilla cubre el ciclo de vida completo de una cuenta con un compromiso arquitectónico consistente: Protocolos como frontera, Casos de Uso desacoplados, Composition Root explícito, Unidad de Trabajo transaccional y, ahora, un esquema versionado con Alembic y una guía de puesta en marcha. Los pendientes de la Sección 14.3 son en su mayoría ajustes de configuración, nomenclatura y documentación; el único que conviene corregir antes de depender de esa ruta de código es `DomainError(detail=...)` (punto 5), y el de las plantillas de correo (punto 7) por su impacto visible para el usuario final.
+
+La plantilla cubre el ciclo de vida completo de una cuenta con un compromiso arquitectónico consistente: Protocolos como frontera, Casos de Uso desacoplados, entidades separadas de los modelos, Composition Root explícito, Unidad de Trabajo transaccional, esquema versionado con Alembic y, desde 1.4.0, distribución como paquete `auth-core` instalable con `pip` o, alternativamente, uso híbrido a partir de los archivos de arranque. Los pendientes de la Sección 14.3 son en su mayoría ajustes de configuración, documentación y cierre del proceso de release.
