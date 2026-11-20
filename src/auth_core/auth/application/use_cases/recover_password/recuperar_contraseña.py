@@ -1,14 +1,14 @@
-from auth_core.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
-from auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
-from auth_core.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
-from auth_core.auth.domain.protocols.repository.protocol_history_password_repository import HistoryRepositoryProtocol
-from auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from auth_core.auth.domain.entities.entitie_recover_password import RecoverPassword
-from auth_core.auth.domain.services.password_policy import PasswordPolicyService
+from src.auth_core.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from src.auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from src.auth_core.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
+from src.auth_core.auth.domain.protocols.repository.protocol_history_password_repository import HistoryRepositoryProtocol
+from src.auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth_core.auth.domain.entities.entitie_recover_password import RecoverPassword
+from src.auth_core.auth.domain.services.password_policy import PasswordPolicyService
 from datetime import datetime, timezone
-from auth_core.auth.domain.exceptions.tokens import TokenNoDesactivado
-from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoModificado, UsuarioNoEncontrado
-from auth_core.domain.exceptions.domain import ErrorCreacion
+from src.auth_core.auth.domain.exceptions.tokens import TokenNoDesactivado
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoModificado, UsuarioNoEncontrado
+from src.auth_core.domain.exceptions.domain import ErrorCreacion
 
 
 

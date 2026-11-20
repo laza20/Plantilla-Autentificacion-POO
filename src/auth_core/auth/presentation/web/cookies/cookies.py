@@ -1,4 +1,4 @@
-from auth_core.config.config import Settings
+from src.auth_core.config.config import Settings
 from fastapi import Response
 
 

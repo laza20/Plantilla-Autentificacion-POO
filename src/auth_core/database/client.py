@@ -1,5 +1,5 @@
 from sqlmodel import create_engine, Session, SQLModel
-from auth_core.config.config import settings
+from src.auth_core.config.config import settings
 import os
 
 DATABASE_URL = settings.DATABASE_URL

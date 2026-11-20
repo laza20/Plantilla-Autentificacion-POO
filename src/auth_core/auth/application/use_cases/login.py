@@ -1,14 +1,14 @@
-from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
-from auth_core.auth.application.dtos.auth_user_dto import LoginResponse, UsuarioLogeado
-from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError
-from auth_core.domain.exceptions.domain import DomainError
+from src.auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth_core.auth.application.dtos.auth_user_dto import LoginResponse, UsuarioLogeado
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioError, LoginError
+from src.auth_core.domain.exceptions.domain import DomainError
 import logging
-from auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from auth_core.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
-from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
-from auth_core.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
-from auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
-from auth_core.auth.domain.services.user_validation_service import UserValidationService
+from src.auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth_core.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
+from src.auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth_core.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from src.auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from src.auth_core.auth.domain.services.user_validation_service import UserValidationService
 
 
 logger = logging.getLogger(__name__)

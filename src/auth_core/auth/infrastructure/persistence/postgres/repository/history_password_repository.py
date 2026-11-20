@@ -1,4 +1,4 @@
-from auth_core.auth.infrastructure.persistence.postgres.models.models_history_password import HistoryPassword as HistoryPasswordSqlModel
+from src.auth_core.auth.infrastructure.persistence.postgres.models.models_history_password import HistoryPassword as HistoryPasswordSqlModel
 from sqlmodel import Session
 from datetime import datetime
 

@@ -1,5 +1,5 @@
-from auth_core.auth.domain.entities.entitie_recover_password import RecoverPassword
-from auth_core.auth.infrastructure.persistence.postgres.models.models_recover_password import (
+from src.auth_core.auth.domain.entities.entitie_recover_password import RecoverPassword
+from src.auth_core.auth.infrastructure.persistence.postgres.models.models_recover_password import (
     RecoverPassword as RecoverPasswordSqlModel
 )
 

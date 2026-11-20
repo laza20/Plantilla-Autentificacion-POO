@@ -1,9 +1,9 @@
 from sqlmodel import Session, select, update
-from auth_core.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser as AuthUserSqlModel
-from auth_core.database.enums.estado_entidad import EstadoEntidad
-from auth_core.auth.domain.exceptions.usuarios_exceptions import MailRepetido
-from auth_core.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad, a_modelo
-from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth_core.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser as AuthUserSqlModel
+from src.auth_core.database.enums.estado_entidad import EstadoEntidad
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import MailRepetido
+from src.auth_core.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad, a_modelo
+from src.auth_core.auth.domain.entities.entitie_auth_users import AuthUser
 from datetime import datetime
 from dataclasses import asdict
 

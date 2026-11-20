@@ -1,7 +1,7 @@
-from auth_core.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
-from auth_core.auth.domain.entities.entitie_sesiones import Sesion
-from auth_core.auth.application.dtos.sesiones_dto import ListaSesiones
-from auth_core.auth.application.mappers.sesiones import a_sesion_visual
+from src.auth_core.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from src.auth_core.auth.domain.entities.entitie_sesiones import Sesion
+from src.auth_core.auth.application.dtos.sesiones_dto import ListaSesiones
+from src.auth_core.auth.application.mappers.sesiones import a_sesion_visual
 
 class ListarSesionesUseCase:
     def __init__(

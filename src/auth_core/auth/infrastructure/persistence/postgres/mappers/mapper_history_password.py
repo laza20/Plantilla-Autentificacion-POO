@@ -1,5 +1,5 @@
-from auth_core.auth.domain.entities.entitie_history_password import HistoryPassword
-from auth_core.auth.infrastructure.persistence.postgres.models import HistoryPassword as HistoryPasswordSqlModel
+from src.auth_core.auth.domain.entities.entitie_history_password import HistoryPassword
+from src.auth_core.auth.infrastructure.persistence.postgres.models import HistoryPassword as HistoryPasswordSqlModel
 
 
 def a_entidad(model: HistoryPasswordSqlModel) -> HistoryPassword:

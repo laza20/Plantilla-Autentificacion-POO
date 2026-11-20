@@ -1,7 +1,7 @@
 from test.auth.unit.auth.domain.service import stub_token_service
 from test.auth.unit.auth.domain.service import (stub_unit_of_work)
 from test.auth.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
-from auth_core.auth.application.use_cases.verify_email import VerifyMailUseCase
+from src.auth_core.auth.application.use_cases.verify_email import VerifyMailUseCase
 
 
 class VerifyEmailTestEnvironment:

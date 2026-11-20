@@ -1,5 +1,5 @@
 from typing import Protocol, runtime_checkable
-from auth_core.auth.domain.entities.entitie_sesiones import Sesion
+from src.auth_core.auth.domain.entities.entitie_sesiones import Sesion
 
 
 @runtime_checkable

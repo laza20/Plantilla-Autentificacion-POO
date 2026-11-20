@@ -1,5 +1,5 @@
 from fastapi import status
-from auth_core.auth.domain.exceptions.tokens import (
+from src.auth_core.auth.domain.exceptions.tokens import (
     TokenException,
     TokenExpirado,
     TokenNoDesactivado,
@@ -16,7 +16,7 @@ from auth_core.auth.domain.exceptions.tokens import (
     SinRefreshToken,
 
 )
-from auth_core.auth.domain.exceptions.usuarios_exceptions import (
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import (
     UsuarioError,
     UsuarioNoModificado,
     UsuarioNoEliminado,
@@ -30,7 +30,7 @@ from auth_core.auth.domain.exceptions.usuarios_exceptions import (
     UsuarioActivo,
     LoginError,
 )
-from auth_core.domain.exceptions.domain import (
+from src.auth_core.domain.exceptions.domain import (
     DomainError,
     SinCargas,
     LongitudExcedida,

@@ -1,9 +1,9 @@
 import pytest
-from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
-from auth_core.domain.exceptions.domain import SinCargas, LongitudExcedida
-from auth_core.auth.application.dtos.auth_user_dto import UserRegisterDTO
+from src.auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth_core.domain.exceptions.domain import SinCargas, LongitudExcedida
+from src.auth_core.auth.application.dtos.auth_user_dto import UserRegisterDTO
 from test.auth.fixtures.fixture_register_case import RegisterTestEnvironment
-from auth_core.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura, MailNoValido, MailRepetido
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura, MailNoValido, MailRepetido
 from io import BytesIO
 from types import SimpleNamespace
 

@@ -1,10 +1,10 @@
 import pytest
 from test.auth.presentation.web.overrides.override_crear import crear_override
 from test.auth.presentation.web.stub.stub_current_user import StubCurrentUserUseCase
-from auth_core.auth.application.dtos.auth_user_dto import UsuarioCreado
-from auth_core.container.auth.providers import get_obtener_usuario_actual, get_current_user
+from src.auth_core.auth.application.dtos.auth_user_dto import UsuarioCreado
+from src.auth_core.container.auth.providers import get_obtener_usuario_actual, get_current_user
 from fastapi import status
-from auth_core.config.config import settings
+from src.auth_core.config.config import settings
 from main import app
 
 

@@ -1,5 +1,5 @@
-from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
-from auth_core.auth.application.dtos.auth_user_dto import UsuarioCreado
+from src.auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth_core.auth.application.dtos.auth_user_dto import UsuarioCreado
 
 
 def a_usuario_creado(entidad: AuthUser) -> UsuarioCreado:

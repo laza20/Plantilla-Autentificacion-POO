@@ -5,8 +5,8 @@ from test.auth.unit.auth.domain.service import (
 from fastapi import Request
 from test.auth.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
 from test.auth.unit.auth.domain.fakes.fake_sesion_repository import FakeSesionRepository
-from auth_core.auth.application.use_cases.login import LoginUseCase
-from auth_core.auth.domain.services.user_validation_service import UserValidationService
+from src.auth_core.auth.application.use_cases.login import LoginUseCase
+from src.auth_core.auth.domain.services.user_validation_service import UserValidationService
 
 
 class LoginTestEnvironment:

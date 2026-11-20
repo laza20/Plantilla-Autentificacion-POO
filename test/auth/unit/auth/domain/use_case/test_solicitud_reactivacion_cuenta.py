@@ -1,6 +1,6 @@
 import pytest
 from test.auth.fixtures.fixture_solicitud_reactivacion_cuenta import SolicitudReactivacionCuentaTestEnvironment
-from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
 from test.auth.factories.factory_usuarios import crear_usuario_de_prueba
 
 

@@ -1,6 +1,6 @@
-from auth_core.auth.presentation.web.exception_handlers import HTTP_STATUS_BY_EXCEPTION, obtener_status_code
-from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioError
-from auth_core.domain.exceptions.domain import DomainError
+from src.auth_core.auth.presentation.web.exception_handlers import HTTP_STATUS_BY_EXCEPTION, obtener_status_code
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioError
+from src.auth_core.domain.exceptions.domain import DomainError
 
 
 

@@ -1,9 +1,9 @@
-from auth_core.auth.domain.exceptions.tokens import TokenInvalido
+from src.auth_core.auth.domain.exceptions.tokens import TokenInvalido
 import pytest
 from test.auth.fixtures.fixture_verify_mail_case import VerifyEmailTestEnvironment
-from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
-from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioActivo
-from auth_core.database.enums.estado_entidad import EstadoEntidad
+from src.auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioActivo
+from src.auth_core.database.enums.estado_entidad import EstadoEntidad
 
 
 def test_debe_verificar_el_mail_y_activar_el_usuario():

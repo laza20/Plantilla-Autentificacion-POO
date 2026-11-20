@@ -1,6 +1,6 @@
 from sqlmodel import Session
-from auth_core.auth.infrastructure.persistence.postgres.mappers.mapper_usuario import a_entidad, a_modelo
-from auth_core.auth.domain.entities.entitie_usuario import Usuario
+from src.auth_core.auth.infrastructure.persistence.postgres.mappers.mapper_usuario import a_entidad, a_modelo
+from src.auth_core.auth.domain.entities.entitie_usuario import Usuario
 
 class UserRepository:
     def __init__(self, session: Session):

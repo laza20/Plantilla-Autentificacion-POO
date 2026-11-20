@@ -2,11 +2,11 @@ from main import app
 from test.auth.presentation.web.overrides.override_crear import crear_override
 from test.auth.presentation.web.stub.stub_recuperar_contraseña import StubRecuperarContraseñaUseCase
 from fastapi import status
-from auth_core.container.auth.providers import get_recuperar_contraseña_use_case, get_token_service
-from auth_core.config.config import settings
-from auth_core.auth.domain.exceptions.tokens import TokenNoDesactivado
-from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoModificado, UsuarioNoEncontrado
-from auth_core.domain.exceptions.domain import ErrorCreacion
+from src.auth_core.container.auth.providers import get_recuperar_contraseña_use_case, get_token_service
+from src.auth_core.config.config import settings
+from src.auth_core.auth.domain.exceptions.tokens import TokenNoDesactivado
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoModificado, UsuarioNoEncontrado
+from src.auth_core.domain.exceptions.domain import ErrorCreacion
 import pytest
 
 

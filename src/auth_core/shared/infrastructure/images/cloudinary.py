@@ -1,8 +1,8 @@
-from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
-from auth_core.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
-from auth_core.domain.exceptions.domain import LimiteTamañoSuperado, ExtensionNoPermitida, ErrorCloudinary, DomainError
-from auth_core.shared.infrastructure.images.cloudinary_config import cloudinary_uploader
-from auth_core.config.config import Settings
+from src.auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth_core.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
+from src.auth_core.domain.exceptions.domain import LimiteTamañoSuperado, ExtensionNoPermitida, ErrorCloudinary, DomainError
+from src.auth_core.shared.infrastructure.images.cloudinary_config import cloudinary_uploader
+from src.auth_core.config.config import Settings
 """
 Servicios validos engloba todos los servicios que pueden utilizar imagenes dentro del sistema
 Max_file_size es el tamaño máximo permitido para las imágenes a subir, en este caso 5MB.

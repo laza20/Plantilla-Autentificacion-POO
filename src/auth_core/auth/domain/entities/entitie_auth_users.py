@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from datetime import date
 from typing import Literal
-from auth_core.database.enums.estado_entidad import EstadoEntidad
-from auth_core.domain.exceptions.domain import LongitudExcedida
+from src.auth_core.database.enums.estado_entidad import EstadoEntidad
+from src.auth_core.domain.exceptions.domain import LongitudExcedida
 
 
 EMAIL_MAX_LENGTH = 255

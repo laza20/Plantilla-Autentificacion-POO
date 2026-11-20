@@ -1,4 +1,4 @@
-from auth_core.domain.exceptions.domain import DomainError
+from src.auth_core.domain.exceptions.domain import DomainError
 
 
 class TokenException(DomainError):

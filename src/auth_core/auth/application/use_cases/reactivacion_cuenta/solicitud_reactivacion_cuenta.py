@@ -1,9 +1,9 @@
-from auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from auth_core.shared.protocols.protocol_mail_service import MailProtocol
-from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
-from auth_core.auth.domain.services.mail_policy import MailPolicyService
-from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
-from auth_core.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
+from src.auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth_core.shared.protocols.protocol_mail_service import MailProtocol
+from src.auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth_core.auth.domain.services.mail_policy import MailPolicyService
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
+from src.auth_core.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
 
 class EnviarMailReactivacionUseCase:
     def __init__(

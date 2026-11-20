@@ -1,9 +1,9 @@
-from auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
-from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
-from auth_core.domain.exceptions.domain import ErrorEliminacion
-from auth_core.database.enums.estado_entidad import EstadoEntidad
-from auth_core.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from src.auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from src.auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth_core.domain.exceptions.domain import ErrorEliminacion
+from src.auth_core.database.enums.estado_entidad import EstadoEntidad
+from src.auth_core.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
 from datetime import date
 
 

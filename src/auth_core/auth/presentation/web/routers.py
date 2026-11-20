@@ -1,10 +1,10 @@
 #MODELS
-from auth_core.auth.application.dtos.auth_user_dto import UserRegisterDTO, UsuarioCreado, UserModifyDTO
-from auth_core.auth.presentation.web.utils.forms import (parse_usuario_form, parse_modificar_usuario_form)
-from auth_core.auth.application.dtos.auth_user_dto import LoginResponse
+from src.auth_core.auth.application.dtos.auth_user_dto import UserRegisterDTO, UsuarioCreado, UserModifyDTO
+from src.auth_core.auth.presentation.web.utils.forms import (parse_usuario_form, parse_modificar_usuario_form)
+from src.auth_core.auth.application.dtos.auth_user_dto import LoginResponse
 
 #SCHEMAS
-from auth_core.auth.infrastructure.persistence.postgres.schemas.schemas_recepcion import (
+from src.auth_core.auth.infrastructure.persistence.postgres.schemas.schemas_recepcion import (
     SolicitudRecuperacionRequest, ModificarPassword, SolicitudReactivacionRequest)
 
 #FASTAPI
@@ -13,31 +13,31 @@ from fastapi import (
 from fastapi.security import OAuth2PasswordRequestForm
 
 #SERVICIOS
-from auth_core.auth.presentation.web.utils.request_metadata import RequestMetadata
-from auth_core.auth.presentation.web.cookies.cookies import CookiesService
-from auth_core.auth.infrastructure.security.tokens.tokens import TokenService
+from src.auth_core.auth.presentation.web.utils.request_metadata import RequestMetadata
+from src.auth_core.auth.presentation.web.cookies.cookies import CookiesService
+from src.auth_core.auth.infrastructure.security.tokens.tokens import TokenService
 
 #USE CASES
-from auth_core.auth.application.use_cases.register import RegisterUseCase
-from auth_core.auth.application.use_cases.obtener_usuario_actual import ObtenerUsuarioActualUseCase
-from auth_core.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
-from auth_core.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
-from auth_core.auth.application.use_cases.eliminar_usuario.eliminar_usuario import EliminarUsuarioUseCase
-from auth_core.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
-from auth_core.auth.application.use_cases.login import LoginUseCase
-from auth_core.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
-from auth_core.auth.application.use_cases.verify_email import VerifyMailUseCase
-from auth_core.auth.application.use_cases.logout import LogoutUseCase
-from auth_core.auth.application.use_cases.refresh_token import RefreshTokenUseCase
-from auth_core.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
-from auth_core.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
-from auth_core.auth.application.use_cases.reactivacion_cuenta.reactivar_cuenta import ReactivarUsuarioUseCase
-from auth_core.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
-from auth_core.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
-from auth_core.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
+from src.auth_core.auth.application.use_cases.register import RegisterUseCase
+from src.auth_core.auth.application.use_cases.obtener_usuario_actual import ObtenerUsuarioActualUseCase
+from src.auth_core.auth.application.use_cases.reenviar_mail import ReenviarMailUseCase
+from src.auth_core.auth.application.use_cases.eliminar_usuario.solicitud_eliminar_usuario import SolicitudEliminacionUsuarioUseCase
+from src.auth_core.auth.application.use_cases.eliminar_usuario.eliminar_usuario import EliminarUsuarioUseCase
+from src.auth_core.auth.application.use_cases.sesiones.listar_sesiones import ListarSesionesUseCase
+from src.auth_core.auth.application.use_cases.login import LoginUseCase
+from src.auth_core.auth.application.use_cases.sesiones.eliminar_sesiones import EliminarSesionesUseCase
+from src.auth_core.auth.application.use_cases.verify_email import VerifyMailUseCase
+from src.auth_core.auth.application.use_cases.logout import LogoutUseCase
+from src.auth_core.auth.application.use_cases.refresh_token import RefreshTokenUseCase
+from src.auth_core.auth.application.use_cases.modificar_usuario import ModificarUsuarioUseCase
+from src.auth_core.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
+from src.auth_core.auth.application.use_cases.reactivacion_cuenta.reactivar_cuenta import ReactivarUsuarioUseCase
+from src.auth_core.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
+from src.auth_core.auth.application.use_cases.recover_password.verificar_token import VerificarTokenUseCase
+from src.auth_core.auth.application.use_cases.recover_password.recuperar_contraseña import RecuperarContraseñaUseCase
 
 #PROVIDERS
-from auth_core.container.auth.providers import (
+from src.auth_core.container.auth.providers import (
     get_register_use_case, get_login_use_case, 
     get_verify_mail_use_case, get_obtener_usuario_actual, 
     get_logout_service, get_refresh_token_service, get_listar_sesiones_use_case,
@@ -48,13 +48,13 @@ from auth_core.container.auth.providers import (
     get_eliminar_usuario_use_case, get_solicitud_reactivacion_cuenta_use_case, get_reactivar_cuenta_use_case)
 
 #EXCEPTIONS
-from auth_core.auth.domain.exceptions.tokens import SinRefreshToken, SinResetToken
+from src.auth_core.auth.domain.exceptions.tokens import SinRefreshToken, SinResetToken
 
 #RATE LIMITER
-from auth_core.shared.infrastructure.security.rate_limiter.limiter import limiter
+from src.auth_core.shared.infrastructure.security.rate_limiter.limiter import limiter
 
 #SETTINGS
-from auth_core.config.config import settings
+from src.auth_core.config.config import settings
 
 router = APIRouter(prefix=f"/{settings.NOMBRE_APP}/usuarios",
                    tags=["USUARIOS"],

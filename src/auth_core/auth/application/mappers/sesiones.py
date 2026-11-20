@@ -1,5 +1,5 @@
-from auth_core.auth.domain.entities.entitie_sesiones import Sesion
-from auth_core.auth.application.dtos.sesiones_dto import SesionVisual
+from src.auth_core.auth.domain.entities.entitie_sesiones import Sesion
+from src.auth_core.auth.application.dtos.sesiones_dto import SesionVisual
 
 
 def a_sesion_visual(entity: Sesion, es_actual: bool = False) -> SesionVisual:

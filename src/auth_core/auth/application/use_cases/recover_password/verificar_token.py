@@ -1,7 +1,7 @@
-from auth_core.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
-from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth_core.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from src.auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
 from datetime import datetime, timezone
-from auth_core.auth.domain.exceptions.tokens import TokenNoVerificado
+from src.auth_core.auth.domain.exceptions.tokens import TokenNoVerificado
 
 
 

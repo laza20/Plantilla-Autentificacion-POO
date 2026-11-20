@@ -1,6 +1,6 @@
 import cloudinary
 import cloudinary.uploader
-from auth_core.config.config import settings 
+from src.auth_core.config.config import settings 
 
 cloudinary.config(
     cloud_name=settings.CLOUDINARY_CLOUD_NAME,

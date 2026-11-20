@@ -4,7 +4,7 @@ from test.auth.unit.auth.domain.service import (
 )
 from test.auth.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
 from test.auth.unit.auth.domain.fakes.fake_recuperar_contraseña_repository import FakeRecuperarContraseñaRepository
-from auth_core.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
+from src.auth_core.auth.application.use_cases.recover_password.solicitud_recuperacion import SolicitudRecuperacionUseCase
 from test.config.config import TestSettings
 from datetime import timedelta
 

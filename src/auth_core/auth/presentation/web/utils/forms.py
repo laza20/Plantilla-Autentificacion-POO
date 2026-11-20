@@ -1,5 +1,5 @@
 from fastapi import Form, File, UploadFile
-from auth_core.auth.application.dtos.auth_user_dto import UserRegisterDTO, UserModifyDTO
+from src.auth_core.auth.application.dtos.auth_user_dto import UserRegisterDTO, UserModifyDTO
 
 def parse_usuario_form(
     email: str = Form(...),

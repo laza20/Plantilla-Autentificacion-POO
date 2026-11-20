@@ -2,7 +2,7 @@ import pytest
 from test.auth.fixtures.fixture_refresh_token_case import RefreshTokenTestEnvironment
 from test.auth.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
 from test.auth.factories.factory_usuarios import crear_usuario_de_prueba
-from auth_core.auth.domain.exceptions.tokens import VerificacionInvalida
+from src.auth_core.auth.domain.exceptions.tokens import VerificacionInvalida
 
 
 def test_debe_verificar_el_flujo_correcto_del_refresh():

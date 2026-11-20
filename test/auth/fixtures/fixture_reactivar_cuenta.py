@@ -3,7 +3,7 @@ from test.auth.unit.auth.domain.service import (
     stub_unit_of_work
     )
 from test.auth.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
-from auth_core.auth.application.use_cases.reactivacion_cuenta.reactivar_cuenta import ReactivarUsuarioUseCase
+from src.auth_core.auth.application.use_cases.reactivacion_cuenta.reactivar_cuenta import ReactivarUsuarioUseCase
 from test.config.config import TestSettings
 from datetime import timedelta
 

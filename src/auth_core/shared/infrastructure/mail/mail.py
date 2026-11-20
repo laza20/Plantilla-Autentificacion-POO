@@ -1,5 +1,5 @@
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
-from auth_core.config.config import Settings, get_settings
+from src.auth_core.config.config import Settings, get_settings
 
 class MailService:
     def __init__(

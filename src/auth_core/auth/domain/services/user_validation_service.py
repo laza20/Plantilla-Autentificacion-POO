@@ -1,6 +1,6 @@
-from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
-from auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado
+from src.auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth_core.auth.domain.entities.entitie_auth_users import AuthUser
 
 class UserValidationService:
     def __init__(

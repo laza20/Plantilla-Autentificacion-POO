@@ -1,5 +1,5 @@
 from typing import Protocol, runtime_checkable
-from auth_core.auth.domain.entities.entitie_usuario import Usuario
+from src.auth_core.auth.domain.entities.entitie_usuario import Usuario
 
 @runtime_checkable
 class UsuarioRepositoryProtocol(Protocol):

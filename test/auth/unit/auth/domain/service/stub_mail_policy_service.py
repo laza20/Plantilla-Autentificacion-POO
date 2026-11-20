@@ -1,4 +1,4 @@
-from auth_core.auth.domain.exceptions.usuarios_exceptions import MailNoValido
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import MailNoValido
 
 class StubMailPolicy:
     def __init__(self):

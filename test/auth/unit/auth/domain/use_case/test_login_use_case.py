@@ -1,6 +1,6 @@
 from test.auth.fixtures.fixture_login_case import LoginTestEnvironment
 from test.auth.factories.factory_usuarios import crear_usuario_de_prueba
-from auth_core.auth.domain.exceptions.usuarios_exceptions import LoginError, UsuarioNoEncontrado
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import LoginError, UsuarioNoEncontrado
 import pytest
 
 

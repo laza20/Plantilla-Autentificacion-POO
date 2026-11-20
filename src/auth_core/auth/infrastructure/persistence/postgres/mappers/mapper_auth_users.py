@@ -1,5 +1,5 @@
-from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
-from auth_core.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser as AuthUserSqlModel
+from src.auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth_core.auth.infrastructure.persistence.postgres.models.models_auth_users import AuthUser as AuthUserSqlModel
 
 
 def a_entidad(modelo: AuthUserSqlModel) -> AuthUser:

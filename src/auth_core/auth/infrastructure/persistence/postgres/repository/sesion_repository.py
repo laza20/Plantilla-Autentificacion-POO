@@ -1,6 +1,6 @@
-from auth_core.auth.infrastructure.persistence.postgres.models.models_sesiones import Sesiones as SesionSqlModel
-from auth_core.auth.infrastructure.persistence.postgres.mappers.mapper_sesiones import a_entidad, a_modelo
-from auth_core.auth.domain.entities.entitie_sesiones import Sesion
+from src.auth_core.auth.infrastructure.persistence.postgres.models.models_sesiones import Sesiones as SesionSqlModel
+from src.auth_core.auth.infrastructure.persistence.postgres.mappers.mapper_sesiones import a_entidad, a_modelo
+from src.auth_core.auth.domain.entities.entitie_sesiones import Sesion
 from sqlmodel import delete, Session
 
 

@@ -1,5 +1,5 @@
-from auth_core.auth.domain.entities.entitie_sesiones import Sesion
-from auth_core.auth.infrastructure.persistence.postgres.models.models_sesiones import Sesiones as SesionesSqlModel
+from src.auth_core.auth.domain.entities.entitie_sesiones import Sesion
+from src.auth_core.auth.infrastructure.persistence.postgres.models.models_sesiones import Sesiones as SesionesSqlModel
 
 def a_entidad(model: SesionesSqlModel) -> Sesion:
     return Sesion(

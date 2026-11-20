@@ -1,10 +1,10 @@
 from fastapi import Request
-from auth_core.auth.application.dtos.auth_user_dto import UsuarioCreado
-from auth_core.auth.domain.exceptions.usuarios_exceptions import (NoAutenticado, UsuarioNoEncontrado)
-from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
-from auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from auth_core.auth.domain.exceptions.tokens import TokenInvalido
-from auth_core.auth.application.mappers.auth_users import a_usuario_creado
+from src.auth_core.auth.application.dtos.auth_user_dto import UsuarioCreado
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import (NoAutenticado, UsuarioNoEncontrado)
+from src.auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth_core.auth.domain.exceptions.tokens import TokenInvalido
+from src.auth_core.auth.application.mappers.auth_users import a_usuario_creado
 
 class AuthDependencies:
     def __init__(

@@ -1,5 +1,5 @@
 from typing import Protocol, runtime_checkable
-from auth_core.auth.domain.entities.entitie_auth_users import UserTokens
+from src.auth_core.auth.domain.entities.entitie_auth_users import UserTokens
 
 
 @runtime_checkable

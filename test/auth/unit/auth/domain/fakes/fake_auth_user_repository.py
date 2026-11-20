@@ -1,10 +1,10 @@
-from auth_core.auth.domain.exceptions.usuarios_exceptions import (
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import (
     UsuarioNoEncontrado, UsuarioActivo, UsuarioNoEliminado, MailRepetido)
 from typing import Dict
 from dataclasses import replace
-from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
-from auth_core.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad
-from auth_core.database.enums.estado_entidad import EstadoEntidad
+from src.auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth_core.auth.infrastructure.persistence.postgres.mappers.mapper_auth_users import a_entidad
+from src.auth_core.database.enums.estado_entidad import EstadoEntidad
 from datetime import datetime, date
 
 class FakeUserRepository:

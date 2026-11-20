@@ -4,15 +4,15 @@ load_dotenv()
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from auth_core.domain.exceptions.domain import DomainError
-from auth_core.auth.presentation.web.exception_handlers import obtener_status_code
-from auth_core.auth.presentation.web import routers as usuarios
+from src.auth_core.domain.exceptions.domain import DomainError
+from src.auth_core.auth.presentation.web.exception_handlers import obtener_status_code
+from src.auth_core.auth.presentation.web import routers as usuarios
 
-from auth_core.auth.infrastructure.persistence.postgres.models import *
+from src.auth_core.auth.infrastructure.persistence.postgres.models import *
 
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from auth_core.shared.infrastructure.security.rate_limiter.limiter import limiter
+from src.auth_core.shared.infrastructure.security.rate_limiter.limiter import limiter
 
 
 app = FastAPI()

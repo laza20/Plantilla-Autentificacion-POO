@@ -1,11 +1,11 @@
-from auth_core.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
-from auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
-from auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
-from auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
-from auth_core.shared.protocols.protocol_mail_service import MailProtocol
+from src.auth_core.auth.domain.protocols.repository.protocol_recover_password_repository import RecuperarContraseñaProtocol
+from src.auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from src.auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import UsuarioNoEncontrado, UsuarioError
+from src.auth_core.shared.protocols.protocol_mail_service import MailProtocol
 from datetime import datetime, timezone, timedelta
-from auth_core.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
+from src.auth_core.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
 
 
 class SolicitudRecuperacionUseCase:

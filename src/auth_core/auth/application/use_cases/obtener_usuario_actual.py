@@ -1,5 +1,5 @@
-from auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from auth_core.auth.application.dtos.auth_user_dto import UsuarioCreado
+from src.auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth_core.auth.application.dtos.auth_user_dto import UsuarioCreado
 
 
 class ObtenerUsuarioActualUseCase:

@@ -1,11 +1,11 @@
 from datetime import datetime, timezone, timedelta
 from jose import jwt
 from typing import Dict
-from auth_core.auth.domain.exceptions.tokens import (
+from src.auth_core.auth.domain.exceptions.tokens import (
     TokenInvalido, TokenResetInactivo, TokenVerificacionInactivo, TokenEliminacionInactivo,
     TokenReactivacionInactivo, SinAccessToken)
-from auth_core.config.config import Settings
-from auth_core.auth.domain.entities.entitie_auth_users import UserTokens
+from src.auth_core.config.config import Settings
+from src.auth_core.auth.domain.entities.entitie_auth_users import UserTokens
 import hashlib
 import secrets
 

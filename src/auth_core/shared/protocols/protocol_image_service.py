@@ -1,6 +1,6 @@
 from typing import Protocol, runtime_checkable
-from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
-from auth_core.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
+from src.auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth_core.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
 
 @runtime_checkable
 class ImageProtocol(Protocol):

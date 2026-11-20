@@ -1,15 +1,15 @@
 from typing import Optional, Literal, TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Date, Relationship
 from datetime import date
-from auth_core.database.enums.estado_entidad import EstadoEntidad
+from src.auth_core.database.enums.estado_entidad import EstadoEntidad
 from sqlalchemy import Column, text
 from sqlalchemy.types import Enum as SAEnum
 
 if TYPE_CHECKING:
-    from auth_core.auth.infrastructure.persistence.postgres.models.models_sesiones import Sesiones
-    from auth_core.auth.infrastructure.persistence.postgres.models.models_usuario import Usuario
-    from auth_core.auth.infrastructure.persistence.postgres.models.models_recover_password import RecoverPassword
-    from auth_core.auth.infrastructure.persistence.postgres.models.models_history_password import HistoryPassword
+    from src.auth_core.auth.infrastructure.persistence.postgres.models.models_sesiones import Sesiones
+    from src.auth_core.auth.infrastructure.persistence.postgres.models.models_usuario import Usuario
+    from src.auth_core.auth.infrastructure.persistence.postgres.models.models_recover_password import RecoverPassword
+    from src.auth_core.auth.infrastructure.persistence.postgres.models.models_history_password import HistoryPassword
 
 class AuthUser(SQLModel, table=True):
     __tablename__ = "auth_users"

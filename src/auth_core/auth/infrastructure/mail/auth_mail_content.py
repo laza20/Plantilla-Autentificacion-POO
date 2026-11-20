@@ -1,5 +1,5 @@
 import os
-from auth_core.shared.infrastructure.mail.template_renderer import TemplateRenderer
+from src.auth_core.shared.infrastructure.mail.template_renderer import TemplateRenderer
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATES_DIR = os.path.join(os.path.dirname(CURRENT_DIR), "templates")

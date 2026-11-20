@@ -1,5 +1,5 @@
-from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
-from auth_core.auth.domain.exceptions.tokens import TokenInvalido, VerificacionInvalida
+from src.auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth_core.auth.domain.exceptions.tokens import TokenInvalido, VerificacionInvalida
 
 class RefreshTokenUseCase:
     def __init__(

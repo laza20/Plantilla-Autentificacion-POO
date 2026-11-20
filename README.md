@@ -543,7 +543,7 @@ alembic revision --autogenerate -m "descripcion del cambio"
 alembic upgrade head
 ```
 
-> Requisito del autogenerate: los modelos de tabla deben importarse en `env.py` (vía `from auth_core.auth.infrastructure.persistence.postgres import models`, cuyo `__init__.py` exporta los cinco modelos). Un modelo nuevo debe agregarse a ese `__init__.py`, o Alembic no lo detectará.
+> Requisito del autogenerate: los modelos de tabla deben importarse en `env.py` (vía `from src.auth_core.auth.infrastructure.persistence.postgres import models`, cuyo `__init__.py` exporta los cinco modelos). Un modelo nuevo debe agregarse a ese `__init__.py`, o Alembic no lo detectará.
 
 ### 10.3 Modelo de datos
 
@@ -669,7 +669,7 @@ Repository, Unit of Work, Dependency Injection (`Depends`), Composition Root, DT
 
 **Cambios que rompen compatibilidad respecto de la estructura anterior**
 
-- **Imports:** todo pasó de `src.algo` a `auth_core.algo` (por ejemplo, `from auth_core.container.auth.providers import ...`). Incluye `main.py`, los tests, `alembic/env.py` y los `patch()` de los tests.
+- **Imports:** todo pasó de `src.algo` a `auth_core.algo` (por ejemplo, `from src.auth_core.container.auth.providers import ...`). Incluye `main.py`, los tests, `alembic/env.py` y los `patch()` de los tests.
 - **`.env`:** `Settings` lo lee del **directorio de trabajo** (`env_file=".env"`). Se eliminaron `BASE_DIR` y `ENV_PATH`. `uvicorn`, `pytest` y `alembic` se ejecutan desde la raíz del proyecto.
 - **`main.py` y `test/`** quedaron fuera del paquete, en la raíz del repo.
 - **Comando de arranque:** `uvicorn main:app --reload` (antes `uvicorn src.main:app`).

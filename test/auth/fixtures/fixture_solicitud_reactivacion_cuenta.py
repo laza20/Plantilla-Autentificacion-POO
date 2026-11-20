@@ -1,7 +1,7 @@
 from test.auth.unit.auth.domain.service import stub_auth_mail_content, stub_mail_service
 from test.auth.unit.auth.domain.service import (stub_token_service)
 from test.auth.unit.auth.domain.fakes.fake_auth_user_repository import FakeUserRepository
-from auth_core.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
+from src.auth_core.auth.application.use_cases.reactivacion_cuenta.solicitud_reactivacion_cuenta import EnviarMailReactivacionUseCase
 from test.config.config import TestSettings
 from test.auth.unit.auth.domain.service import (stub_mail_policy_service)
 

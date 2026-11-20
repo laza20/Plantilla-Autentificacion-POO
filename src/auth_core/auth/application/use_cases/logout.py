@@ -1,6 +1,6 @@
-from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
-from auth_core.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
-from auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from src.auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth_core.auth.domain.protocols.repository.protocol_sesion_repository import TokenRepositoryProtocol
+from src.auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
 
 class LogoutUseCase:
     def __init__(

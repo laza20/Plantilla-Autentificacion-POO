@@ -1,6 +1,6 @@
 from typing import Protocol, runtime_checkable
 from datetime import datetime
-from auth_core.auth.domain.entities.entitie_recover_password import RecoverPassword
+from src.auth_core.auth.domain.entities.entitie_recover_password import RecoverPassword
 
 @runtime_checkable
 class RecuperarContraseñaProtocol(Protocol):

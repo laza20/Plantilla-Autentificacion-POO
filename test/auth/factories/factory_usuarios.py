@@ -1,4 +1,4 @@
-from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth_core.auth.domain.entities.entitie_auth_users import AuthUser
 
 def crear_usuario_de_prueba(
     auth_user_repository,

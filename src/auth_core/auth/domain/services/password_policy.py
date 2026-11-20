@@ -1,4 +1,4 @@
-from auth_core.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura
 import re
 
 class PasswordPolicyService:

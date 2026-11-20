@@ -2,9 +2,9 @@ from main import app
 from test.auth.presentation.web.overrides.override_crear import crear_override
 from test.auth.presentation.web.stub.stub_verificar_token_recuperar_contraseña import StubVerificarTokenRecuperarContraseñaUseCase
 from fastapi import status
-from auth_core.container.auth.providers import get_verificar_token_recuperacion_contraseña_use_case
-from auth_core.config.config import settings
-from auth_core.auth.domain.exceptions.tokens import TokenNoVerificado
+from src.auth_core.container.auth.providers import get_verificar_token_recuperacion_contraseña_use_case
+from src.auth_core.config.config import settings
+from src.auth_core.auth.domain.exceptions.tokens import TokenNoVerificado
 
 
 def test_debe_verificar_el_retorno_del_reset_token_correctamente(test_client):

@@ -1,15 +1,15 @@
 from main import app
 from test.auth.presentation.web.overrides.override_crear import crear_override
 from test.auth.presentation.web.stub.stub_register_router import StubRegisterUseCase
-from auth_core.auth.application.dtos.auth_user_dto import UsuarioCreado
-from auth_core.domain.exceptions.domain import (
+from src.auth_core.auth.application.dtos.auth_user_dto import UsuarioCreado
+from src.auth_core.domain.exceptions.domain import (
     LongitudExcedida, LimiteTamañoSuperado, ExtensionNoPermitida, ErrorCloudinary,
     SinCargas
     )
-from auth_core.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura, MailRepetido
+from src.auth_core.auth.domain.exceptions.usuarios_exceptions import ContraseñaNoSegura, MailRepetido
 from fastapi import status
-from auth_core.container.auth.providers import get_register_use_case
-from auth_core.config.config import settings
+from src.auth_core.container.auth.providers import get_register_use_case
+from src.auth_core.config.config import settings
 import pytest
 from io import BytesIO
 from dataclasses import asdict

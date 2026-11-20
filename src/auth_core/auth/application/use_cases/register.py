@@ -1,21 +1,21 @@
 import logging
-from auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
-from auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
-from auth_core.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
-from auth_core.shared.protocols.protocol_mail_service import MailProtocol
-from auth_core.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
-from auth_core.shared.protocols.protocol_image_service import ImageProtocol
-from auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
-from auth_core.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
-from auth_core.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
-from auth_core.auth.domain.services.password_policy import PasswordPolicyService
-from auth_core.auth.domain.services.mail_policy import MailPolicyService
-from auth_core.auth.application.mappers.auth_users import a_usuario_creado
-from auth_core.auth.domain.entities.entitie_auth_users import AuthUser
-from auth_core.auth.domain.entities.entitie_usuario import Usuario
+from src.auth_core.auth.domain.protocols.repository.protocol_auth_user_repository import AuthUserRepositoryProtocol
+from src.auth_core.database.protocols.protocol_unit_of_work import UnitOfWorkProtocol
+from src.auth_core.auth.domain.protocols.service.protocol_password_service import PasswordProtocol
+from src.auth_core.shared.protocols.protocol_mail_service import MailProtocol
+from src.auth_core.shared.protocols.protocol_imagen_tipado import TipadoImagenProtocol
+from src.auth_core.shared.protocols.protocol_image_service import ImageProtocol
+from src.auth_core.auth.domain.protocols.service.protocol_token_service import TokenProtocol
+from src.auth_core.auth.domain.protocols.repository.protocol_user_repository import UsuarioRepositoryProtocol
+from src.auth_core.auth.domain.protocols.service.protocol_auth_mail_content import AuthMailContentProtocol
+from src.auth_core.auth.domain.services.password_policy import PasswordPolicyService
+from src.auth_core.auth.domain.services.mail_policy import MailPolicyService
+from src.auth_core.auth.application.mappers.auth_users import a_usuario_creado
+from src.auth_core.auth.domain.entities.entitie_auth_users import AuthUser
+from src.auth_core.auth.domain.entities.entitie_usuario import Usuario
 from pydantic import ValidationError
-from auth_core.domain.exceptions.domain import LongitudExcedida, SinCargas, ErrorCreacion
-from auth_core.auth.application.dtos.auth_user_dto import UserRegisterDTO, UsuarioCreado
+from src.auth_core.domain.exceptions.domain import LongitudExcedida, SinCargas, ErrorCreacion
+from src.auth_core.auth.application.dtos.auth_user_dto import UserRegisterDTO, UsuarioCreado
 
 logger = logging.getLogger(__name__)
 
